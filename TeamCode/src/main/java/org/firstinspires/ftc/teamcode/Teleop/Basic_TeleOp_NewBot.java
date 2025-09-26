@@ -125,7 +125,13 @@ public class Basic_TeleOp_NewBot extends OpMode {
         controlMode();
         driveSpeed();
 
-        if (gamepad1.square) {
+        if(targetData.currentlyDetected)
+        {
+            gamepad1.rumble(0.25, 0.25, 100);
+            //gamepad1.rumble(100);
+        }
+
+        if (gamepad1.left_bumper || gamepad1.right_bumper) {
             autoWheel(targetData.currentlyDetected, targetData.angleX);
         } else {
             singleJoystickDrive();
@@ -178,25 +184,25 @@ public class Basic_TeleOp_NewBot extends OpMode {
 
 
         if (!spinTargetAquired) {
-            SpinTargetFrontLeft = robot.frontLeftDrive.getCurrentPosition() + 830*4;
-            SpinTargetFrontRight = robot.frontRightDrive.getCurrentPosition() - 830*4;
-            SpinTargetBackLeft = robot.backLeftDrive.getCurrentPosition() + 830*4;
-            SpinTargetBackRight = robot.backRightDrive.getCurrentPosition() - 830*4;
+            SpinTargetFrontLeft = robot.frontLeftDrive.getCurrentPosition() + 830*2;
+            SpinTargetFrontRight = robot.frontRightDrive.getCurrentPosition() - 830*2;
+            SpinTargetBackLeft = robot.backLeftDrive.getCurrentPosition() + 830*2;
+            SpinTargetBackRight = robot.backRightDrive.getCurrentPosition() - 830*2;
             spinTargetAquired = true;
             speed = 1;
         }//we so cool if this works
 
 
-        if (!detected) {
+        if (gamepad1.right_bumper) {
             //180 Turn
             robot.frontLeftDrive.setTargetPosition(SpinTargetFrontLeft);
             robot.frontRightDrive.setTargetPosition(SpinTargetFrontRight);
             robot.backLeftDrive.setTargetPosition(SpinTargetBackLeft);
             robot.backRightDrive.setTargetPosition(SpinTargetBackRight);
-        } else if (detected) //Turn to face target tag
+        } else if (detected && gamepad1.left_bumper) //Turn to face target tag
         {
-            double constant = -850 / 360; //We will know this later
-            speed = 0.65;
+            double constant = -1660 / 360; //We will know this later
+            speed = 1;
             double turnTicks = targetData.angleX * constant;
 
             robot.frontLeftDrive.setTargetPosition(robot.frontLeftDrive.getCurrentPosition() + (int) turnTicks);
