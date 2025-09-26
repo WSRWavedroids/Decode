@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.INTO_THE_DEEP_BOT;
+package org.firstinspires.ftc.teamcode;
 
 import static android.os.SystemClock.sleep;
 
@@ -156,7 +156,7 @@ public class artifactLocator extends Robot {
          *        CLOSING:    Will Dilate and then Erode which will tend to fill in any small holes in blob edges.
          */
         purpleLocator = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(CustomColorRange.ARTIFACT_PURPLE)   // Use a predefined color match
+                .setTargetColorRange(org.firstinspires.ftc.teamcode.CustomColorRange.ARTIFACT_PURPLE)   // Use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
                 .setDrawContours(true)   // Show contours on the Stream Preview

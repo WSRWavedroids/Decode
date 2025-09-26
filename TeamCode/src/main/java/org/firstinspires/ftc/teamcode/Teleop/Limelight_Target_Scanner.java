@@ -30,16 +30,18 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.Autonomous.AutonomousPLUS;
 
 import java.util.List;
 
@@ -65,20 +67,24 @@ import java.util.List;
  *   and the ip address the Limelight device assigned the Control Hub and which is displayed in small text
  *   below the name of the Limelight on the top level configuration screen.
  */
-@Autonomous(name = "Randomization", group = "Sensor")
-public class Limelight_Randomization_Scanner extends org.firstinspires.ftc.teamcode.Autonomous.AutonomousPLUS {
+
+@Autonomous(name = "Limelight Score Target", group = "Sensor")
+public class Limelight_Target_Scanner extends AutonomousPLUS {
 
     private Limelight3A limelight;
+    public static final String ALLIANCE_KEY = "Alliance";
 
     @Override
     public void runOpMode()
     {
-        super.runOpMode();
-        limelight = robot.limelight;
+
+
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
         telemetry.setMsTransmissionInterval(11);
 
-        limelight.pipelineSwitch(0);
+
+        limelight.pipelineSwitch(1);
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
@@ -114,6 +120,7 @@ public class Limelight_Randomization_Scanner extends org.firstinspires.ftc.teamc
                 telemetry.addData("ty", result.getTy());
                 telemetry.addData("tync", result.getTyNC());
 
+
                 telemetry.addData("Botpose", botpose.toString());
 
                 // Access barcode results
@@ -123,18 +130,23 @@ public class Limelight_Randomization_Scanner extends org.firstinspires.ftc.teamc
                 for (LLResultTypes.FiducialResult fr : fiducialResults) {
                     telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
 
-                    if(fr.getFiducialId() == 21)
-                    {
-                        telemetry.addData("Pattern: ", "GPP");
-                    }
-                    else if (fr.getFiducialId() == 22)
-                    {
-                        telemetry.addData("Pattern: ", "PGP");
-                    }
-                    else if (fr.getFiducialId() == 23)
-                    {
-                        telemetry.addData("Pattern: ", "PPG");
-                    }
+                    Pose3D targetPose = fr.getTargetPoseRobotSpace();
+
+                    double distanceZ = targetPose.getPosition().z;
+                    double distanceY = targetPose.getPosition().y;
+                    double distanceX = targetPose.getPosition().x;
+
+                    double angleX = fr.getTargetXDegrees();
+                    double angleY = fr.getTargetYDegrees();
+
+                    telemetry.addData("Dist Z:", distanceZ);
+                    telemetry.addData("Dist Y:", distanceY);
+                    telemetry.addData("Dist X:", distanceX);
+
+                    telemetry.addData("Angle Z:", angleX);
+                    telemetry.addData("Angle Y:", angleY);
+
+
                 }
 
             } else {
@@ -142,88 +154,60 @@ public class Limelight_Randomization_Scanner extends org.firstinspires.ftc.teamc
             }
 
             telemetry.update();
+        }}
+
+        public void InitLimeLightTargeting(int pipeline, HardwareMap hardwareMap)
+        {
+
+            limelight = hardwareMap.get(Limelight3A.class , "limelight");
+
+            telemetry.setMsTransmissionInterval(11);
+            limelight.pipelineSwitch(pipeline);
+
+
+            /*
+             * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
+             */
+            limelight.start();
+
+
         }
-        limelight.stop();
-    }
 
-    public void InitLimeLight(int pipeline, HardwareMap hardwareMap)
-    {
 
-        limelight = hardwareMap.get(Limelight3A.class , "limelight");
+        public WaveTag tagInfo()
+        {
+            WaveTag current = new WaveTag();
 
-        telemetry.setMsTransmissionInterval(11);
+            current.currentlyDetected = false;
 
-        limelight.pipelineSwitch(pipeline);
+            LLResult result = limelight.getLatestResult();
 
-        /*
-         * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
-         */
-        limelight.start();
-    }
-
-    public String GetRandomization()
-    {
-        String current = "GPP";
-
-        LLStatus status = limelight.getStatus();
-        telemetry.addData("Name", "%s",
-                status.getName());
-        telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d",
-                status.getTemp(), status.getCpu(),(int)status.getFps());
-        telemetry.addData("Pipeline", "Index: %d, Type: %s",
-                status.getPipelineIndex(), status.getPipelineType());
-
-        LLResult result = limelight.getLatestResult();
-        if (result.isValid()) {
-            // Access general information
-            /*Pose3D botpose = result.getBotpose();
-            double captureLatency = result.getCaptureLatency();
-            double targetingLatency = result.getTargetingLatency();
-            double parseLatency = result.getParseLatency();
-            telemetry.addData("LL Latency", captureLatency + targetingLatency);
-            telemetry.addData("Parse Latency", parseLatency);
-            telemetry.addData("PythonOutput", java.util.Arrays.toString(result.getPythonOutput()));
-
-            telemetry.addData("tx", result.getTx());
-            telemetry.addData("txnc", result.getTxNC());
-            telemetry.addData("ty", result.getTy());
-            telemetry.addData("tync", result.getTyNC());
-
-            telemetry.addData("Botpose", botpose.toString());*/
-
-            // Access barcode results
-
-            // Access fiducial results
             List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
             for (LLResultTypes.FiducialResult fr : fiducialResults) {
                 telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
 
-                if(fr.getFiducialId() == 21)
-                {
-                    telemetry.addData("Pattern: ", "GPP");
-                    current = "GPP";
-                }
-                else if (fr.getFiducialId() == 22)
-                {
-                    telemetry.addData("Pattern: ", "PGP");
-                    current = "PGP";
-                }
-                else if (fr.getFiducialId() == 23)
-                {
-                    telemetry.addData("Pattern: ", "PPG");
-                    current = "PPG";
-                }
-                else
-                {
-                    current = "GPP";
-                }
+                current.currentlyDetected = true;
+                 Pose3D targetPose = fr.getTargetPoseRobotSpace();
+                 current.data = targetPose;
+
+                 current.tagID = fr.getFiducialId();
+
+                 current.distanceZ = targetPose.getPosition().z;
+                current.distanceY = targetPose.getPosition().y;
+                current.distanceX = targetPose.getPosition().x;
+
+                current.angleX = fr.getTargetXDegrees();
+                current.angleY = fr.getTargetYDegrees();
+
             }
-            //telemetry.update();
 
-        }
+            return current;
 
-        //telemetry.update();
 
-        return current;
+
+
+
+
+
     }
 }

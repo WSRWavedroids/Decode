@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.INTO_THE_DEEP_BOT.Teleop;
+package org.firstinspires.ftc.teamcode.Teleop;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 

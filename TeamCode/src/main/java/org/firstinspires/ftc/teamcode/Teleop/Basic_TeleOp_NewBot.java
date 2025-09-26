@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.INTO_THE_DEEP_BOT.Teleop;
+package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.INTO_THE_DEEP_BOT.Robot;
-import org.firstinspires.ftc.teamcode.INTO_THE_DEEP_BOT.Teleop.Limelight_Target_Scanner;
-import org.firstinspires.ftc.teamcode.INTO_THE_DEEP_BOT.Teleop.WaveTag;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Teleop.Limelight_Target_Scanner;
+import org.firstinspires.ftc.teamcode.Teleop.WaveTag;
 
 /**
  * This file is our iterative (Non-Linear) "OpMode" for TeleOp.
