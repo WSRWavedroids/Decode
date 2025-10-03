@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -13,13 +14,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.Objects;
-@Disabled
-public class Basic_Strafer_Bot {
 
-    public DcMotor frontLeftDrive;
-    public DcMotor frontRightDrive;
-    public DcMotor backLeftDrive;
-    public DcMotor backRightDrive;
+public class
+
+Basic_Strafer_Bot {
+
+    public DcMotorEx frontLeftDrive;
+    public DcMotorEx frontRightDrive;
+    public DcMotorEx backLeftDrive;
+    public DcMotorEx backRightDrive;
+
+    public CRServo expandyServo;
 
 
     public Telemetry telemetry;
@@ -49,6 +54,7 @@ public class Basic_Strafer_Bot {
         backLeftDrive = hardwareMap.get(DcMotorEx.class, "backLeftDrive");
         backRightDrive = hardwareMap.get(DcMotorEx.class, "backRightDrive");
 
+        expandyServo = hardwareMap.get(CRServo.class, "expandyServo");
         //add arms to map
         /*
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();

@@ -4,6 +4,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -137,6 +138,24 @@ public class Basic_TeleOp_NewBot extends OpMode {
             singleJoystickDrive();
             spinTargetAquired = false;
         }
+
+
+        /*
+        if(gamepad2.square)
+        {
+            robot.expandyServo.setDirection(DcMotorSimple.Direction.FORWARD);
+            robot.expandyServo.setPower(1);
+        }
+        else if(gamepad2.triangle)
+        {
+            robot.expandyServo.setDirection(DcMotorSimple.Direction.REVERSE);
+            robot.expandyServo.setPower(1);
+        }
+        else
+        {
+            robot.expandyServo.setPower(0);
+        }*/
+
 
 
         if (gamepad1.touchpad || gamepad2.touchpad) {

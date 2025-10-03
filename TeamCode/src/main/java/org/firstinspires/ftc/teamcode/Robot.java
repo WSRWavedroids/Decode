@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -29,6 +30,8 @@ public class Robot {
     public DcMotorEx frontRightDrive;
     public DcMotorEx backLeftDrive;
     public DcMotorEx backRightDrive;
+
+    //public CRServo expandyServo;
 
 
     public Limelight3A limelight;
@@ -60,7 +63,7 @@ public class Robot {
         backLeftDrive = hardwareMap.get(DcMotorEx.class, "backLeftDrive");
         backRightDrive = hardwareMap.get(DcMotorEx.class, "backRightDrive");
         CamCam = hardwareMap.get(WebcamName.class, "CamCam");
-
+        //expandyServo = hardwareMap.get(CRServo.class, "expandyServo");
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
