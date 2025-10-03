@@ -187,7 +187,7 @@ public class artifactLocator extends Robot {
 
                 .build();
 
-        internalCamera = hardwareMap.get(WebcamName.class, "Webcam 1");
+        internalCamera = hardwareMap.get(WebcamName.class, "CamCam");;
 
 
         /*
