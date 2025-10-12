@@ -26,6 +26,8 @@ Basic_Strafer_Bot {
 
     public CRServo expandyServo;
 
+    public CRServo intakeyServo;
+
 
     public Telemetry telemetry;
     //public BNO055IMU imu;
@@ -55,6 +57,7 @@ Basic_Strafer_Bot {
         backRightDrive = hardwareMap.get(DcMotorEx.class, "backRightDrive");
 
         expandyServo = hardwareMap.get(CRServo.class, "expandyServo");
+        intakeyServo = hardwareMap.get(CRServo.class, "intakeyServo");
         //add arms to map
         /*
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();

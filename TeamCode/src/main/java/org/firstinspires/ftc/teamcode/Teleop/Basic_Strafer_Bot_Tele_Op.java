@@ -163,15 +163,45 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
         {
             Bot.expandyServo.setDirection(DcMotorSimple.Direction.FORWARD);
             Bot.expandyServo.setPower(1);
+
+            /*Bot.frontLeftDrive.setPower(.1);
+            Bot.frontRightDrive.setPower(.1);
+            Bot.backLeftDrive.setPower(-0.1);
+            Bot.backRightDrive.setPower(-0.1);*/
+
+
         }
         else if(gamepad2.triangle)
         {
             Bot.expandyServo.setDirection(DcMotorSimple.Direction.REVERSE);
             Bot.expandyServo.setPower(1);
+
+            //Drivetrain Assist?
+            /*
+            Bot.frontLeftDrive.setPower(-.1);
+            Bot.frontRightDrive.setPower(-.1);
+            Bot.backLeftDrive.setPower(0.1);
+            Bot.backRightDrive.setPower(0.1);*/
+
         }
         else
         {
             Bot.expandyServo.setPower(0);
+        }
+
+        if(gamepad2.cross)
+        {
+            Bot.intakeyServo.setDirection(DcMotorSimple.Direction.FORWARD);
+            Bot.intakeyServo.setPower(1);
+        }
+        else if(gamepad2.circle)
+        {
+            Bot.intakeyServo.setDirection(DcMotorSimple.Direction.REVERSE);
+            Bot.intakeyServo.setPower(1);
+        }
+        else
+        {
+            Bot.intakeyServo.setPower(0);
         }
         //
 
