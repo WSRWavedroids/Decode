@@ -42,11 +42,15 @@ public class PedroGoDrive extends OpMode {
     public Limelight_Target_Scanner scanner = new Limelight_Target_Scanner();
     public WaveTag targetData = null;
 
+    public double trackpadCurrentX;
+    public double trackpadCurrentY;
+
     public double trackpadXMax = 1920;
     public double trackpadXMin = 0;
     public double trackpadYMax = 1020;
     public double trackpadYMin = 0;
 
+    public Pose trackTarget;
     private Pose tagPosition;
 
     @Override
@@ -81,11 +85,34 @@ public class PedroGoDrive extends OpMode {
         //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
         //If you don't pass anything in, it uses the default (false)
         follower.startTeleopDrive();
+        gamepad1.setLedColor(0, 0, 255, 1000000000);
+        gamepad2.setLedColor(0, 0, 255, 1000000000);
+
     }
 
     @Override
     public void loop() {
         //Call this once per loop
+
+
+        if(gamepad1.touchpad_finger_1)
+        {
+            trackpadCurrentX = gamepad1.touchpad_finger_1_x;
+            trackpadCurrentY = Math.abs(gamepad1.touchpad_finger_1_y - trackpadYMax); // Corrected for inversion
+            trackTarget = translateTrackpad(trackpadCurrentX, trackpadCurrentY, ""); // Sets tracktarget to coords
+
+            telemetry.addData("Finger 1 x detected val: ", gamepad1.touchpad_finger_1_x);
+            telemetry.addData("Finger 1 y detected val: ", gamepad1.touchpad_finger_1_y);
+
+            telemetry.addData("Finger 1 x corrected: ", trackpadCurrentX);
+            telemetry.addData("Finger 1 y corrrected: ", trackpadCurrentY);
+
+            telemetry.addData("Pedro Target Position: ", trackTarget);
+        }
+        else if(trackTarget == null)
+        {
+            trackTarget = new Pose(72, 72, 0);
+        }
 
 
 
@@ -169,6 +196,11 @@ public class PedroGoDrive extends OpMode {
 
         //fix y axis inversion (top is 0 instead of bottom)
         inY = Math.abs(inY - trackpadYMax);
+
+        double MDistanceX = trackpadXMax-trackpadXMin;
+        double MDistanceY = trackpadYMax-trackpadYMin;
+
+
 
         //if the heading check is tag rotate to point at target during path
         if (headingCheck == "tag")
