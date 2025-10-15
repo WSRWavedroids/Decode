@@ -45,19 +45,19 @@ public class PedroGoDrive extends OpMode {
     public double trackpadCurrentX;
     public double trackpadCurrentY;
 
-    public double trackpadXMax = 1920;
-    public double trackpadXMin = 0;
-    public double trackpadYMax = 1020;
-    public double trackpadYMin = 0;
+    public double stickerOffsetX = -0.01;
+    public double stickerOffsetY = 0.01;
 
     public Pose trackTarget;
     private Pose tagPosition;
 
     @Override
     public void init() {
+        robot = new Robot(hardwareMap, telemetry, this);
+
         follower = Constants.createFollower(hardwareMap);
         if (blackboard.get(POSE_KEY) == null) {
-            blackboard.put(POSE_KEY, new Pose(72,72,0));
+            blackboard.put(POSE_KEY, new Pose(72,72,-Math.PI/2));
         }
         follower.setStartingPose((Pose) blackboard.get(POSE_KEY));
         follower.update();
@@ -98,14 +98,14 @@ public class PedroGoDrive extends OpMode {
         if(gamepad1.touchpad_finger_1)
         {
             trackpadCurrentX = gamepad1.touchpad_finger_1_x;
-            trackpadCurrentY = Math.abs(gamepad1.touchpad_finger_1_y - trackpadYMax); // Corrected for inversion
+            trackpadCurrentY = -gamepad1.touchpad_finger_1_y; // Corrected for inversion
             trackTarget = translateTrackpad(trackpadCurrentX, trackpadCurrentY, ""); // Sets tracktarget to coords
 
             telemetry.addData("Finger 1 x detected val: ", gamepad1.touchpad_finger_1_x);
             telemetry.addData("Finger 1 y detected val: ", gamepad1.touchpad_finger_1_y);
 
-            telemetry.addData("Finger 1 x corrected: ", trackpadCurrentX);
-            telemetry.addData("Finger 1 y corrrected: ", trackpadCurrentY);
+            telemetry.addData("Finger 1 x adjusted: ", trackpadCurrentX);
+            telemetry.addData("Finger 1 y adjusted: ", trackpadCurrentY);
 
             telemetry.addData("Pedro Target Position: ", trackTarget);
         }
@@ -115,7 +115,7 @@ public class PedroGoDrive extends OpMode {
         }
 
 
-
+        telemetry.update();
         follower.update();
         telemetryM.update();
 
@@ -175,7 +175,7 @@ public class PedroGoDrive extends OpMode {
 
     private Pose translateTrackpad(double inX, double inY, String headingCheck)
     {
-        //So we don't drive off the field from misclicking
+        /*//So we don't drive off the field from misclicking
         if(inX > trackpadXMax)
         {
             inX = trackpadXMax;
@@ -192,24 +192,24 @@ public class PedroGoDrive extends OpMode {
         else if(inY < trackpadYMin)
         {
             inY = trackpadYMin;
-        }
+        }*/
 
         //fix y axis inversion (top is 0 instead of bottom)
-        inY = Math.abs(inY - trackpadYMax);
+        //inY = Math.abs(inY - trackpadYMax);
 
-        double MDistanceX = trackpadXMax-trackpadXMin;
-        double MDistanceY = trackpadYMax-trackpadYMin;
+        //double MDistanceX = trackpadXMax-trackpadXMin;
+        //double MDistanceY = trackpadYMax-trackpadYMin;
 
 
 
         //if the heading check is tag rotate to point at target during path
         if (headingCheck == "tag")
         {
-            return new Pose(((inX / trackpadXMax)*144),((inY / trackpadYMax)*144));
+            return new Pose(((inX)*72)+72,((inY)*72)+72);
         }
         else //or just keep current heading for same movement
         {
-            return new Pose(((inX / trackpadXMax)*144),((inY / trackpadYMax)*144));
+            return new Pose(((inX)*72)+72,((inY)*72)+72);
         }
 
 
