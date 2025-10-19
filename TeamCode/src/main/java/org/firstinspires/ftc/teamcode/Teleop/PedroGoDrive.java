@@ -5,13 +5,16 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.CoordinateSystem;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.HeadingInterpolator;
+import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.pedropathing.ftc.FTCCoordinates;
-import com.pedropathing.geometry.PedroCoordinates;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
@@ -39,19 +42,15 @@ public class PedroGoDrive extends OpMode {
     public Limelight_Target_Scanner scanner = new Limelight_Target_Scanner();
     public WaveTag targetData = null;
 
-    public double trackpadCurrentX;
-    public double trackpadCurrentY;
+    public double trackpadXMax = 1920;
+    public double trackpadXMin = 0;
+    public double trackpadYMax = 1020;
+    public double trackpadYMin = 0;
 
-    public double stickerOffsetX = -0.01;
-    public double stickerOffsetY = 0.01;
-
-    public Pose trackTarget;
     private Pose tagPosition;
 
     @Override
     public void init() {
-        robot = new Robot(hardwareMap, telemetry, this);
-
         follower = Constants.createFollower(hardwareMap);
         if (blackboard.get(POSE_KEY) == null) {
             blackboard.put(POSE_KEY, new Pose(72,72,0));
@@ -64,25 +63,16 @@ public class PedroGoDrive extends OpMode {
         //if using field centric youl need this lolzeez
         if (blackboard.get(ALLIANCE_KEY) == "BLUE") {
             scanner.InitLimeLightTargeting(2, robot.hardwareMap);
-            tagPosition = new Pose(58.3464567 + 72, 55.6299213 + 72, Math.toDegrees(54), PedroCoordinates.INSTANCE);
-            //targetData.data = new Pose3D(new Position(DistanceUnit.INCH, 58.3464567 + 72, 55.6299213 + 72, 29.488189 + 72, 0),
-                   //new YawPitchRollAngles(AngleUnit.DEGREES, 45, 0,0, 0));
-
         } else if (blackboard.get(ALLIANCE_KEY) == "RED") {
             scanner.InitLimeLightTargeting(1, robot.hardwareMap);
-            tagPosition = new Pose(58.3464567 + 72,  -55.6299213 + 72, Math.toDegrees(-54), PedroCoordinates.INSTANCE);
-
-            //targetData.data = new Pose3D(new Position(DistanceUnit.INCH, 58.3464567 + 72, -55.6299213 + 72, 29.488189 + 72, 0),
-              //      new YawPitchRollAngles(AngleUnit.DEGREES, -45, 0,0, 0));
-            //set the tag position
         } else {
             scanner.InitLimeLightTargeting(1, robot.hardwareMap);
-            tagPosition = new Pose(58.3464567 + 72,  -55.6299213 + 72, Math.toDegrees(-54), PedroCoordinates.INSTANCE);
         }
 
-        targetData = scanner.tagInfo();
-
-
+        /*pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
+                .addPath(new Path(new BezierLine(follower::getPose, (new Pose(0, 53))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(45), 0.8))
+                .build());*/
     }
 
     @Override
@@ -91,42 +81,14 @@ public class PedroGoDrive extends OpMode {
         //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
         //If you don't pass anything in, it uses the default (false)
         follower.startTeleopDrive();
-        gamepad1.setLedColor(0, 0, 255, 1000000000);
-        gamepad2.setLedColor(0, 0, 255, 1000000000);
-
     }
 
     @Override
     public void loop() {
         //Call this once per loop
 
-        if(targetData.currentlyDetected)
-        {
-            gamepad1.rumble(0.25, 0.25, 100);
-        }
 
 
-        if(gamepad1.touchpad_finger_1)
-        {
-            trackpadCurrentX = gamepad1.touchpad_finger_1_x;
-            trackpadCurrentY = -gamepad1.touchpad_finger_1_y; // Corrected for inversion
-            trackTarget = translateTrackpad(trackpadCurrentX, trackpadCurrentY, ""); // Sets tracktarget to coords
-
-            telemetry.addData("Finger 1 x detected val: ", gamepad1.touchpad_finger_1_x);
-            telemetry.addData("Finger 1 y detected val: ", gamepad1.touchpad_finger_1_y);
-
-            telemetry.addData("Finger 1 x adjusted: ", trackpadCurrentX);
-            telemetry.addData("Finger 1 y adjusted: ", trackpadCurrentY);
-
-            telemetry.addData("Pedro Target Position: ", trackTarget);
-        }
-        else if(trackTarget == null)
-        {
-            trackTarget = new Pose(72, 72, 0);
-        }
-
-
-        telemetry.update();
         follower.update();
         telemetryM.update();
 
@@ -153,12 +115,7 @@ public class PedroGoDrive extends OpMode {
 
         //Automated PathFollowing
         if (gamepad1.touchpadWasPressed()) {
-            follower.followPath(makeDynamicPath(translateTrackpad(gamepad1.touchpad_finger_1_x, gamepad1.touchpad_finger_1_y, ""), findTagHeading()));
-            automatedDrive = true;
-        }
-
-        if (gamepad1.cross) {
-            follower.followPath(makeDynamicPath(follower.getPose(), findTagHeading()));
+            follower.followPath(makeDynamicPath(translateTrackpad(gamepad1.touchpad_finger_1_x, gamepad1.touchpad_finger_1_y, "") , follower.getHeading()));
             automatedDrive = true;
         }
 
@@ -180,9 +137,9 @@ public class PedroGoDrive extends OpMode {
 
 
 
-        telemetry.addData("position", follower.getPose());
-        telemetry.addData("velocity", follower.getVelocity());
-        telemetry.addData("automatedDrive", automatedDrive);
+        telemetryM.debug("position", follower.getPose());
+        telemetryM.debug("velocity", follower.getVelocity());
+        telemetryM.debug("automatedDrive", automatedDrive);
     }
 
     private Pose enterStandardCoords(double x, double y, double heading) {
@@ -191,48 +148,48 @@ public class PedroGoDrive extends OpMode {
 
     private Pose translateTrackpad(double inX, double inY, String headingCheck)
     {
-            return new Pose(((inX)*72)+72,((inY)*72)+72);
+        //So we don't drive off the field from misclicking
+        if(inX > trackpadXMax)
+        {
+            inX = trackpadXMax;
+        }
+        else if(inX < trackpadXMin)
+        {
+            inX = trackpadXMin;
+        }
+
+        if(inY > trackpadYMax)
+        {
+            inY = trackpadYMax;
+        }
+        else if(inY < trackpadYMin)
+        {
+            inY = trackpadYMin;
+        }
+
+        //fix y axis inversion (top is 0 instead of bottom)
+        inY = Math.abs(inY - trackpadYMax);
+
+        //if the heading check is tag rotate to point at target during path
+        if (headingCheck == "tag")
+        {
+            return new Pose(((inX / trackpadXMax)*144),((inY / trackpadYMax)*144));
+        }
+        else //or just keep current heading for same movement
+        {
+            return new Pose(((inX / trackpadXMax)*144),((inY / trackpadYMax)*144));
+        }
+
+
+
     }
 
     private PathChain makeDynamicPath(Pose targetPose, double targetHeadingRadians) {
         return follower.pathBuilder()
                 .addPath(new BezierLine(follower.getPose(), targetPose))
-                .setLinearHeadingInterpolation(follower.getHeading(), targetHeadingRadians)
+                .setLinearHeadingInterpolation(follower.getHeading(), follower.getHeading())
                 .build();
                  // Build the PathChain after adding all paths
-    }
-
-    private Pose getRobotPoseFromCamera()
-    {
-
-        if (targetData != null)
-        {
-            double x = targetData.robotFromTagPos.getPosition().x; // or whatever field coordinate data Limelight gives
-            double y = targetData.robotFromTagPos.getPosition().y;
-            double heading = targetData.robotFromTagPos.getOrientation().getYaw();
-
-            // Convert FTC coords -> Pedro coords
-            Pose pose = new Pose(x, y, heading, FTCCoordinates.INSTANCE);
-            return pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
-        }
-        else
-        {
-            return null;
-        }
-
-    }
-
-    public double findTagHeading()
-    {
-        Pose robotPose = follower.getPose();
-
-        // Get difference between tag and robot
-        double dx = tagPosition.getX() - robotPose.getX();
-        double dy = tagPosition.getY() - robotPose.getY();
-
-        // Get the angle (in radians) from robot to tag
-        double targetHeading = Math.atan2(dy, dx) + (Math.PI);
-        return targetHeading;
     }
 
 

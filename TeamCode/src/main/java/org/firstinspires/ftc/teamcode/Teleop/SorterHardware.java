@@ -11,6 +11,8 @@ public class SorterHardware {
     public int currentTickCount;
     public boolean currentlyCounting = false;
     public boolean readyForNextTick = false;
+    public boolean inPosition;
+    public int targetClicks;
 
     public double slotOneIntake;
     public double slotOneLaunch;
@@ -22,17 +24,18 @@ public class SorterHardware {
     public double slotThreeLaunch;
 
 
+
     public int findMagsToTarget(int currentSlot, int targetSlot)
     {
         return Math.abs(targetSlot - currentSlot);
     }
 
-    public boolean countToTarget(int clicks, TouchSensor sensor, boolean startingOnPosition)
+    public boolean countToTarget(TouchSensor sensor, boolean startingOnPosition)
     {
 
             if(startingOnPosition)
             {
-                clicks++;
+                targetClicks++;
             }
 
             if (sensor.getValue() == 0) {
@@ -42,13 +45,20 @@ public class SorterHardware {
                 readyForNextTick = false;
             }
 
-        return currentTickCount == clicks;
+        return currentTickCount == targetClicks;
 
     }
 
     public void resetCount()
     {
         currentTickCount = 0;
+    }
+
+    public void prepareNewMovement(int currentSlot, int targetSlot)
+    {
+        resetCount();
+        targetClicks = findMagsToTarget(currentSlot, targetSlot);
+        currentlyCounting = true;
     }
 
 

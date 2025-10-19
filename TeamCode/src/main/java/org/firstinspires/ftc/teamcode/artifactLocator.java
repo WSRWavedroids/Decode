@@ -255,40 +255,6 @@ public class artifactLocator extends Robot {
         purpleBlobList = purpleLocator.getBlobs();
         greenBlobList = greenLocator.getBlobs();
 
-        /*
-         * The list of Blobs can be filtered to remove unwanted Blobs.
-         *   Note:  All contours will be still displayed on the Stream Preview, but only those
-         *          that satisfy the filter conditions will remain in the current list of
-         *          "blobList".  Multiple filters may be used.
-         *
-         * To perform a filter
-         *   ColorBlobLocatorProcessor.Util.filterByCriteria(criteria, minValue, maxValue, blobList);
-         *
-         * The following criteria are currently supported.
-         *
-         * ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA
-         *   A Blob's area is the number of pixels contained within the Contour.  Filter out any
-         *   that are too big or small. Start with a large range and then refine the range based
-         *   on the likely size of the desired object in the viewfinder.
-         *
-         * ColorBlobLocatorProcessor.BlobCriteria.BY_DENSITY
-         *   A blob's density is an indication of how "full" the contour is.
-         *   If you put a rubber band around the contour you would get the "Convex Hull" of the
-         *   contour. The density is the ratio of Contour-area to Convex Hull-area.
-         *
-         * ColorBlobLocatorProcessor.BlobCriteria.BY_ASPECT_RATIO
-         *   A blob's Aspect ratio is the ratio of boxFit long side to short side.
-         *   A perfect Square has an aspect ratio of 1.  All others are > 1
-         *
-         * ColorBlobLocatorProcessor.BlobCriteria.BY_ARC_LENGTH
-         *   A blob's arc length is the perimeter of the blob.
-         *   This can be used in conjunction with an area filter to detect oddly shaped blobList.
-         *
-         * ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY
-         *   A blob's circularity is how circular it is based on the known area and arc length.
-         *   A perfect circle has a circularity of 1.  All others are < 1
-         */
-
         //FILTERS
         ColorBlobLocatorProcessor.Util.filterByCriteria(
                 ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
@@ -305,23 +271,7 @@ public class artifactLocator extends Robot {
                 ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
                 0.6, 1, greenBlobList);     // filter out non-circular blobs.
 
-        /*
-         * NOTE: You may want to adjust the minimum value depending on your use case.
-         * Circularity values will be affected by shadows, and will therefore vary based
-         * on the location of the camera on your robot and venue lighting. It is strongly
-         * encouraged to test your vision on the competition field if your event allows
-         * sensor calibration time.
-         */
-
-        /*
-         * The list of Blobs can be sorted using the same Blob attributes as listed above.
-         * No more than one sort call should be made.  Sorting can use ascending or descending order.
-         * Here is an example.:
-         *   ColorBlobLocatorProcessor.Util.sortByCriteria(
-         *      ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA, SortOrder.DESCENDING, blobList);
-         */
-
-        //this.sortOutBlobs(); // TODO uncomment this please
+        this.sortOutBlobs();
         this.takeInventory();
 
     }

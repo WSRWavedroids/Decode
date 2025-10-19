@@ -108,7 +108,7 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
 
         if(gamepad2.touchpad)
         {
-            telemetry.addData("Mag Count: ", magStuff.countToTarget(5, Bot.magsense, false));
+            telemetry.addData("Mag Count: ", magStuff.countToTarget(Bot.magsense, false));
             telemetry.addData("Mag Count: ", magStuff.currentTickCount);
         }else{//
             magStuff.resetCount();
