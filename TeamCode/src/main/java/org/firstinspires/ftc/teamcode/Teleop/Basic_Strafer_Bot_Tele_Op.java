@@ -110,7 +110,7 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
         {
             telemetry.addData("Mag Count: ", magStuff.countToTarget(5, Bot.magsense, false));
             telemetry.addData("Mag Count: ", magStuff.currentTickCount);
-        }else{
+        }else{//
             magStuff.resetCount();
         }
 
