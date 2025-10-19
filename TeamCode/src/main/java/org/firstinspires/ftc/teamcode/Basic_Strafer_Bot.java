@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -26,7 +27,10 @@ Basic_Strafer_Bot {
 
     public CRServo expandyServo;
 
-    public CRServo intakeyServo;
+    public CRServo intakeyServoR;
+    public CRServo intakeyServoL;
+
+    public TouchSensor magsense;
 
 
     public Telemetry telemetry;
@@ -38,6 +42,7 @@ Basic_Strafer_Bot {
     public static double parkingZone;
     public String startingPosition;
     public String controlMode = "Robot Centric";
+    public int magCount;
 
     public Basic_Strafer_Bot()
     {
@@ -57,7 +62,11 @@ Basic_Strafer_Bot {
         backRightDrive = hardwareMap.get(DcMotorEx.class, "backRightDrive");
 
         expandyServo = hardwareMap.get(CRServo.class, "expandyServo");
-        intakeyServo = hardwareMap.get(CRServo.class, "intakeyServo");
+        intakeyServoL = hardwareMap.get(CRServo.class, "intakeyServoL");
+        intakeyServoR = hardwareMap.get(CRServo.class, "intakeyServoR");
+
+        magsense = hardwareMap.get(TouchSensor.class, "magsense");
+
         //add arms to map
         /*
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -66,10 +75,15 @@ Basic_Strafer_Bot {
         imu.initialize(parameters);
         */
         // This section sets the direction of all of the motors. Depending on the motor, this may change later in the program.
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backRightDrive.setDirection(DcMotor.Direction.FORWARD); //Was inverted as forward
+        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        intakeyServoL.setDirection(DcMotorSimple.Direction.FORWARD);
+        intakeyServoR.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        //Was inverted as forward
         // This tells the motors to chill when we're not powering them.
         frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -187,6 +201,8 @@ Basic_Strafer_Bot {
         return ((inches/12.25) * 537.6 / .5);
         //todo Reference that 1 inch ~= 50 ticks
     }
+
+
     // one side may be backwards due to the direction that the motor was faced
 
     ElapsedTime timer = new ElapsedTime();
