@@ -51,6 +51,8 @@ public class PedroGoDrive extends OpMode {
 
     @Override
     public void init() {
+        robot = new Robot(hardwareMap, telemetry, this);
+
         follower = Constants.createFollower(hardwareMap);
         if (blackboard.get(POSE_KEY) == null) {
             blackboard.put(POSE_KEY, new Pose(72,72,0));
@@ -113,9 +115,12 @@ public class PedroGoDrive extends OpMode {
             );
         }
 
+        double touchX = gamepad1.touchpad_finger_1_x;
+        double touchY =  gamepad1.touchpad_finger_1_y;
+
         //Automated PathFollowing
-        if (gamepad1.touchpadWasPressed()) {
-            follower.followPath(makeDynamicPath(translateTrackpad(gamepad1.touchpad_finger_1_x, gamepad1.touchpad_finger_1_y, "") , follower.getHeading()));
+        if (gamepad1.triangle) {
+            follower.followPath(makeDynamicPath(translateTrackpad(touchX, touchY, "") , follower.getHeading()));
             automatedDrive = true;
         }
 
@@ -168,7 +173,7 @@ public class PedroGoDrive extends OpMode {
         }
 
         //fix y axis inversion (top is 0 instead of bottom)
-        inY = Math.abs(inY - trackpadYMax);
+        //inY = Math.abs(inY - trackpadYMax);
 
         //if the heading check is tag rotate to point at target during path
         if (headingCheck == "tag")
