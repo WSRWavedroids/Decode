@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -23,6 +24,8 @@ public class SorterHardware {
     public double slotThreeIntake;
     public double slotThreeLaunch;
 
+    public double motorTargetSpeed;
+    public boolean motorSpeedOK;
 
 
     public int findMagsToTarget(int currentSlot, int targetSlot)
@@ -31,7 +34,7 @@ public class SorterHardware {
     }
 
     public boolean countToTarget(TouchSensor sensor, boolean startingOnPosition)
-    {
+    {//returns true when at target until other vars are reset
 
             if(startingOnPosition)
             {
@@ -58,8 +61,22 @@ public class SorterHardware {
     {
         resetCount();
         targetClicks = findMagsToTarget(currentSlot, targetSlot);
-        currentlyCounting = true;
     }
+
+    public boolean motorSpeedCheck(DcMotorEx motor, double speedTarget, double tolleranceRange)
+    {
+
+        if((motor.getVelocity() > motor.getVelocity()-tolleranceRange) && (motor.getVelocity() < motor.getVelocity()+tolleranceRange))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
 
 
 
