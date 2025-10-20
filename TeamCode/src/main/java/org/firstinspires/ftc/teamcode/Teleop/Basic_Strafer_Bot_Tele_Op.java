@@ -62,6 +62,7 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
     private double speed = 0.75;
     //private double storedSpeed;
     public Basic_Strafer_Bot Bot = new Basic_Strafer_Bot();
+    public SorterHardware magStuff = new SorterHardware();
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -94,7 +95,7 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
     public void loop() {
-
+        telemetry.addData("Limit switch Value: ", Bot.magsense.getValue());
         singleJoystickDrive();
         // This little section updates the driver hub on the runtime and the motor powers.
         // It's mostly used for troubleshooting.
@@ -103,6 +104,17 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
 
         float armStickY = this.gamepad2.left_stick_y;
         float turntableStickX = this.gamepad2.right_stick_x;
+
+
+        if(gamepad2.touchpad)
+        {
+            telemetry.addData("Mag Count: ", magStuff.countToTarget(Bot.magsense, false));
+            telemetry.addData("Mag Count: ", magStuff.currentTickCount);
+        }else{//
+            magStuff.resetCount();
+        }
+
+
 
         // This section checks what buttons on the Dpad are being pressed and changes the speed accordingly.
         //So Begins the input chain. At least try a bit to organise by driver
@@ -191,17 +203,17 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
 
         if(gamepad2.cross)
         {
-            Bot.intakeyServo.setDirection(DcMotorSimple.Direction.FORWARD);
-            Bot.intakeyServo.setPower(1);
+            Bot.intakeyServoR.setPower(1);
+            Bot.intakeyServoL.setPower(1);
         }
         else if(gamepad2.circle)
         {
-            Bot.intakeyServo.setDirection(DcMotorSimple.Direction.REVERSE);
-            Bot.intakeyServo.setPower(1);
+            Bot.intakeyServoL.setPower(-1);
+            Bot.intakeyServoR.setPower(-1);
         }
         else
         {
-            Bot.intakeyServo.setPower(0);
+            Bot.intakeyServoR.setPower(0);
         }
         //
 
@@ -234,7 +246,7 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
         // We don't really know how this function works, but it makes the wheels drive, so we don't question it.
         // Don't mess with this function unless you REALLY know what you're doing.
 
-        float rightX = this.gamepad1.right_stick_x;
+        float rightX = -this.gamepad1.right_stick_x;
         float leftY = this.gamepad1.left_stick_y;
         float leftX = -this.gamepad1.left_stick_x;
 

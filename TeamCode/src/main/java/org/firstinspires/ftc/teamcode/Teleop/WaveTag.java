@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import com.pedropathing.geometry.Pose;
+
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 public class WaveTag {
@@ -16,7 +18,8 @@ public class WaveTag {
     double angleX;
     double angleY;
 
-    Pose3D data;
+    Pose3D tagPosFromRobot;
+    Pose3D robotFromTagPos;
 
 
 }

@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
@@ -187,17 +188,23 @@ public class Limelight_Target_Scanner extends AutonomousPLUS {
                 telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
 
                 current.currentlyDetected = true;
-                 Pose3D targetPose = fr.getTargetPoseRobotSpace();
-                 current.data = targetPose;
+                 Pose3D targetPoseRs = fr.getTargetPoseRobotSpace();
+                 Pose3D robotPoseFromTag = fr.getRobotPoseTargetSpace();
+                 //current.pos = targetPose;
+
+
 
                  current.tagID = fr.getFiducialId();
 
-                 current.distanceZ = targetPose.getPosition().z;
-                current.distanceY = targetPose.getPosition().y;
-                current.distanceX = targetPose.getPosition().x;
+                 current.distanceZ = targetPoseRs.getPosition().z;
+                current.distanceY = targetPoseRs.getPosition().y;
+                current.distanceX = targetPoseRs.getPosition().x;
 
                 current.angleX = fr.getTargetXDegrees();
                 current.angleY = fr.getTargetYDegrees();
+
+                current.tagPosFromRobot = targetPoseRs;
+                current.robotFromTagPos = robotPoseFromTag;
 
             }
 
