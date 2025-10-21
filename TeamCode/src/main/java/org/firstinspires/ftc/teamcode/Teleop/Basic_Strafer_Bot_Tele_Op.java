@@ -214,6 +214,7 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
         else
         {
             Bot.intakeyServoR.setPower(0);
+            Bot.intakeyServoL.setPower(0);
         }
         //
 

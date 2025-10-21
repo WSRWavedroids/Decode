@@ -75,11 +75,11 @@ public class PedroGoDrive extends OpMode {
         //if using field centric youl need this lolzeez
         if (blackboard.get(ALLIANCE_KEY) == "BLUE") {
             scanner.InitLimeLightTargeting(2, robot.hardwareMap);
-            tagPosition = (enterStandardCoords(-58.3464567, 55.6299213, Math.toRadians(54)));
+            tagPosition = (new Pose(12, 132, Math.toRadians(54)));
 
         } else if (blackboard.get(ALLIANCE_KEY) == "RED") {
             scanner.InitLimeLightTargeting(1, robot.hardwareMap);
-            tagPosition = (enterStandardCoords(58.3464567, 55.6299213, Math.toRadians(-54)));
+            tagPosition = new Pose(132, 132, Math.toRadians(-54));
 
         } else {
             scanner.InitLimeLightTargeting(1, robot.hardwareMap);
@@ -102,6 +102,7 @@ public class PedroGoDrive extends OpMode {
         follower.startTeleopDrive();
         gamepad1.setLedColor(0, 0, 255, 1000000000);
         gamepad2.setLedColor(0, 0, 255, 1000000000);
+        speed = .5;
     }
 
     @Override
@@ -117,8 +118,6 @@ public class PedroGoDrive extends OpMode {
             gamepad1.rumble(0.25, 0.25, 100);
             //gamepad1.rumble(100);
         }
-
-        if(gamepad1.dpad_up)
 
         if(gamepad1.touchpad_finger_1)
         {
@@ -151,7 +150,7 @@ public class PedroGoDrive extends OpMode {
 
             //This is the normal version to use in the TeleOp
             follower.setTeleOpDrive(
-                    -gamepad1.left_stick_x * speed,//swapped these for mason
+                    gamepad1.left_stick_x * speed,//swapped these for mason
                     -gamepad1.left_stick_y * speed,//swapped these for mason
                     -gamepad1.right_stick_x * speed,
                     false // Robot Centric
@@ -164,21 +163,25 @@ public class PedroGoDrive extends OpMode {
         if (gamepad1.touchpadWasPressed()) {
             follower.followPath(makeDynamicPath(trackTarget, follower.getHeading()));
             automatedDrive = true;
+            speed = 1;
         } else if (gamepad1.triangle) //Do a 180
         {
             follower.holdPoint(new BezierPoint(follower.getPose()), follower.getHeading() + Math.PI);
             automatedDrive = true;
+            speed = 1;
         } else if (gamepad1.right_bumper)// Auto aim
         {
             follower.holdPoint(new BezierPoint(follower.getPose()), locateTagHeading(tagPosition, follower.getPose()));
             automatedDrive = true;
+            speed = 1;
         }
         else if(gamepad1.left_bumper)
         {
-            //follower.holdPoint(new BezierPoint(follower.getPose()), follower.getHeading());
+            follower.holdPoint(new BezierPoint(follower.getPose()), follower.getHeading());
 
-            follower.followPath(makeDynamicPath(follower.getPose(), follower.getHeading()));
+            //follower.followPath(makeDynamicPath(follower.getPose(), follower.getHeading()));
             automatedDrive = true;
+            speed = 1;
         }
 
 
@@ -226,9 +229,6 @@ public class PedroGoDrive extends OpMode {
         {
             return new Pose(((inX)*72)+72,((inY)*72)+72);
         }
-
-
-
     }
 
     private double locateTagHeading(Pose tagPose, Pose robot)
