@@ -1,14 +1,8 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLStatus;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 
-import org.firstinspires.ftc.teamcode.Autonomous.AutonomousPLUS;
-import org.firstinspires.ftc.teamcode.Autonomous.Limelight_Randomization_Scanner;
+import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 
 @Autonomous(group = "Basic", name = "Decode Auto")
 public class Test_Randomization_Blue extends AutonomousPLUS {

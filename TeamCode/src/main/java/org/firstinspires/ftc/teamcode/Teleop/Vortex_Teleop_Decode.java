@@ -4,14 +4,11 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.Teleop.Limelight_Target_Scanner;
-import org.firstinspires.ftc.teamcode.Teleop.WaveTag;
 
 /**
  * This file is our iterative (Non-Linear) "OpMode" for TeleOp.
@@ -31,8 +28,8 @@ import org.firstinspires.ftc.teamcode.Teleop.WaveTag;
  */
 
 
-@TeleOp(name = "CS", group = "CompBot")
-public class Basic_TeleOp_NewBot extends OpMode {
+@TeleOp(name = "Vortex", group = "CompBot")
+public class Vortex_Teleop_Decode extends OpMode {
 
     // This section tells the program all of the different pieces of hardware that are on our robot that we will use in the program.
     private ElapsedTime runtime = new ElapsedTime();

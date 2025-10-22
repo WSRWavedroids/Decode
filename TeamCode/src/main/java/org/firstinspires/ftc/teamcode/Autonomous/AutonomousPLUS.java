@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 //import org.firstinspires.ftc.teamcode.OLD.Autonomous.AprilTags.MayFlowers;
 
 /**
@@ -46,7 +47,7 @@ public class AutonomousPLUS extends LinearOpMode {
     // This section tells the program all of the different pieces of hardware that are on our robot that we will use in the program.
     private ElapsedTime runtime = new ElapsedTime();
 
-    public org.firstinspires.ftc.teamcode.Autonomous.Limelight_Randomization_Scanner randomization;
+    public Limelight_Randomization_Scanner randomization;
     public double speed = 0.6;
     public int sleepTime;
     public boolean inMarker;

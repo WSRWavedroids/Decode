@@ -29,13 +29,14 @@
 
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Basic_Strafer_Bot;
+import org.firstinspires.ftc.teamcode.SorterHardware;
 
 
 /**
@@ -74,6 +75,8 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
+
+
     }
 
     /*
@@ -96,6 +99,9 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
      */
     public void loop() {
         telemetry.addData("Limit switch Value: ", Bot.magsense.getValue());
+        telemetry.addData("current: ", Bot.sorterMotor.getCurrentPosition());
+        telemetry.addData("Target: ", Bot.sorterMotor.getTargetPosition()
+        );
         singleJoystickDrive();
         // This little section updates the driver hub on the runtime and the motor powers.
         // It's mostly used for troubleshooting.
@@ -106,12 +112,14 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
         float turntableStickX = this.gamepad2.right_stick_x;
 
 
+
+
         if(gamepad2.touchpad)
         {
-            telemetry.addData("Mag Count: ", magStuff.countToTarget(Bot.magsense, false));
+            telemetry.addData("Mag Count: ", magStuff.countToTarget(false));
             telemetry.addData("Mag Count: ", magStuff.currentTickCount);
         }else{//
-            magStuff.resetCount();
+            magStuff.currentTickCount = 0;
         }
 
 
@@ -150,6 +158,13 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
             telemetry.addData("Speed", "Normal Boi");
         }
 
+        if(gamepad1.touchpadWasPressed())
+        {
+
+            Bot.sorterMotor.setTargetPosition(Bot.sorterMotor.getCurrentPosition() + 8192/2);
+            Bot.sorterMotor.setPower(.5);
+            Bot.sorterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
 
 
 
