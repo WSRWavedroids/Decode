@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 public class SorterHardware {
@@ -25,7 +24,7 @@ public class SorterHardware {
         disRobot = robot;
         //motor = robot.sorterMotor;
 
-        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
         motor.setPositionPIDFCoefficients(1.0); // 1.0 default
 
@@ -122,7 +121,7 @@ public class SorterHardware {
     public void spin()
     {
         motor.setPower(0.5);
-        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         currentlyMoving = true;
     }
 
