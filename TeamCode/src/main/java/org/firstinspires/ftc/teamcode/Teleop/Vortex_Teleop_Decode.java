@@ -28,7 +28,7 @@ import org.firstinspires.ftc.teamcode.Robot;
  */
 
 
-@TeleOp(name = "Vortex", group = "CompBot")
+@TeleOp(name = "Basic Vortex", group = "CompBot")
 public class Vortex_Teleop_Decode extends OpMode {
 
     // This section tells the program all of the different pieces of hardware that are on our robot that we will use in the program.

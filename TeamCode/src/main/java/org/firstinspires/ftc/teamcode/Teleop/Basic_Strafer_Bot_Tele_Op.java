@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Basic_Strafer_Bot;
+import org.firstinspires.ftc.teamcode.LauncherHardware;
 import org.firstinspires.ftc.teamcode.SorterHardware;
 
 
@@ -55,7 +56,7 @@ import org.firstinspires.ftc.teamcode.SorterHardware;
  * Throughout this program, there are comments explaining what everything does because previous programmers
  * did a horrible job of doing that.
  */
-@TeleOp(name="Basic Strafer", group="CompBot")
+@TeleOp(name="Beta Vortex", group="CompBot")
 public class Basic_Strafer_Bot_Tele_Op extends OpMode {
 
     // This section tells the program all of the different pieces of hardware that are on our robot that we will use in the program.
@@ -63,7 +64,9 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
     private double speed = 0.75;
     //private double storedSpeed;
     public Basic_Strafer_Bot Bot = new Basic_Strafer_Bot();
-    public SorterHardware magStuff = new SorterHardware();
+    public SorterHardware sorter = new SorterHardware();
+    public LauncherHardware launcher = new LauncherHardware();
+
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -72,6 +75,12 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
 
         // Call the initialization protocol from the Robot class.
         Bot = new Basic_Strafer_Bot(hardwareMap, telemetry, this);
+        sorter = new SorterHardware();
+        launcher = new LauncherHardware();
+
+        sorter.initDaSorter(Bot, launcher);
+        launcher.initLaucher(Bot);
+
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -103,6 +112,10 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
         telemetry.addData("Target: ", Bot.sorterMotor.getTargetPosition()
         );
         singleJoystickDrive();
+        sorter.updateSorterHardware();
+        launcher.updateLauncherHardware();
+
+
         // This little section updates the driver hub on the runtime and the motor powers.
         // It's mostly used for troubleshooting.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -116,10 +129,10 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
 
         if(gamepad2.touchpad)
         {
-            telemetry.addData("Mag Count: ", magStuff.countToTarget(false));
-            telemetry.addData("Mag Count: ", magStuff.currentTickCount);
+            telemetry.addData("Mag Count: ", sorter.inMagPosition);
+            telemetry.addData("Mag Count: ", sorter.currentTickCount);
         }else{//
-            magStuff.currentTickCount = 0;
+            sorter.resetMagCountAndTarget(false);
         }
 
 
@@ -230,6 +243,16 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
         {
             Bot.intakeyServoR.setPower(0);
             Bot.intakeyServoL.setPower(0);
+        }
+
+
+        //testing rotation
+        if(gamepad2.dpad_down)
+        {
+            sorter.prepareNewMovement(Bot.sorterMotor.getCurrentPosition(), sorter.positions[0]);
+        }else if(gamepad2.dpad_up)
+        {
+            sorter.prepareNewMovement(Bot.sorterMotor.getCurrentPosition(), sorter.positions[1]);
         }
         //
 

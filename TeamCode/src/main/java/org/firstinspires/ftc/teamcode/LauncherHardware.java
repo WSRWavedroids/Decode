@@ -11,6 +11,12 @@ public class LauncherHardware {
     public Basic_Strafer_Bot disBot;
     public DcMotorEx motor;
 
+    public boolean on = false;
+
+    public double toleranceRange = 5;
+
+    public double speedTarget;
+
     public double distanceMultiplier;
 
     public double P;
@@ -22,12 +28,12 @@ public class LauncherHardware {
     {
         disBot = robot;
         motor = disBot.launcherMotor;
-        motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(P, I, D, F));
+        motor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(P, I, D, F));
     }
 
-    public boolean motorSpeedCheck(DcMotorEx motor, double speedTarget, double tolleranceRange)
+    public boolean motorSpeedCheck(double speedTarget)
     {
-        if((motor.getVelocity() > speedTarget-tolleranceRange) && (motor.getVelocity() < speedTarget+tolleranceRange))
+        if((motor.getVelocity() > speedTarget-toleranceRange) && (motor.getVelocity() < speedTarget+toleranceRange))
         {
             return true;
         }
@@ -46,6 +52,19 @@ public class LauncherHardware {
     {
         motor.setVelocity(targetspeed);
     }
+    public void cutSpeed()
+    {
+        motor.setVelocity(0);
+    }
+
+    public void updateLauncherHardware()
+    {
+        inSpeedRange = motorSpeedCheck(speedTarget);
+
+
+    }
+
+
 
     //public double speed
 
