@@ -123,23 +123,23 @@ public class SorterHardware {
         else return  false;
     }
 
-    public void triggerServoCooldown()
+    /*public void triggerServoCooldown()
     {
         cooldownTimer.reset();
         onCooldown = true;
-    }
+    }*/
 
     public boolean finalSafeCheck()
     {
-        if(onCooldown)
+        /*if(onCooldown)
         {
             if(cooldownTimer.seconds() >= cooldownDuration)
             {
                 onCooldown = false;
             }
-        }
+        }*/
 
-        if(!onCooldown && !positionedCheck()) //if not on servo timeout and not already there, rotate
+        if(!launcher.waitingForServo && !positionedCheck()) //if not on servo timeout and not already there, rotate
         {
             return true;
         }else
@@ -160,7 +160,7 @@ public class SorterHardware {
 
     public void spin()
     {
-            motor.setPower(0.5);
+            motor.setPower(0.25);
             motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
             currentlyMoving = true;
     }

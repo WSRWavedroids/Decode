@@ -112,8 +112,9 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
         telemetry.addData("Target: ", Bot.sorterMotor.getTargetPosition()
         );
         singleJoystickDrive();
-        sorter.updateSorterHardware();
         launcher.updateLauncherHardware();
+        sorter.updateSorterHardware();
+
 
 
         // This little section updates the driver hub on the runtime and the motor powers.

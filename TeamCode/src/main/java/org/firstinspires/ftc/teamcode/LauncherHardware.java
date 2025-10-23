@@ -12,6 +12,8 @@ public class LauncherHardware {
     public DcMotorEx motor;
 
     public boolean on = false;
+    public boolean waitingForServo = false;
+
 
     public double toleranceRange = 5;
 
