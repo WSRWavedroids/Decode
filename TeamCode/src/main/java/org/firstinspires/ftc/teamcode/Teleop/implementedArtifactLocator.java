@@ -36,7 +36,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.Vision.artifactLocator;
+import org.firstinspires.ftc.teamcode.Vision.ArtifactLocator;
 
 
 /**
@@ -64,7 +64,7 @@ public class implementedArtifactLocator extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     public Robot robot;
-    public artifactLocator intCam;
+    public ArtifactLocator intCam;
     public IMU imu;
 
     /*
@@ -74,7 +74,7 @@ public class implementedArtifactLocator extends OpMode {
 
         // Call the initialization protocol from the Robot class.
         robot = new Robot(hardwareMap, telemetry, this);
-        intCam = new artifactLocator(hardwareMap,telemetry,this);
+        intCam = robot.sorterLogic;
 
         intCam.initCamera();
 

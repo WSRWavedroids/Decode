@@ -4,11 +4,14 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.LauncherHardware;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.SorterHardware;
 
 /**
  * This file is our iterative (Non-Linear) "OpMode" for TeleOp.
@@ -41,12 +44,17 @@ public class Vortex_Teleop_Decode extends OpMode {
     int SpinTargetBackLeft;
     int SpinTargetBackRight;
 
+    int slot = 0; // temp for testing lol
+
 
     //private double storedSpeed;
     public Robot robot = null;
     public IMU imu;
-    public Limelight_Target_Scanner scanner = new Limelight_Target_Scanner();
+    public Limelight_Target_Scanner tagScanner;
     public WaveTag targetData = null;
+
+    public SorterHardware sorterHardware;
+    public LauncherHardware launcherHardware;
 
     public static final String ALLIANCE_KEY = "Alliance"; //For blackboard
     public static final String PATTERN_KEY = "Pattern";
@@ -63,6 +71,8 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         // Call the initialization protocol from the Robot class.
         robot = new Robot(hardwareMap, telemetry, this);
+        tagScanner = robot.targetScanner;
+        sorterHardware = robot.sorterHardware;
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -74,18 +84,20 @@ public class Vortex_Teleop_Decode extends OpMode {
             imu = hardwareMap.get(IMU.class, "imu");
             IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                     RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                    RevHubOrientationOnRobot.UsbFacingDirection.RIGHT)); //Forward = left fsr
+                    RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD)); //Forward = left fsr
             // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
             imu.initialize(parameters);
         }
         //if using field centric youl need this lolzeez
         if (blackboard.get(ALLIANCE_KEY) == "BLUE") {
-            scanner.InitLimeLightTargeting(2, robot.hardwareMap);
+            tagScanner.InitLimeLightTargeting(2, robot.hardwareMap);
         } else if (blackboard.get(ALLIANCE_KEY) == "RED") {
-            scanner.InitLimeLightTargeting(1, robot.hardwareMap);
+            tagScanner.InitLimeLightTargeting(1, robot.hardwareMap);
         } else {
-            scanner.InitLimeLightTargeting(1, robot.hardwareMap);
+            tagScanner.InitLimeLightTargeting(1, robot.hardwareMap);
         }
+
+
 
 
     }
@@ -114,7 +126,7 @@ public class Vortex_Teleop_Decode extends OpMode {
      */
     public void loop() {
 
-        targetData = scanner.tagInfo();
+        robot.updateAllDaThings();
 
 
         //So Begins the input chain. At least try a bit to organise by driver
@@ -123,35 +135,94 @@ public class Vortex_Teleop_Decode extends OpMode {
         controlMode();
         driveSpeed();
 
-        if(targetData.currentlyDetected)
+        if(robot.targetTag.currentlyDetected)
         {
             gamepad1.rumble(0.25, 0.25, 100);
             //gamepad1.rumble(100);
         }
 
         if (gamepad1.left_bumper || gamepad1.right_bumper) {
-            autoWheel(targetData.currentlyDetected, targetData.angleX);
+            autoWheel(robot.targetTag.currentlyDetected, robot.targetTag.angleX);
         } else {
             singleJoystickDrive();
             spinTargetAquired = false;
         }
 
 
-        /*
         if(gamepad2.square)
         {
             robot.expandyServo.setDirection(DcMotorSimple.Direction.FORWARD);
             robot.expandyServo.setPower(1);
+
+            /*Bot.frontLeftDrive.setPower(.1);
+            Bot.frontRightDrive.setPower(.1);
+            Bot.backLeftDrive.setPower(-0.1);
+            Bot.backRightDrive.setPower(-0.1);*/
+
+
         }
         else if(gamepad2.triangle)
         {
             robot.expandyServo.setDirection(DcMotorSimple.Direction.REVERSE);
             robot.expandyServo.setPower(1);
+
+            //Drivetrain Assist?
+            /*
+            Bot.frontLeftDrive.setPower(-.1);
+            Bot.frontRightDrive.setPower(-.1);
+            Bot.backLeftDrive.setPower(0.1);
+            Bot.backRightDrive.setPower(0.1);*/
+
         }
         else
         {
             robot.expandyServo.setPower(0);
-        }*/
+        }
+
+        if(gamepad2.cross)
+        {
+            robot.intakeyServoR.setPower(1);
+            robot.intakeyServoL.setPower(1);
+        }
+        else if(gamepad2.circle)
+        {
+            robot.intakeyServoL.setPower(-1);
+            robot.intakeyServoR.setPower(-1);
+        }
+        else
+        {
+            robot.intakeyServoR.setPower(0);
+            robot.intakeyServoL.setPower(0);
+        }
+
+         // temp measure
+        //testing rotation
+        if(gamepad2.dpad_down)
+        {
+            sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[slot]);
+        }else if(gamepad2.dpad_up)
+        {
+            sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[slot+1]);
+        }
+        else if(gamepad2.dpad_left)
+        {
+            slot--;
+            if(slot < 0)
+            {
+               slot += 5;
+            }
+        }
+        else if(gamepad2.dpad_right)
+        {
+            slot++;
+            if(slot > 5)
+            {
+                slot -= 5;
+            }
+        }
+        telemetry.addData("currentSlot target: ", slot);
+
+
 
 
 

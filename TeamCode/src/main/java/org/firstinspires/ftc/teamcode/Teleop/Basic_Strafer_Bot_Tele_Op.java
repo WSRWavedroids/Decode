@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Basic_Strafer_Bot;
 import org.firstinspires.ftc.teamcode.LauncherHardware;
+import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.SorterHardware;
 
 
@@ -63,9 +64,9 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private double speed = 0.75;
     //private double storedSpeed;
-    public Basic_Strafer_Bot Bot = new Basic_Strafer_Bot();
-    public SorterHardware sorter = new SorterHardware();
-    public LauncherHardware launcher = new LauncherHardware();
+    public Robot Bot;
+    public SorterHardware sorter;
+    public LauncherHardware launcher;
 
 
     /*
@@ -74,12 +75,11 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
     public void init() {
 
         // Call the initialization protocol from the Robot class.
-        Bot = new Basic_Strafer_Bot(hardwareMap, telemetry, this);
-        sorter = new SorterHardware();
-        launcher = new LauncherHardware();
+        Bot = new Robot(hardwareMap, telemetry, this);
+        sorter = Bot.sorterHardware;
+        launcher = Bot.launcher;
 
-        sorter.initDaSorter(Bot, launcher);
-        launcher.initLaucher(Bot);
+
 
 
         // Tell the driver that initialization is complete.
@@ -200,61 +200,7 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
             //speed = storedSpeed;
         }
 
-        if(gamepad2.square)
-        {
-            Bot.expandyServo.setDirection(DcMotorSimple.Direction.FORWARD);
-            Bot.expandyServo.setPower(1);
 
-            /*Bot.frontLeftDrive.setPower(.1);
-            Bot.frontRightDrive.setPower(.1);
-            Bot.backLeftDrive.setPower(-0.1);
-            Bot.backRightDrive.setPower(-0.1);*/
-
-
-        }
-        else if(gamepad2.triangle)
-        {
-            Bot.expandyServo.setDirection(DcMotorSimple.Direction.REVERSE);
-            Bot.expandyServo.setPower(1);
-
-            //Drivetrain Assist?
-            /*
-            Bot.frontLeftDrive.setPower(-.1);
-            Bot.frontRightDrive.setPower(-.1);
-            Bot.backLeftDrive.setPower(0.1);
-            Bot.backRightDrive.setPower(0.1);*/
-
-        }
-        else
-        {
-            Bot.expandyServo.setPower(0);
-        }
-
-        if(gamepad2.cross)
-        {
-            Bot.intakeyServoR.setPower(1);
-            Bot.intakeyServoL.setPower(1);
-        }
-        else if(gamepad2.circle)
-        {
-            Bot.intakeyServoL.setPower(-1);
-            Bot.intakeyServoR.setPower(-1);
-        }
-        else
-        {
-            Bot.intakeyServoR.setPower(0);
-            Bot.intakeyServoL.setPower(0);
-        }
-
-
-        //testing rotation
-        if(gamepad2.dpad_down)
-        {
-            sorter.prepareNewMovement(Bot.sorterMotor.getCurrentPosition(), sorter.positions[0]);
-        }else if(gamepad2.dpad_up)
-        {
-            sorter.prepareNewMovement(Bot.sorterMotor.getCurrentPosition(), sorter.positions[1]);
-        }
         //
 
     }

@@ -175,24 +175,6 @@ public class Limelight_Randomization_Scanner extends org.firstinspires.ftc.teamc
 
         LLResult result = limelight.getLatestResult();
         if (result.isValid()) {
-            // Access general information
-            /*Pose3D botpose = result.getBotpose();
-            double captureLatency = result.getCaptureLatency();
-            double targetingLatency = result.getTargetingLatency();
-            double parseLatency = result.getParseLatency();
-            telemetry.addData("LL Latency", captureLatency + targetingLatency);
-            telemetry.addData("Parse Latency", parseLatency);
-            telemetry.addData("PythonOutput", java.util.Arrays.toString(result.getPythonOutput()));
-
-            telemetry.addData("tx", result.getTx());
-            telemetry.addData("txnc", result.getTxNC());
-            telemetry.addData("ty", result.getTy());
-            telemetry.addData("tync", result.getTyNC());
-
-            telemetry.addData("Botpose", botpose.toString());*/
-
-            // Access barcode results
-
             // Access fiducial results
             List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
             for (LLResultTypes.FiducialResult fr : fiducialResults) {
@@ -218,7 +200,6 @@ public class Limelight_Randomization_Scanner extends org.firstinspires.ftc.teamc
                     current = "GPP";
                 }
             }
-            //telemetry.update();
 
         }
 

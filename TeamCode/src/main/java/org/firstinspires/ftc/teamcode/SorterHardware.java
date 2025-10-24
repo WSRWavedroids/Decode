@@ -1,36 +1,46 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
-public class SorterHardware {
 
-    public int currentTickCount;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+
+@Configurable
+public class SorterHardware {
     public boolean currentlyMoving = false;
-    public boolean safe;
+
     public boolean readyForNextTick = false;
     public boolean inMagPosition;
-    public boolean inPosition;
     public int targetClicks;
+
+    public int currentTickCount;
     public int tickTolerance = 5;
-
     public int[] positions;
-
     public int ticksPerRotation = 8192;
 
-    public Basic_Strafer_Bot disRobot;
+    public boolean open;
+    public boolean wantToMoveDoor;
+    public double doorClosedPosition = 0;
+    public double doorOpenPosition = 1;
+
+    public Robot disRobot;
     public DcMotorEx motor;
     public LauncherHardware launcher;
+
+    String doorTarget;
 
     private ElapsedTime cooldownTimer = new ElapsedTime();
     private boolean onCooldown = false;
     private double cooldownDuration = 0.5;
 
-    public void initDaSorter(Basic_Strafer_Bot robot, LauncherHardware launcherh)
+    public SorterHardware(Robot robot)
     {
         disRobot = robot;
         motor = robot.sorterMotor;
-        launcher = launcherh;
-        //motor = robot.sorterMotor;
+        //doorServo = robot.doorServo
+        launcher = robot.launcher;
+
 
         motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -43,9 +53,10 @@ public class SorterHardware {
         positions[3] = (ticksPerRotation/3 + (ticksPerRotation/2)); // slot two launch
         positions[4] = 2*(ticksPerRotation/3);//Slot three load
         positions[5] = (2*(ticksPerRotation/3)) + (ticksPerRotation/2); //Slot three launch
-        
+
+        //doorServo.setPosition(0);
         motor.setTargetPosition(0);
-        //motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
         inMagPosition = true;
         
@@ -123,23 +134,65 @@ public class SorterHardware {
         else return  false;
     }
 
-    /*public void triggerServoCooldown()
+    public void triggerServo(String goTo)
     {
-        cooldownTimer.reset();
-        onCooldown = true;
-    }*/
+        doorTarget = goTo;
+        wantToMoveDoor = true;
+    }
 
-    public boolean finalSafeCheck()
+    public void moveDoor()//Needs to become a state in update
     {
-        /*if(onCooldown)
-        {
-            if(cooldownTimer.seconds() >= cooldownDuration)
+            wantToMoveDoor = false;
+            cooldownTimer.reset();
+            onCooldown = true;
+
+            if(doorTarget.equals("CLOSED"))
             {
-                onCooldown = false;
+                //doorServo.setPosition(0)
+                open = false;
+                //door
             }
-        }*/
+            if(doorTarget.equals("OPEN"))
+            {
+                //doorServo.setPosition(1)
+                open = true;
+            }
+    }
 
-        if(!launcher.waitingForServo && !positionedCheck()) //if not on servo timeout and not already there, rotate
+    public boolean closedCheck()
+    {
+        if(!onCooldown && !open)
+        {
+            return true;
+        }
+        else return false;
+    }
+
+    public boolean openCheck()
+    {
+        if(!onCooldown && open)
+        {
+            return true;
+        }
+        else return false;
+    }
+
+    public boolean moveSafeCheck()
+    {
+
+        if(!launcher.waitingForServo && !positionedCheck() && closedCheck()) //if not on servo timeout and not already there, rotate
+        {
+            return true;
+        }else
+        {
+            return false;
+        }
+    }
+
+    public boolean fireSafeCheck()
+    {
+
+        if(!launcher.waitingForServo && !positionedCheck() && openCheck()) //if not on servo timeout and not already there, rotate
         {
             return true;
         }else
@@ -170,13 +223,18 @@ public class SorterHardware {
 
         countMagsToTarget();
 
-        if(finalSafeCheck())
+        if(moveSafeCheck())
         {
             spin();
         }
         else
         {
             Estop();
+        }
+
+        if(wantToMoveDoor && positionedCheck())
+        {
+            moveDoor();
         }
     }
     
