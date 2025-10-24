@@ -160,6 +160,9 @@ public class Test_Randomization_Blue extends AutonomousPLUS {
             sorter.triggerServo("CLOSED"); //Tell to close
             stallTillTrue(sorter.closedCheck()); //Wait for close
 
+
+
+
             /*//in pedro
             launcher.rampSpeed(launcher.findSpeed(robot.targetTag.distanceZ));
             sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[1]);

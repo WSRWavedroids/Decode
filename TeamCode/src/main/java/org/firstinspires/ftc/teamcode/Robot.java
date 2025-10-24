@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -33,6 +34,8 @@ public class Robot {
 
     public DcMotorEx sorterMotor;
     public DcMotorEx launcherMotor;
+
+    public Servo hammerServo;
 
     public CRServo expandyServo;
 
@@ -83,6 +86,8 @@ public class Robot {
 
         sorterMotor = hardwareMap.get(DcMotorEx.class, "sorterMotor");
         launcherMotor =  hardwareMap.get(DcMotorEx.class, "launcherMotor");
+
+        hammerServo = hardwareMap.get(Servo.class, "hammerServo");
 
         expandyServo = hardwareMap.get(CRServo.class, "expandyServo");
         intakeyServoL = hardwareMap.get(CRServo.class, "intakeyServoL");
