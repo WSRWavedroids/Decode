@@ -19,23 +19,25 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Vision;
 
 import static android.os.SystemClock.sleep;
+
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.util.Size;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.teamcode.CustomColorRange;
+import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Teleop.SorterHardware;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.opencv.Circle;
@@ -76,7 +78,7 @@ import java.util.concurrent.TimeUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-public class artifactLocator extends Robot {
+public class ArtifactLocator {
 
     private ExposureControl exposureControl;
     private GainControl gainControl;
@@ -89,10 +91,6 @@ public class artifactLocator extends Robot {
     private VisionPortal portal;
     private List<ColorBlobLocatorProcessor.Blob> purpleBlobList;
     private List<ColorBlobLocatorProcessor.Blob> greenBlobList;
-    public artifactLocator(HardwareMap hardwareMap, Telemetry telemetry, OpMode opmode) {
-        super(hardwareMap, telemetry, opmode);
-        initCamera();
-    }
     public enum slotState{EMPTY, PURPLE, GREEN}
     public enum positionState{FIRE, LOAD, SWITCH}
 
@@ -110,7 +108,10 @@ public class artifactLocator extends Robot {
     public ArrayList<Double> offsetPositions = new ArrayList<>();
     public slotInventory inventory;
 
-
+    public Robot robot;
+    public ArtifactLocator(Robot robotFile) {
+        robot = robotFile;
+    }
 
     public void initCamera() {
         /* Build a "Color Locator" vision processor based on the ColorBlobLocatorProcessor class.
