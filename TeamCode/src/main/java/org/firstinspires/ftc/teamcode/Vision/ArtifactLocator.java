@@ -30,10 +30,15 @@ import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.util.Size;
 
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.teamcode.CustomColorRange;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Teleop.SorterHardware;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.opencv.Circle;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
@@ -78,29 +83,35 @@ public class ArtifactLocator {
     private ExposureControl exposureControl;
     private GainControl gainControl;
     private WebcamName internalCamera;
+    private Servo servo;
+    private TouchSensor magnet;
 
     private ColorBlobLocatorProcessor purpleLocator;
     private ColorBlobLocatorProcessor greenLocator;
     private VisionPortal portal;
     private List<ColorBlobLocatorProcessor.Blob> purpleBlobList;
     private List<ColorBlobLocatorProcessor.Blob> greenBlobList;
-    private Robot robot;
-
-    public ArtifactLocator(Robot robotFile) {
-        robot = robotFile;
-    }
-
     public enum slotState{EMPTY, PURPLE, GREEN}
+    public enum positionState{FIRE, LOAD, SWITCH}
+
     public slot slotA;
     public slot slotB;
     public slot slotC;
+    private slotRange zone1;
+    private slotRange zone2;
+    private slotRange zone3;
+    private slotRange zone4;
+    private slotRange zone5;
+    private slotRange zone6;
     public ArrayList<slot> allSlots = new ArrayList<>();
     public ArrayList<slotRange> allZones = new ArrayList<slotRange>();
+    public ArrayList<Double> offsetPositions = new ArrayList<>();
     public slotInventory inventory;
 
-    private final slotRange zone1 = new slotRange(0,0,0,0); //TODO fill in values
-    private final slotRange zone2 = new slotRange(0,0,0,0); //TODO fill in values
-    private final slotRange zone3 = new slotRange(0,0,0,0); //TODO fill in values
+    public Robot robot;
+    public ArtifactLocator(Robot robotFile) {
+        robot = robotFile;
+    }
 
     public void initCamera() {
         /* Build a "Color Locator" vision processor based on the ColorBlobLocatorProcessor class.
@@ -160,7 +171,7 @@ public class ArtifactLocator {
          *        CLOSING:    Will Dilate and then Erode which will tend to fill in any small holes in blob edges.
          */
         purpleLocator = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(CustomColorRange.ARTIFACT_PURPLE)   // Use a predefined color match
+                .setTargetColorRange(org.firstinspires.ftc.teamcode.CustomColorRange.ARTIFACT_PURPLE)   // Use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
                 .setDrawContours(true)   // Show contours on the Stream Preview
@@ -191,22 +202,10 @@ public class ArtifactLocator {
 
                 .build();
 
-        internalCamera = hardwareMap.get(WebcamName.class, "CamCam");;
+        internalCamera = hardwareMap.get(WebcamName.class, "CamCam");
+        servo = hardwareMap.get(Servo.class, "blenderServo");
+        magnet = hardwareMap.get(TouchSensor.class, "placeholder"); //TODO
 
-
-        /*
-         * Build a vision portal to run the Color Locator process.
-         *
-         *  - Add the colorLocator process created above.
-         *  - Set the desired video resolution.
-         *      Since a high resolution will not improve this process, choose a lower resolution
-         *      that is supported by your camera.  This will improve overall performance and reduce
-         *      latency.
-         *  - Choose your video source.  This may be
-         *      .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))  .....   for a webcam
-         *  or
-         *      .setCamera(BuiltinCameraDirection.BACK)    ... for a Phone Camera
-         */
         portal = new VisionPortal.Builder()
                 .addProcessor(purpleLocator)
                 .addProcessor(greenLocator)
@@ -219,13 +218,22 @@ public class ArtifactLocator {
         slotB = new slot(2);
         slotC = new slot(3);
 
+        zone1 = new slotRange(0,0,0,0); //TODO fill in values
+        zone2 = new slotRange(0,0,0,0); //TODO fill in values
+        zone3 = new slotRange(0,0,0,0); //TODO fill in values
+        zone4 = new slotRange(0,0,0,0); //TODO fill in values
+        zone5 = new slotRange(0,0,0,0); //TODO fill in values
+        zone6 = new slotRange(0,0,0,0); //TODO fill in values
+
         //Sort things into lists
-        allSlots.add(slotA);
-        allSlots.add(slotB);
-        allSlots.add(slotC);
-        allZones.add(zone1);
-        allZones.add(zone2);
-        allZones.add(zone3);
+        offsetPositions.add(slotA.servoLoadPosition); offsetPositions.add(slotB.servoFirePosition);
+        offsetPositions.add(slotC.servoLoadPosition); offsetPositions.add(slotA.servoFirePosition);
+        offsetPositions.add(slotB.servoLoadPosition); offsetPositions.add(slotC.servoFirePosition);
+
+        allSlots.add(slotA); allSlots.add(slotB); allSlots.add(slotC);
+
+        allZones.add(zone1); allZones.add(zone2); allZones.add(zone3);
+        allZones.add(zone4); allZones.add(zone5); allZones.add(zone6);
 
         // Define the inventory
         inventory = new slotInventory();
@@ -233,19 +241,14 @@ public class ArtifactLocator {
         // Set camera settings
         /*while (portal.getCameraState() != VisionPortal.CameraState.CAMERA_DEVICE_READY) {
             sleep(10); //lol stallin
-        }*/ sleep(2000);
-        exposureControl = portal.getCameraControl(ExposureControl.class);
-        exposureControl.setMode(ExposureControl.Mode.Manual);
-        exposureControl.setExposure(37, TimeUnit.MILLISECONDS);
-
-        gainControl = portal.getCameraControl(GainControl.class);
-        gainControl.setGain(85);
+        }*/ sleep(2000); //TODO get this to actually work
+        setCameraSettings();
     }
 
     public void setCameraSettings() {
         exposureControl = portal.getCameraControl(ExposureControl.class);
         exposureControl.setMode(ExposureControl.Mode.Manual);
-        exposureControl.setExposure(20, TimeUnit.MILLISECONDS);
+        exposureControl.setExposure(37, TimeUnit.MILLISECONDS);
 
         gainControl = portal.getCameraControl(GainControl.class);
         gainControl.setGain(85);
@@ -284,43 +287,76 @@ public class ArtifactLocator {
         boolean z1Filled = false;
         boolean z2Filled = false;
         boolean z3Filled = false;
+        boolean z4Filled = false;
+        boolean z5Filled = false;
+        boolean z6Filled = false;
+
+        boolean inLoadPosition = getCurrentOffset() % 2 == 0;
+
         for (ColorBlobLocatorProcessor.Blob b : purpleBlobList) {
             Circle circleFit = b.getCircle();
-            if (zone1.inRange(circleFit.getX(),circleFit.getY())) {
+            if (inLoadPosition & zone1.inRange(circleFit.getX(),circleFit.getY())) {
                 findSlotByZone(zone1).occupied = slotState.PURPLE;
                 z1Filled = true;
-            } else if (zone2.inRange(circleFit.getX(),circleFit.getY())) {
+            } else if (!inLoadPosition & zone2.inRange(circleFit.getX(),circleFit.getY())) {
                 findSlotByZone(zone2).occupied = slotState.PURPLE;
                 z2Filled = true;
-            } else if (zone3.inRange(circleFit.getX(),circleFit.getY())) {
+            } else if (inLoadPosition & zone3.inRange(circleFit.getX(),circleFit.getY())) {
                 findSlotByZone(zone3).occupied = slotState.PURPLE;
                 z3Filled = true;
+            } else if (!inLoadPosition & zone4.inRange(circleFit.getX(),circleFit.getY())) {
+                findSlotByZone(zone3).occupied = slotState.PURPLE;
+                z4Filled = true;
+            } else if (inLoadPosition & zone5.inRange(circleFit.getX(),circleFit.getY())) {
+                findSlotByZone(zone3).occupied = slotState.PURPLE;
+                z5Filled = true;
+            } else if (!inLoadPosition & zone6.inRange(circleFit.getX(),circleFit.getY())) {
+                findSlotByZone(zone3).occupied = slotState.PURPLE;
+                z6Filled = true;
             }
         }
 
         for (ColorBlobLocatorProcessor.Blob b : greenBlobList) {
             Circle circleFit = b.getCircle();
-            if (zone1.inRange(circleFit.getX(),circleFit.getY())) {
+            if (inLoadPosition & zone1.inRange(circleFit.getX(),circleFit.getY())) {
                 findSlotByZone(zone1).occupied = slotState.GREEN;
                 z1Filled = true;
-            } else if (zone2.inRange(circleFit.getX(),circleFit.getY())) {
+            } else if (!inLoadPosition & zone2.inRange(circleFit.getX(),circleFit.getY())) {
                 findSlotByZone(zone2).occupied = slotState.GREEN;
                 z2Filled = true;
-            } else if (zone3.inRange(circleFit.getX(),circleFit.getY())) {
+            } else if (inLoadPosition & zone3.inRange(circleFit.getX(),circleFit.getY())) {
                 findSlotByZone(zone3).occupied = slotState.GREEN;
                 z3Filled = true;
+            } else if (!inLoadPosition & zone4.inRange(circleFit.getX(),circleFit.getY())) {
+                findSlotByZone(zone3).occupied = slotState.GREEN;
+                z4Filled = true;
+            } else if (inLoadPosition & zone5.inRange(circleFit.getX(),circleFit.getY())) {
+                findSlotByZone(zone3).occupied = slotState.GREEN;
+                z5Filled = true;
+            } else if (!inLoadPosition & zone6.inRange(circleFit.getX(),circleFit.getY())) {
+                findSlotByZone(zone3).occupied = slotState.GREEN;
+                z6Filled = true;
             }
         }
 
         for (slotRange r : allZones) {
-            if (!z1Filled) {
+            if (inLoadPosition & !z1Filled) {
                 findSlotByZone(zone1).occupied = slotState.EMPTY;
             }
-            if (!z2Filled) {
-                findSlotByZone(zone1).occupied = slotState.EMPTY;
+            if (!inLoadPosition & !z2Filled) {
+                findSlotByZone(zone2).occupied = slotState.EMPTY;
             }
-            if (!z3Filled) {
-                findSlotByZone(zone1).occupied = slotState.EMPTY;
+            if (inLoadPosition & !z3Filled) {
+                findSlotByZone(zone3).occupied = slotState.EMPTY;
+            }
+            if (!inLoadPosition & !z4Filled) {
+                findSlotByZone(zone3).occupied = slotState.EMPTY;
+            }
+            if (inLoadPosition & !z5Filled) {
+                findSlotByZone(zone3).occupied = slotState.EMPTY;
+            }
+            if (!inLoadPosition & !z6Filled) {
+                findSlotByZone(zone3).occupied = slotState.EMPTY;
             }
         }
     }
@@ -357,8 +393,34 @@ public class ArtifactLocator {
     }
 
     public slot findSlotByZone(slotRange zone) {
-        //TODO Offset Logic
+        int offset = getCurrentOffset();
+        if (offset == -1) {
+            return null;
+        }
+        int zoneIndex = allZones.indexOf(zone) + 1;
+        int x = zoneIndex - offset;
+
+        switch (x) {
+            case 1:
+                return slotA;
+            case 3:
+                return slotB;
+            case 5:
+                return slotC;
+        }
         return null;
+    }
+
+    /**
+     * Will get the current offset, 0-5.
+     * -1 means it's in transit.
+     */
+    public int getCurrentOffset() {
+        if (SorterHardware.countToTarget(magnet, true)) {
+            return offsetPositions.indexOf(servo.getPosition());
+        } else {
+            return -1;
+        }
     }
     @SuppressLint("DefaultLocale")
     public void cameraTelemetry() {
@@ -399,9 +461,9 @@ public class ArtifactLocator {
         public slot(int slotIdentity) {
             this.slotIdentity = slotIdentity;
             switch (this.slotIdentity) {
-                case 1: servoFirePosition = 0; servoLoadPosition = 0; break; //TODO fill in with correct position
-                case 2: servoFirePosition = 0; servoLoadPosition = 0; break; //TODO fill in with correct position
-                case 3: servoFirePosition = 0; servoLoadPosition = 0; break; //TODO fill in with correct position
+                case 1: servoFirePosition = SorterHardware.slotALaunch; servoLoadPosition = SorterHardware.slotAIntake; break;
+                case 2: servoFirePosition = SorterHardware.slotBLaunch; servoLoadPosition = SorterHardware.slotBIntake; break;
+                case 3: servoFirePosition = SorterHardware.slotCLaunch; servoLoadPosition = SorterHardware.slotCIntake; break;
                 default: throw new IllegalArgumentException("Invalid slotIdentity"); // Fancy code throw error if bad
             }
         }
@@ -438,7 +500,7 @@ public class ArtifactLocator {
          * represented by a slotRange. Input the center coordinates of a Blob to test this.
          * @param inputX
          * @param inputY
-         * @return 
+         * @return Whether or not the point is in the range (Boolean)
          */
         public boolean inRange(float inputX, float inputY) {
             return inputX > xMin & inputX < xMax & inputY > yMin & inputY < yMax;
