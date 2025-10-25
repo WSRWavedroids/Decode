@@ -12,14 +12,15 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLStatus;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Teleop.Limelight_Target_Scanner;
+import org.firstinspires.ftc.teamcode.Teleop.WaveTag;
+import org.firstinspires.ftc.teamcode.Vision.ArtifactLocator;
+import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 
 import java.util.Objects;
 
@@ -31,7 +32,20 @@ public class Robot {
     public DcMotorEx backLeftDrive;
     public DcMotorEx backRightDrive;
 
-    //public CRServo expandyServo;
+    public DcMotorEx sorterMotor;
+    public DcMotorEx launcherMotor;
+
+    public Servo hammerServo;
+    public Servo doorServo;
+
+    public CRServo expandyServo;
+
+    public CRServo intakeyServoR;
+    public CRServo intakeyServoL;
+
+    public TouchSensor magsense;
+
+
 
 
     public Limelight3A limelight;
@@ -48,6 +62,14 @@ public class Robot {
     public String startingPosition;
     public String controlMode = "Robot Centric";// Robot Centric
     public IMU.Parameters imuParameters;
+    public WaveTag targetTag;
+    public String pattern;
+
+    public SorterHardware sorterHardware;
+    public LauncherHardware launcher;
+    public ArtifactLocator sorterLogic;
+    public Limelight_Randomization_Scanner randomizationScanner;
+    public Limelight_Target_Scanner targetScanner;
 
 
     //Initialize motors and servos
@@ -62,6 +84,19 @@ public class Robot {
         frontLeftDrive = hardwareMap.get(DcMotorEx.class, "frontLeftDrive");
         backLeftDrive = hardwareMap.get(DcMotorEx.class, "backLeftDrive");
         backRightDrive = hardwareMap.get(DcMotorEx.class, "backRightDrive");
+
+        sorterMotor = hardwareMap.get(DcMotorEx.class, "sorterMotor");
+        launcherMotor =  hardwareMap.get(DcMotorEx.class, "launcherMotor");
+
+        hammerServo = hardwareMap.get(Servo.class, "hammerServo");
+        doorServo = hardwareMap.get(Servo.class, "doorServo");
+
+        expandyServo = hardwareMap.get(CRServo.class, "expandyServo");
+        intakeyServoL = hardwareMap.get(CRServo.class, "intakeyServoL");
+        intakeyServoR = hardwareMap.get(CRServo.class, "intakeyServoR");
+
+        magsense = hardwareMap.get(TouchSensor.class, "magsense");
+
         CamCam = hardwareMap.get(WebcamName.class, "CamCam");
         //expandyServo = hardwareMap.get(CRServo.class, "expandyServo");
 
@@ -81,15 +116,27 @@ public class Robot {
         backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
         backRightDrive.setDirection(DcMotor.Direction.REVERSE);
 
+        sorterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        intakeyServoL.setDirection(DcMotorSimple.Direction.FORWARD);
+        intakeyServoR.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         // This tells the motors to chill when we're not powering them.
         frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        sorterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //This is new..
         telemetry.addData("Status", "Initialized");
+
+        sorterHardware = new SorterHardware(this);
+        launcher = new LauncherHardware(this);
+        //sorterLogic = new ArtifactLocator(this);
+        targetScanner = new Limelight_Target_Scanner();
+        randomizationScanner = new Limelight_Randomization_Scanner();
 
     }
 
@@ -158,9 +205,6 @@ public class Robot {
             backRightDrive.setPower(0);
         }
 
-
-
-
     }
 
     public void positionRunningMode(){
@@ -185,8 +229,6 @@ public class Robot {
         backRightDrive.setPower(speed);
 
     }
-
-
 
     public DcMotor.RunMode encoderRunningMode(){
         frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -224,9 +266,24 @@ public class Robot {
     ElapsedTime timer = new ElapsedTime();
 
 
-
     public void prepareAuto(){
 
+    }
+
+    public void updateAllDaThings()
+    {
+        launcher.updateLauncherHardware();
+        sorterHardware.updateSorterHardware();
+        //sorterLogic.update();
+        targetTag = targetScanner.tagInfo();
+        //pattern = randomizationScanner.GetRandomization();
+
+        dumpAllTelemetryFromUpdate();
+    }
+
+    public void dumpAllTelemetryFromUpdate()
+    {
+        //Reliant functions not present
     }
 
 }
