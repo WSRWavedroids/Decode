@@ -36,6 +36,7 @@ public class Robot {
     public DcMotorEx launcherMotor;
 
     public Servo hammerServo;
+    public Servo doorServo;
 
     public CRServo expandyServo;
 
@@ -88,6 +89,7 @@ public class Robot {
         launcherMotor =  hardwareMap.get(DcMotorEx.class, "launcherMotor");
 
         hammerServo = hardwareMap.get(Servo.class, "hammerServo");
+        doorServo = hardwareMap.get(Servo.class, "doorServo");
 
         expandyServo = hardwareMap.get(CRServo.class, "expandyServo");
         intakeyServoL = hardwareMap.get(CRServo.class, "intakeyServoL");

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -19,6 +20,8 @@ public class SorterHardware {
     public int[] positions;
     public int ticksPerRotation = 8192;
 
+
+    public Servo doorServo;
     public boolean open;
     public boolean wantToMoveDoor;
     public double doorClosedPosition = 0;
@@ -38,7 +41,7 @@ public class SorterHardware {
     {
         disRobot = robot;
         motor = robot.sorterMotor;
-        //doorServo = robot.doorServo
+        doorServo = robot.doorServo;
         launcher = robot.launcher;
 
 
@@ -54,7 +57,7 @@ public class SorterHardware {
         positions[4] = 2*(ticksPerRotation/3);//Slot three load
         positions[5] = (2*(ticksPerRotation/3)) + (ticksPerRotation/2); //Slot three launch
 
-        //doorServo.setPosition(0);
+        doorServo.setPosition(doorClosedPosition);
         motor.setTargetPosition(0);
         motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
@@ -148,13 +151,13 @@ public class SorterHardware {
 
             if(doorTarget.equals("CLOSED"))
             {
-                //doorServo.setPosition(0)
+                doorServo.setPosition(doorClosedPosition);
                 open = false;
                 //door
             }
             if(doorTarget.equals("OPEN"))
             {
-                //doorServo.setPosition(1)
+                doorServo.setPosition(doorOpenPosition);
                 open = true;
             }
     }

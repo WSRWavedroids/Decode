@@ -290,7 +290,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         {
             double constant = -1660 / 360; //We will know this later
             speed = 1;
-            double turnTicks = targetData.angleX * constant;
+            double turnTicks = robot.targetTag.angleX * constant;
 
             robot.frontLeftDrive.setTargetPosition(robot.frontLeftDrive.getCurrentPosition() + (int) turnTicks);
             robot.frontRightDrive.setTargetPosition(robot.frontRightDrive.getCurrentPosition() - (int) turnTicks);
@@ -426,13 +426,13 @@ public class Vortex_Teleop_Decode extends OpMode {
         // It's mostly used for troubleshooting.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
 
-        telemetry.addData("last detected x angle: ", targetData.angleX);
-        telemetry.addData("last detected y angle: ", targetData.angleY);
+        telemetry.addData("last detected x angle: ", robot.targetTag.angleX);
+        telemetry.addData("last detected y angle: ", robot.targetTag.angleY);
 
-        telemetry.addData("last distance x: ", targetData.distanceX);
-        telemetry.addData("last detected distance y: ", targetData.distanceY);
-        telemetry.addData("last detected distance z: ", targetData.distanceZ);
-        telemetry.addData("Is occupied?: ", targetData.currentlyDetected);
+        telemetry.addData("last distance x: ", robot.targetTag.distanceX);
+        telemetry.addData("last detected distance y: ", robot.targetTag.distanceY);
+        telemetry.addData("last detected distance z: ", robot.targetTag.distanceZ);
+        telemetry.addData("Is occupied?: ", robot.targetTag.currentlyDetected);
 
         telemetry.addData("Last saved pattern: ", blackboard.get(PATTERN_KEY));
 

@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.SorterHardware;
 import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 
 @Autonomous(group = "Basic", name = "Blue Back Start")
-public class Test_Randomization_Blue extends AutonomousPLUS {
+public class BlueBackAuto extends AutonomousPLUS {
 
     public Limelight_Randomization_Scanner Limelight = new Limelight_Randomization_Scanner();
     public Limelight_Target_Scanner scanner = new Limelight_Target_Scanner();

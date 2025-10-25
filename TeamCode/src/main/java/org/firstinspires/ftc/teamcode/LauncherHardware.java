@@ -35,6 +35,8 @@ public class LauncherHardware {
 
     private boolean hammerForward;
     private boolean hammerBack;
+    private double hammerForwardPosition = 1;
+    private double hamemrBackPosition = 0;
 
 
     public double P;
@@ -47,6 +49,7 @@ public class LauncherHardware {
         motor = disBot.launcherMotor;
         motor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(P, I, D, F));
         hammerServo = robot.hammerServo;
+        hammerServo.setPosition(hamemrBackPosition);
     }
 
 
@@ -78,18 +81,13 @@ public class LauncherHardware {
 
         if(onCooldown && hammerBack)
         {
-            hammerServo.setPosition(1);
+            hammerServo.setPosition(hammerForwardPosition);
         }
 
         else if(onCooldown && hammerForward)
         {
-            hammerServo.setPosition(0);
+            hammerServo.setPosition(hamemrBackPosition);
         }
-
-
-
-
-
     }
 
     public void timerCheck()
@@ -105,12 +103,7 @@ public class LauncherHardware {
             hammerForward = false;
             onCooldown = false;
         }
-
     }
-
-
-
-
 
 
     public void rampSpeed(double targetspeed) {
