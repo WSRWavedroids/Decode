@@ -54,7 +54,7 @@ public class Vortex_Teleop_Decode extends OpMode {
     public WaveTag targetData = null;
 
     public SorterHardware sorterHardware;
-    public LauncherHardware launcherHardware;
+    public LauncherHardware launcher;
 
     public static final String ALLIANCE_KEY = "Alliance"; //For blackboard
     public static final String PATTERN_KEY = "Pattern";
@@ -73,6 +73,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         robot = new Robot(hardwareMap, telemetry, this);
         tagScanner = robot.targetScanner;
         sorterHardware = robot.sorterHardware;
+        launcher = robot.launcher;
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -200,13 +201,13 @@ public class Vortex_Teleop_Decode extends OpMode {
         if(gamepad2.dpad_down)
         {
             sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[slot]);
-        }else if(gamepad2.dpad_up)
+        } else if(gamepad2.dpad_up)
         {
             sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[slot+1]);
         }
         else if(gamepad2.dpad_left)
         {
-            slot--;
+            slot -= 2;
             if(slot < 0)
             {
                slot += 5;
@@ -214,7 +215,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         }
         else if(gamepad2.dpad_right)
         {
-            slot++;
+            slot += 2;
             if(slot > 5)
             {
                 slot -= 5;

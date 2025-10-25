@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -37,6 +39,21 @@ public class SorterHardware {
     private boolean onCooldown = false;
     private double cooldownDuration = 0.5;
 
+    public static double kp = 0.00012;
+    public static double ki = 0.0;
+    public static double kd = 0.0;
+
+    public ElapsedTime pidfTime() {
+        return cooldownTimer;
+    }
+
+
+    double reference;
+
+    double integralSum = 0;
+
+    double lastError = 0;
+
     public SorterHardware(Robot robot)
     {
         disRobot = robot;
@@ -45,9 +62,10 @@ public class SorterHardware {
         launcher = robot.launcher;
 
 
-        motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        //motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-        motor.setPositionPIDFCoefficients(1.0); // 1.0 default
+
+        motor.setTargetPositionTolerance(10);
 
         positions = new int[6];
         positions[0] = 0; //Slot one load
@@ -58,8 +76,8 @@ public class SorterHardware {
         positions[5] = (2*(ticksPerRotation/3)) + (ticksPerRotation/2); //Slot three launch
 
         doorServo.setPosition(doorClosedPosition);
-        motor.setTargetPosition(0);
-        motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        reference = findFastestRotationInTicks(motor.getCurrentPosition(), 0);
+        //motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
         inMagPosition = true;
         
@@ -164,26 +182,18 @@ public class SorterHardware {
 
     public boolean closedCheck()
     {
-        if(!onCooldown && !open)
-        {
-            return true;
-        }
-        else return false;
+        return !onCooldown && !open;
     }
 
     public boolean openCheck()
     {
-        if(!onCooldown && open)
-        {
-            return true;
-        }
-        else return false;
+        return !onCooldown && open;
     }
 
     public boolean moveSafeCheck()
     {
 
-        if(!launcher.waitingForServo && !positionedCheck() && closedCheck()) //if not on servo timeout and not already there, rotate
+        if(!disRobot.launcher.onCooldown && !positionedCheck() && closedCheck()) //if not on servo timeout and not already there, rotate
         {
             return true;
         }else
@@ -195,7 +205,7 @@ public class SorterHardware {
     public boolean fireSafeCheck()
     {
 
-        if(!launcher.waitingForServo && !positionedCheck() && openCheck()) //if not on servo timeout and not already there, rotate
+        if(!disRobot.launcher.onCooldown && !positionedCheck() && openCheck()) //if not on servo timeout and not already there, rotate
         {
             return true;
         }else
@@ -210,14 +220,16 @@ public class SorterHardware {
         //targetClicks = findMagsToTarget(currentSlot, targetSlot);
 
 
-        motor.setTargetPosition(findFastestRotationInTicks(currentTickPose, targetTickPose));
+        reference = (findFastestRotationInTicks(currentTickPose, targetTickPose));
 
     }
 
     public void spin()
     {
-            motor.setPower(0.25);
-            motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            //motor.setPower(0.3);
+            //motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+
+            runPIDMotorStuffLol();
             currentlyMoving = true;
     }
     
@@ -244,6 +256,31 @@ public class SorterHardware {
     public void Estop()
     {
         motor.setPower(0);
+    }
+
+    public void runPIDMotorStuffLol()
+    {
+        // obtain the encoder position
+        double encoderPosition = motor.getCurrentPosition();
+        // calculate the error
+        double error = reference - encoderPosition;
+
+        // rate of change of the error
+        double derivative = (error - lastError) / pidfTime().seconds();
+
+        // sum of all error over time
+        integralSum = integralSum + (error * pidfTime().seconds());
+
+        double out = (kp * error) + (ki * integralSum) + (kd * derivative);
+
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor.setPower(out);
+
+        lastError = error;
+
+        // reset the timer for next time
+        pidfTime().reset();
+
     }
 
 }

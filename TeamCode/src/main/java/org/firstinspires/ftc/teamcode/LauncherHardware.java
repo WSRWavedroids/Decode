@@ -29,9 +29,9 @@ public class LauncherHardware {
 
     public Servo hammerServo;
 
-    private ElapsedTime cooldownTimer;
+    private ElapsedTime cooldownTimer = new ElapsedTime();
     private double timeForMove;
-    private boolean onCooldown;
+    public boolean onCooldown = false;
 
     private boolean hammerForward;
     private boolean hammerBack;
@@ -46,10 +46,11 @@ public class LauncherHardware {
 
     public LauncherHardware(Robot robotFile) {
         robot = robotFile;
-        motor = disBot.launcherMotor;
+        motor = robot.launcherMotor;
         motor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(P, I, D, F));
         hammerServo = robot.hammerServo;
         hammerServo.setPosition(hamemrBackPosition);
+
     }
 
 
@@ -74,7 +75,9 @@ public class LauncherHardware {
     public void fire() {
         waitingToFire = false;
         runHammer();
+        onCooldown = true;
         cooldownTimer.reset();
+
     }
 
     public void runHammer() {
@@ -118,7 +121,7 @@ public class LauncherHardware {
         inSpeedRange = motorSpeedCheck(speedTarget);
         timerCheck();
 
-        if (inSpeedRange && robot.sorterHardware.openCheck() && waitingToFire) {
+        if (inSpeedRange && robot.sorterHardware.fireSafeCheck() && waitingToFire) {
             fire();
         }
 

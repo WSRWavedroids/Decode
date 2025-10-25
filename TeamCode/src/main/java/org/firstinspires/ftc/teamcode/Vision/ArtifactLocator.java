@@ -101,6 +101,7 @@ public class ArtifactLocator {
     private final slotRange zone1 = new slotRange(0,0,0,0); //TODO fill in values
     private final slotRange zone2 = new slotRange(0,0,0,0); //TODO fill in values
     private final slotRange zone3 = new slotRange(0,0,0,0); //TODO fill in values
+
     public void initCamera() {
         /* Build a "Color Locator" vision processor based on the ColorBlobLocatorProcessor class.
          * - Specify the color range you are looking for. Use a predefined color, or create your own

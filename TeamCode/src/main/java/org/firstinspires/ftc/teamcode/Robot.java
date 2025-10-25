@@ -116,6 +116,8 @@ public class Robot {
         backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
         backRightDrive.setDirection(DcMotor.Direction.REVERSE);
 
+        sorterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         intakeyServoL.setDirection(DcMotorSimple.Direction.FORWARD);
         intakeyServoR.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -132,7 +134,7 @@ public class Robot {
 
         sorterHardware = new SorterHardware(this);
         launcher = new LauncherHardware(this);
-        sorterLogic = new ArtifactLocator(this);
+        //sorterLogic = new ArtifactLocator(this);
         targetScanner = new Limelight_Target_Scanner();
         randomizationScanner = new Limelight_Randomization_Scanner();
 
@@ -272,9 +274,9 @@ public class Robot {
     {
         launcher.updateLauncherHardware();
         sorterHardware.updateSorterHardware();
-        sorterLogic.update();
+        //sorterLogic.update();
         targetTag = targetScanner.tagInfo();
-        pattern = randomizationScanner.GetRandomization();
+        //pattern = randomizationScanner.GetRandomization();
 
         dumpAllTelemetryFromUpdate();
     }
