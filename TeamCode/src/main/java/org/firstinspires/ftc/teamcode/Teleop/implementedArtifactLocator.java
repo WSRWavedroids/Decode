@@ -30,13 +30,16 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 //package edu.wpi.first.wpilibj;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.Vision.ArtifactLocator;
+import org.firstinspires.ftc.teamcode.artifactLocator;
 
 
 /**
@@ -64,7 +67,7 @@ public class implementedArtifactLocator extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     public Robot robot;
-    public ArtifactLocator intCam;
+    public artifactLocator intCam;
     public IMU imu;
 
     /*
@@ -74,7 +77,7 @@ public class implementedArtifactLocator extends OpMode {
 
         // Call the initialization protocol from the Robot class.
         robot = new Robot(hardwareMap, telemetry, this);
-        intCam = robot.sorterLogic;
+        intCam = new artifactLocator(hardwareMap,telemetry,this);
 
         intCam.initCamera();
 

@@ -25,9 +25,6 @@ Basic_Strafer_Bot {
     public DcMotorEx backLeftDrive;
     public DcMotorEx backRightDrive;
 
-    public DcMotorEx sorterMotor;
-    public DcMotorEx launcherMotor;
-
     public CRServo expandyServo;
 
     public CRServo intakeyServoR;
@@ -64,15 +61,11 @@ Basic_Strafer_Bot {
         backLeftDrive = hardwareMap.get(DcMotorEx.class, "backLeftDrive");
         backRightDrive = hardwareMap.get(DcMotorEx.class, "backRightDrive");
 
-        sorterMotor = hardwareMap.get(DcMotorEx.class, "sorterMotor");
-        launcherMotor =  hardwareMap.get(DcMotorEx.class, "launcherMotor");
-
         expandyServo = hardwareMap.get(CRServo.class, "expandyServo");
         intakeyServoL = hardwareMap.get(CRServo.class, "intakeyServoL");
         intakeyServoR = hardwareMap.get(CRServo.class, "intakeyServoR");
 
         magsense = hardwareMap.get(TouchSensor.class, "magsense");
-
 
         //add arms to map
         /*
@@ -96,7 +89,6 @@ Basic_Strafer_Bot {
         frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        sorterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //This is new..
         telemetry.addData("Status", "Initialized");
 

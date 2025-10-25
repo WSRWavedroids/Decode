@@ -34,7 +34,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Basic_Strafer_Bot;
-import org.firstinspires.ftc.teamcode.Robot;
 
 
 /**
@@ -54,7 +53,7 @@ public class wheelyCoolMotorTest extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private double speed = 0.75;
     //private double storedSpeed;
-    public Robot Bot;
+    public Basic_Strafer_Bot Bot = new Basic_Strafer_Bot();
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -62,7 +61,7 @@ public class wheelyCoolMotorTest extends OpMode {
     public void init() {
 
         // Call the initialization protocol from the Robot class.
-        Bot = new Robot(hardwareMap, telemetry, this);
+        Bot = new Basic_Strafer_Bot(hardwareMap, telemetry, this);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");

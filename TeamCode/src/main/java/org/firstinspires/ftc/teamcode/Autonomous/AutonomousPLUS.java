@@ -33,7 +33,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 //import org.firstinspires.ftc.teamcode.OLD.Autonomous.AprilTags.MayFlowers;
 
 /**
@@ -47,8 +46,7 @@ public class AutonomousPLUS extends LinearOpMode {
     // This section tells the program all of the different pieces of hardware that are on our robot that we will use in the program.
     private ElapsedTime runtime = new ElapsedTime();
 
-    public Limelight_Randomization_Scanner randomization;
-
+    public org.firstinspires.ftc.teamcode.Autonomous.Limelight_Randomization_Scanner randomization;
     public double speed = 0.6;
     public int sleepTime;
     public boolean inMarker;
@@ -98,7 +96,6 @@ public class AutonomousPLUS extends LinearOpMode {
         if (waitForCompletion) {
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
-                robot.updateAllDaThings();
             } // And we stall...
         }
 
@@ -126,7 +123,6 @@ public class AutonomousPLUS extends LinearOpMode {
 
         while (opModeIsActive() && robot.isWheelsBusy()) {
             robot.tellMotorOutput();
-            robot.updateAllDaThings();
         }
 
         robot.stopAllMotors();
@@ -144,7 +140,6 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
-                robot.updateAllDaThings();
             }
 
             robot.stopAllMotors();
@@ -163,7 +158,6 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
-                robot.updateAllDaThings();
             }
 
             robot.stopAllMotors();
@@ -182,7 +176,6 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
-                robot.updateAllDaThings();
             }
 
             robot.stopAllMotors();
@@ -201,7 +194,6 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
-                robot.updateAllDaThings();
             }
 
             robot.stopAllMotors();
@@ -220,7 +212,6 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
-                robot.updateAllDaThings();
             }
 
             robot.stopAllMotors();
@@ -241,7 +232,6 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
-                robot.updateAllDaThings();
             }
 
             robot.stopAllMotors();
@@ -261,7 +251,6 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
-                robot.updateAllDaThings();
             }
 
             robot.stopAllMotors();
@@ -282,8 +271,6 @@ public class AutonomousPLUS extends LinearOpMode {
             robot.backLeftDrive.setPower(-speed);
             robot.frontRightDrive.setPower(-speed);
             robot.backRightDrive.setPower(-speed);
-
-            robot.updateAllDaThings();
         }
         robot.stopAllMotors();
         sleep(pause);
@@ -300,8 +287,6 @@ public class AutonomousPLUS extends LinearOpMode {
             robot.backLeftDrive.setPower(speed);
             robot.frontRightDrive.setPower(speed);
             robot.backRightDrive.setPower(speed);
-
-            robot.updateAllDaThings();
         }
         robot.stopAllMotors();
         sleep(pause);
@@ -318,8 +303,6 @@ public class AutonomousPLUS extends LinearOpMode {
             robot.backLeftDrive.setPower(speed);
             robot.frontRightDrive.setPower(speed);
             robot.backRightDrive.setPower(-speed);
-
-            robot.updateAllDaThings();
         }
         robot.stopAllMotors();
         sleep(pause);
@@ -336,8 +319,6 @@ public class AutonomousPLUS extends LinearOpMode {
             robot.backLeftDrive.setPower(-speed);
             robot.frontRightDrive.setPower(-speed);
             robot.backRightDrive.setPower(speed);
-
-            robot.updateAllDaThings();
         }
         robot.stopAllMotors();
         sleep(pause);
@@ -354,8 +335,6 @@ public class AutonomousPLUS extends LinearOpMode {
             robot.backLeftDrive.setPower(speed);
             robot.frontRightDrive.setPower(-speed);
             robot.backRightDrive.setPower(-speed);
-
-            robot.updateAllDaThings();
         }
         robot.stopAllMotors();
         sleep(pause);
@@ -372,8 +351,6 @@ public class AutonomousPLUS extends LinearOpMode {
             robot.backLeftDrive.setPower(-speed);
             robot.frontRightDrive.setPower(speed);
             robot.backRightDrive.setPower(speed);
-
-            robot.updateAllDaThings();
         }
         robot.stopAllMotors();
         sleep(pause);
@@ -390,8 +367,6 @@ public class AutonomousPLUS extends LinearOpMode {
             robot.backLeftDrive.setPower(0);
             robot.frontRightDrive.setPower(0);
             robot.backRightDrive.setPower(-speed * PosOneForward_MinusOneBack);
-
-            robot.updateAllDaThings();
         }
         robot.stopAllMotors();
         sleep(pause);
@@ -408,8 +383,6 @@ public class AutonomousPLUS extends LinearOpMode {
             robot.backLeftDrive.setPower(-speed * PosOneForward_MinusOneBack);
             robot.frontRightDrive.setPower(-speed * PosOneForward_MinusOneBack);
             robot.backRightDrive.setPower(0);
-
-            robot.updateAllDaThings();
         }
         robot.stopAllMotors();
         sleep(pause);
@@ -421,8 +394,6 @@ public class AutonomousPLUS extends LinearOpMode {
 
 
         robot.encoderReset();
-
-
 
     }
 
@@ -447,25 +418,6 @@ public class AutonomousPLUS extends LinearOpMode {
         int ticks = (int) ((537.6 * inches) / (3.77953 * 3.1415926535));
         return ticks;
     }
-
-    public void stallTillFalse(boolean condition) {
-        while (condition)
-        {
-            robot.updateAllDaThings();
-            sleep(1);
-        }
-    }
-
-    public void stallTillTrue(boolean condition)
-    {
-        while (!condition)
-        {
-            robot.updateAllDaThings();
-            sleep(1);
-        }
-    }
-
-
 
 
     /**

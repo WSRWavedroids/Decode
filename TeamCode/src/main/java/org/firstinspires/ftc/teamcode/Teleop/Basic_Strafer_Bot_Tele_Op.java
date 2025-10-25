@@ -29,16 +29,13 @@
 
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Basic_Strafer_Bot;
-import org.firstinspires.ftc.teamcode.LauncherHardware;
-import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.SorterHardware;
 
 
 /**
@@ -57,17 +54,15 @@ import org.firstinspires.ftc.teamcode.SorterHardware;
  * Throughout this program, there are comments explaining what everything does because previous programmers
  * did a horrible job of doing that.
  */
-@TeleOp(name="Beta Vortex", group="CompBot")
+@TeleOp(name="Basic Strafer", group="CompBot")
 public class Basic_Strafer_Bot_Tele_Op extends OpMode {
 
     // This section tells the program all of the different pieces of hardware that are on our robot that we will use in the program.
     private ElapsedTime runtime = new ElapsedTime();
     private double speed = 0.75;
     //private double storedSpeed;
-    public Robot Bot;
-    public SorterHardware sorter;
-    public LauncherHardware launcher;
-
+    public Basic_Strafer_Bot Bot = new Basic_Strafer_Bot();
+    public SorterHardware magStuff = new SorterHardware();
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -75,17 +70,10 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
     public void init() {
 
         // Call the initialization protocol from the Robot class.
-        Bot = new Robot(hardwareMap, telemetry, this);
-        sorter = Bot.sorterHardware;
-        launcher = Bot.launcher;
-
-
-
+        Bot = new Basic_Strafer_Bot(hardwareMap, telemetry, this);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
-
-
     }
 
     /*
@@ -108,15 +96,7 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
      */
     public void loop() {
         telemetry.addData("Limit switch Value: ", Bot.magsense.getValue());
-        telemetry.addData("current: ", Bot.sorterMotor.getCurrentPosition());
-        telemetry.addData("Target: ", Bot.sorterMotor.getTargetPosition()
-        );
         singleJoystickDrive();
-        launcher.updateLauncherHardware();
-        sorter.updateSorterHardware();
-
-
-
         // This little section updates the driver hub on the runtime and the motor powers.
         // It's mostly used for troubleshooting.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -126,14 +106,12 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
         float turntableStickX = this.gamepad2.right_stick_x;
 
 
-
-
         if(gamepad2.touchpad)
         {
-            telemetry.addData("Mag Count: ", sorter.inMagPosition);
-            telemetry.addData("Mag Count: ", sorter.currentTickCount);
+            telemetry.addData("Mag Count: ", magStuff.countToTarget(Bot.magsense, false));
+            telemetry.addData("Mag Count: ", magStuff.currentTickCount);
         }else{//
-            sorter.resetMagCountAndTarget(false);
+            magStuff.resetCount();
         }
 
 
@@ -172,13 +150,6 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
             telemetry.addData("Speed", "Normal Boi");
         }
 
-        if(gamepad1.touchpadWasPressed())
-        {
-
-            Bot.sorterMotor.setTargetPosition(Bot.sorterMotor.getCurrentPosition() + 8192/2);
-            Bot.sorterMotor.setPower(.5);
-            Bot.sorterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
 
 
 
@@ -200,7 +171,50 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
             //speed = storedSpeed;
         }
 
+        if(gamepad2.square)
+        {
+            Bot.expandyServo.setDirection(DcMotorSimple.Direction.FORWARD);
+            Bot.expandyServo.setPower(1);
 
+            /*Bot.frontLeftDrive.setPower(.1);
+            Bot.frontRightDrive.setPower(.1);
+            Bot.backLeftDrive.setPower(-0.1);
+            Bot.backRightDrive.setPower(-0.1);*/
+
+
+        }
+        else if(gamepad2.triangle)
+        {
+            Bot.expandyServo.setDirection(DcMotorSimple.Direction.REVERSE);
+            Bot.expandyServo.setPower(1);
+
+            //Drivetrain Assist?
+            /*
+            Bot.frontLeftDrive.setPower(-.1);
+            Bot.frontRightDrive.setPower(-.1);
+            Bot.backLeftDrive.setPower(0.1);
+            Bot.backRightDrive.setPower(0.1);*/
+
+        }
+        else
+        {
+            Bot.expandyServo.setPower(0);
+        }
+
+        if(gamepad2.cross)
+        {
+            Bot.intakeyServoR.setPower(1);
+            Bot.intakeyServoL.setPower(1);
+        }
+        else if(gamepad2.circle)
+        {
+            Bot.intakeyServoL.setPower(-1);
+            Bot.intakeyServoR.setPower(-1);
+        }
+        else
+        {
+            Bot.intakeyServoR.setPower(0);
+        }
         //
 
     }
