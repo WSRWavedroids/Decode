@@ -23,9 +23,6 @@ package org.firstinspires.ftc.teamcode.Vision;
 
 import static android.os.SystemClock.sleep;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.util.Size;
@@ -36,15 +33,16 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
-import org.firstinspires.ftc.teamcode.CustomColorRange;
+import org.firstinspires.ftc.teamcode.Vision.CustomColorRange;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.Teleop.SorterHardware;
+import org.firstinspires.ftc.teamcode.SorterHardware;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.opencv.Circle;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -171,7 +169,7 @@ public class ArtifactLocator {
          *        CLOSING:    Will Dilate and then Erode which will tend to fill in any small holes in blob edges.
          */
         purpleLocator = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(org.firstinspires.ftc.teamcode.CustomColorRange.ARTIFACT_PURPLE)   // Use a predefined color match
+                .setTargetColorRange(CustomColorRange.ARTIFACT_PURPLE)   // Use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
                 .setDrawContours(true)   // Show contours on the Stream Preview
@@ -202,9 +200,9 @@ public class ArtifactLocator {
 
                 .build();
 
-        internalCamera = hardwareMap.get(WebcamName.class, "CamCam");
-        servo = hardwareMap.get(Servo.class, "blenderServo");
-        magnet = hardwareMap.get(TouchSensor.class, "placeholder"); //TODO
+        internalCamera = robot.hardwareMap.get(WebcamName.class, "CamCam");
+        servo = robot.hardwareMap.get(Servo.class, "blenderServo");
+        magnet = robot.hardwareMap.get(TouchSensor.class, "placeholder"); //TODO
 
         portal = new VisionPortal.Builder()
                 .addProcessor(purpleLocator)
@@ -226,9 +224,9 @@ public class ArtifactLocator {
         zone6 = new slotRange(0,0,0,0); //TODO fill in values
 
         //Sort things into lists
-        offsetPositions.add(slotA.servoLoadPosition); offsetPositions.add(slotB.servoFirePosition);
-        offsetPositions.add(slotC.servoLoadPosition); offsetPositions.add(slotA.servoFirePosition);
-        offsetPositions.add(slotB.servoLoadPosition); offsetPositions.add(slotC.servoFirePosition);
+        offsetPositions.add(slotA.motorLoadPosition); offsetPositions.add(slotB.motorFirePosition);
+        offsetPositions.add(slotC.motorLoadPosition); offsetPositions.add(slotA.motorFirePosition);
+        offsetPositions.add(slotB.motorLoadPosition); offsetPositions.add(slotC.motorFirePosition);
 
         allSlots.add(slotA); allSlots.add(slotB); allSlots.add(slotC);
 
@@ -416,34 +414,54 @@ public class ArtifactLocator {
      * -1 means it's in transit.
      */
     public int getCurrentOffset() {
-        if (SorterHardware.countToTarget(magnet, true)) {
-            return offsetPositions.indexOf(servo.getPosition());
+        if (robot.sorterHardware.positionedCheck()) {
+            return robot.sorterHardware.reference;
         } else {
             return -1;
         }
     }
+
+    public int findClosestOffset(double ticks) {
+        while (ticks > robot.sorterHardware.ticksPerRotation) {
+            ticks -= robot.sorterHardware.ticksPerRotation;
+        }
+        while (ticks < robot.sorterHardware.ticksPerRotation) {
+            ticks += robot.sorterHardware.ticksPerRotation;
+        }
+
+        double[] distanceToOffset = null;
+
+        for(int i = 0; i<6; i++) {
+            distanceToOffset[i] =
+        }
+
+        double[] sortedDistances = distanceToOffset;
+        Arrays.sort(sortedDistances);
+
+        return
+    }
     @SuppressLint("DefaultLocale")
     public void cameraTelemetry() {
 
-        telemetry.addLine("Inventory: " + inventory.count + " Artifacts; " + inventory.purpleCount + " purple, " + inventory.greenCount + " green.");
-        telemetry.addLine("Circularity Radius Center");
-        telemetry.addLine("Gain: " + Integer.toString(gainControl.getGain()));
+        robot.telemetry.addLine("Inventory: " + inventory.count + " Artifacts; " + inventory.purpleCount + " purple, " + inventory.greenCount + " green.");
+        robot.telemetry.addLine("Circularity Radius Center");
+        robot.telemetry.addLine("Gain: " + Integer.toString(gainControl.getGain()));
 
 
         // Display the Blob's circularity, and the size (radius) and center location of its circleFit.
-        telemetry.addLine("Purple:");
+        robot.telemetry.addLine("Purple:");
         for (ColorBlobLocatorProcessor.Blob b : purpleBlobList) {
 
             Circle circleFit = b.getCircle();
-            telemetry.addLine(String.format("%5.3f      %3d     (%3d,%3d)",
+            robot.telemetry.addLine(String.format("%5.3f      %3d     (%3d,%3d)",
                     b.getCircularity(), (int) circleFit.getRadius(), (int) circleFit.getX(), (int) circleFit.getY()));
         }
 
-        telemetry.addLine("Green");
+        robot.telemetry.addLine("Green");
         for (ColorBlobLocatorProcessor.Blob b : greenBlobList) {
 
             Circle circleFit = b.getCircle();
-            telemetry.addLine(String.format("%5.3f      %3d     (%3d,%3d)",
+            robot.telemetry.addLine(String.format("%5.3f      %3d     (%3d,%3d)",
                     b.getCircularity(), (int) circleFit.getRadius(), (int) circleFit.getX(), (int) circleFit.getY()));
         }
     }
@@ -456,14 +474,14 @@ public class ArtifactLocator {
     public class slot {
         public slotState occupied;
         public int slotIdentity;
-        public double servoFirePosition;
-        public double servoLoadPosition;
+        public double motorFirePosition;
+        public double motorLoadPosition;
         public slot(int slotIdentity) {
             this.slotIdentity = slotIdentity;
             switch (this.slotIdentity) {
-                case 1: servoFirePosition = SorterHardware.slotALaunch; servoLoadPosition = SorterHardware.slotAIntake; break;
-                case 2: servoFirePosition = SorterHardware.slotBLaunch; servoLoadPosition = SorterHardware.slotBIntake; break;
-                case 3: servoFirePosition = SorterHardware.slotCLaunch; servoLoadPosition = SorterHardware.slotCIntake; break;
+                case 1: motorFirePosition = robot.sorterHardware.positions[1]; motorLoadPosition = robot.sorterHardware.positions[0]; break;
+                case 2: motorFirePosition = robot.sorterHardware.positions[3]; motorLoadPosition = robot.sorterHardware.positions[2]; break;
+                case 3: motorFirePosition = robot.sorterHardware.positions[5]; motorLoadPosition = robot.sorterHardware.positions[4]; break;
                 default: throw new IllegalArgumentException("Invalid slotIdentity"); // Fancy code throw error if bad
             }
         }

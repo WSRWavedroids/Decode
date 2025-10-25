@@ -48,7 +48,7 @@ public class SorterHardware {
     }
 
 
-    double reference;
+    public double reference;
 
     double integralSum = 0;
 
