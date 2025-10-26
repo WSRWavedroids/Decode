@@ -46,36 +46,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/*
- * This OpMode illustrates how to use a video source (camera) to locate specifically colored regions.
- * This sample is targeted towards circular blobList. To see rectangles, look at ConceptVisionColorLocator_Rectangle
- *
- * Unlike a "color sensor" which determines the color of nearby object, this "color locator"
- * will search the Region Of Interest (ROI) in a camera image, and find any "blobList" of color that
- * match the requested color range.  These blobList can be further filtered and sorted to find the one
- * most likely to be the item the user is looking for.
- *
- * To perform this function, a VisionPortal runs a ColorBlobLocatorProcessor process.
- *   The ColorBlobLocatorProcessor (CBLP) process is created first, and then the VisionPortal is built.
- *   The (CBLP) analyses the ROI and locates pixels that match the ColorRange to form a "mask".
- *   The matching pixels are then collected into contiguous "blobList" of pixels.
- *   The outer boundaries of these blobList are called its "contour".  For each blob, the process then
- *   creates the smallest possible circle that will fully encase the contour. The user can then call
- *   getBlobs() to retrieve the list of Blobs, where each contains the contour and the circle.
- *   Note: The default sort order for Blobs is ContourArea, in descending order, so the biggest
- *   contours are listed first.
- *
- * A colored enclosing circle is drawn on the camera preview to show the location of each Blob
- * The original Blob contour can also be added to the preview.
- * This is helpful when configuring the ColorBlobLocatorProcessor parameters.
- *
- * Tip:  Connect an HDMI monitor to the Control Hub to view the Color Location process in real-time.
- *       Or use a screen copy utility like ScrCpy.exe to view the video remotely.
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
- */
-
 public class ArtifactLocator {
 
     private ExposureControl exposureControl;
@@ -109,65 +79,16 @@ public class ArtifactLocator {
     public Robot robot;
     public ArtifactLocator(Robot robotFile) {
         robot = robotFile;
+        // TODO Should we call initCamera() here or do it in the individual OpModes later?
     }
 
+    /**
+     * Initializes the camera, sets the settings, prepares the VisionPortal,
+     * and initializes numerous logic-related objects, including slots and the inventory.
+     * Might take a couple seconds to run, as it has to wait for the camera to initialize.
+     */
     public void initCamera() {
-        /* Build a "Color Locator" vision processor based on the ColorBlobLocatorProcessor class.
-         * - Specify the color range you are looking for. Use a predefined color, or create your own
-         *
-         *   .setTargetColorRange(ColorRange.BLUE)     // use a predefined color match
-         *     Available colors are: RED, BLUE, YELLOW, GREEN, ARTIFACT_GREEN, ARTIFACT_PURPLE
-         *   .setTargetColorRange(new ColorRange(ColorSpace.YCrCb,  // or define your own color match
-         *                                       new Scalar( 32, 176,  0),
-         *                                       new Scalar(255, 255, 132)))
-         *
-         * - Focus the color locator by defining a RegionOfInterest (ROI) which you want to search.
-         *     This can be the entire frame, or a sub-region defined using:
-         *     1) standard image coordinates or 2) a normalized +/- 1.0 coordinate system.
-         *     Use one form of the ImageRegion class to define the ROI.
-         *       ImageRegion.entireFrame()
-         *       ImageRegion.asImageCoordinates(50, 50,  150, 150)  100x100 pixels at upper left corner
-         *       ImageRegion.asUnityCenterCoordinates(-0.5, 0.5, 0.5, -0.5)  50% width/height in center
-         *
-         * - Define which contours are included.
-         *   You can get ALL the contours, ignore contours that are completely inside another contour.
-         *     .setContourMode(ColorBlobLocatorProcessor.ContourMode.ALL_FLATTENED_HIERARCHY)
-         *     .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
-         *     EXTERNAL_ONLY helps to avoid bright reflection spots from breaking up solid colors.
-         *
-         * - Turn the displays of contours ON or OFF.
-         *     Turning these on helps debugging but takes up valuable CPU time.
-         *        .setDrawContours(true)                Draws an outline of each contour.
-         *        .setEnclosingCircleColor(int color)   Draws a circle around each contour. 0 to disable.
-         *        .setBoxFitColor(int color)            Draws a rectangle around each contour. 0 to disable. ON by default.
-         *
-         *
-         * - include any pre-processing of the image or mask before looking for Blobs.
-         *     There are some extra processing you can include to improve the formation of blobList.
-         *     Using these features requires an understanding of how they may effect the final
-         *     blobList.  The "pixels" argument sets the NxN kernel size.
-         *        .setBlurSize(int pixels)
-         *        Blurring an image helps to provide a smooth color transition between objects,
-         *        and smoother contours.  The higher the number, the more blurred the image becomes.
-         *        Note:  Even "pixels" values will be incremented to satisfy the "odd number" requirement.
-         *        Blurring too much may hide smaller features.  A size of 5 is good for a 320x240 image.
-         *
-         *     .setErodeSize(int pixels)
-         *        Erosion removes floating pixels and thin lines so that only substantive objects remain.
-         *        Erosion can grow holes inside regions, and also shrink objects.
-         *        "pixels" in the range of 2-4 are suitable for low res images.
-         *
-         *     .setDilateSize(int pixels)
-         *        Dilation makes objects and lines more visible by filling in small holes, and making
-         *        filled shapes appear larger. Dilation is useful for joining broken parts of an
-         *        object, such as when removing noise from an image.
-         *        "pixels" in the range of 2-4 are suitable for low res images.
-         *
-         *        .setMorphOperationType(MorphOperationType morphOperationType)
-         *        This defines the order in which the Erode/Dilate actions are performed.
-         *        OPENING:    Will Erode and then Dilate which will make small noise blobList go away
-         *        CLOSING:    Will Dilate and then Erode which will tend to fill in any small holes in blob edges.
-         */
+
         purpleLocator = new ColorBlobLocatorProcessor.Builder()
                 .setTargetColorRange(CustomColorRange.ARTIFACT_PURPLE)   // Use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
@@ -243,6 +164,10 @@ public class ArtifactLocator {
         setCameraSettings();
     }
 
+    /**
+     * Sets the proper camera settings. Must be called after the camera is initialized,
+     * otherwise the program crashes.
+     */
     public void setCameraSettings() {
         exposureControl = portal.getCameraControl(ExposureControl.class);
         exposureControl.setMode(ExposureControl.Mode.Manual);
@@ -252,9 +177,9 @@ public class ArtifactLocator {
         gainControl.setGain(85);
     }
 
-        // WARNING:  To view the stream preview on the Driver Station, this code runs in INIT mode.
-        //while (opModeIsActive() || opModeInInit()) {
-
+    /**
+     * Queries the camera for the current blob lists, sorts them into slots, and updates the inventory class.
+     */
     public void update() {
         // Read the current list
         purpleBlobList = purpleLocator.getBlobs();
@@ -281,6 +206,9 @@ public class ArtifactLocator {
 
     }
 
+    /**
+     * Sorts the color blobs into the proper slots.
+     */
     private void sortOutBlobs() {
         boolean z1Filled = false;
         boolean z2Filled = false;
@@ -359,6 +287,9 @@ public class ArtifactLocator {
         }
     }
 
+    /**
+     * Totals the number of Artifacts stored in the blender and updates the inventory class.
+     */
     private void takeInventory() {
         int currentPurpleCount = 0;
         int currentGreenCount = 0;
@@ -381,6 +312,12 @@ public class ArtifactLocator {
         return;
     }
 
+    /**
+     * Searches the slots in order of ABC to find the first slot containing the indicated contents.
+     * @param slotType The target state of the slot. Can be EMPTY, GREEN, or PURPLE,
+     *                 in the form of a slotState enum.
+     * @return The first found slot filled with the indicated slotType.
+     */
     public slot findFirstType(slotState slotType) {
         for (slot currentSlot : allSlots) {
             if (currentSlot.occupied == slotType) {
@@ -410,18 +347,25 @@ public class ArtifactLocator {
     }
 
     /**
-     * Will get the current offset, 0-5.
-     * -1 means it's in transit.
+     * Uses the blender encoder and offsetPositions to calculate which
+     * offset position the blender is currently in.
+     * @return The current offset, 0-5. -1 means it's in transit.
      */
     public int getCurrentOffset() {
         if (robot.sorterHardware.positionedCheck()) {
-            return robot.sorterHardware.reference;
+            return findClosestOffset(robot.sorterHardware.motor.getCurrentPosition());
         } else {
             return -1;
         }
     }
 
-    public int findClosestOffset(double ticks) {
+    /**
+     * Compares the current motor position to offsetPositions to
+     * calculate which offset position the blender is closest to.
+     * @param ticks The current position of the encoder
+     * @return The current nearest blender offset, from 0-5. -1 = error.
+     */
+    private int findClosestOffset(double ticks) {
         while (ticks > robot.sorterHardware.ticksPerRotation) {
             ticks -= robot.sorterHardware.ticksPerRotation;
         }
@@ -429,16 +373,18 @@ public class ArtifactLocator {
             ticks += robot.sorterHardware.ticksPerRotation;
         }
 
-        double[] distanceToOffset = null;
+        double lowestDistance = 1000000000;
+        int offset = -1;
 
         for(int i = 0; i<6; i++) {
-            distanceToOffset[i] =
+            double currentDistanceCheck = offsetPositions.get(i) - ticks;
+            if (currentDistanceCheck < lowestDistance) {
+                lowestDistance = currentDistanceCheck;
+                offset = i;
+            }
         }
 
-        double[] sortedDistances = distanceToOffset;
-        Arrays.sort(sortedDistances);
-
-        return
+        return offset;
     }
     @SuppressLint("DefaultLocale")
     public void cameraTelemetry() {
@@ -487,6 +433,10 @@ public class ArtifactLocator {
         }
     }
 
+    /**
+     * This class is the inventory. It stores the current count of Artifacts,
+     * for each color and in total, and whether or not a Pattern can be created.
+     */
     public class slotInventory {
         public int count;
         public int purpleCount;
