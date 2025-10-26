@@ -3,11 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
 @Configurable
 public class SorterHardware {
@@ -61,12 +58,6 @@ public class SorterHardware {
         doorServo = robot.doorServo;
         launcher = robot.launcher;
 
-
-        //motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
-
-        motor.setTargetPositionTolerance(10);
-
         positions = new int[6];
         positions[0] = 0; //Slot one load
         positions[1] = (ticksPerRotation / 2);//Slot one launch
@@ -76,11 +67,8 @@ public class SorterHardware {
         positions[5] = (2*(ticksPerRotation/3)) + (ticksPerRotation/2); //Slot three launch
 
         doorServo.setPosition(doorClosedPosition);
-        reference = findFastestRotationInTicks(motor.getCurrentPosition(), 0);
-        //motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
         inMagPosition = true;
-        
     }
 
     public int findMagsToTarget(int currentSlot, int targetSlot)
@@ -136,7 +124,7 @@ public class SorterHardware {
         return currentLowest;
     }
 
-    public boolean inPropperTickPositon()
+    public boolean inProperTickPosition()
     {
         if(motor.getCurrentPosition() > motor.getTargetPosition() - tickTolerance &&  motor.getCurrentPosition() < motor.getTargetPosition() + tickTolerance)
         {
@@ -147,12 +135,12 @@ public class SorterHardware {
 
     public boolean positionedCheck()
     {
-        if(/*inMagPosition &&*/ inPropperTickPositon())
+        if(/*inMagPosition &&*/ inProperTickPosition())
         {
             currentlyMoving = false;
             return true;
         }
-        else return  false;
+        else return false;
     }
 
     public void triggerServo(String goTo)

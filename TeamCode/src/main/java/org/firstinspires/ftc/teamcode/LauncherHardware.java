@@ -53,14 +53,9 @@ public class LauncherHardware {
 
     }
 
-
     public boolean motorSpeedCheck(double speedTarget) {
-        if ((motor.getVelocity() > speedTarget - toleranceRange) && (motor.getVelocity() < speedTarget + toleranceRange)) {
-            robot.launcher.rampSpeed(2);
-            return true;
-        } else {
-            return false;
-        }
+        //robot.launcher.rampSpeed(2);
+        return (motor.getVelocity() > speedTarget - toleranceRange) && (motor.getVelocity() < speedTarget + toleranceRange);
     }
 
     public double findSpeed(double distance) {
