@@ -39,9 +39,9 @@ public class SorterHardware {
     private boolean onCooldown = false;
     private double cooldownDuration = 0.5;
 
-    public static double kp = 0.00012;
-    public static double ki = 0.0;
-    public static double kd = 0.0;
+    public static double kp = 0.000175;
+    public static double ki = 0.00075;
+    public static double kd = 0.0000365;
 
     public ElapsedTime pidfTime() {
         return cooldownTimer;

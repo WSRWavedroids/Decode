@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import com.bylazar.graph.PanelsGraph;
+import com.bylazar.panels.Panels;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -63,6 +67,7 @@ public class Vortex_Teleop_Decode extends OpMode {
 
     ElapsedTime outtakeTimer = new ElapsedTime();
 
+    static TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -98,7 +103,7 @@ public class Vortex_Teleop_Decode extends OpMode {
             tagScanner.InitLimeLightTargeting(1, robot.hardwareMap);
         }
 
-
+        robot.panels = Panels.INSTANCE;
 
 
     }
@@ -128,7 +133,6 @@ public class Vortex_Teleop_Decode extends OpMode {
     public void loop() {
 
         robot.updateAllDaThings();
-
 
         //So Begins the input chain. At least try a bit to organise by driver
 
@@ -223,16 +227,12 @@ public class Vortex_Teleop_Decode extends OpMode {
         }
         telemetry.addData("currentSlot target: ", slot);
 
-
-
-
-
         if (gamepad1.touchpad || gamepad2.touchpad) {
             requestOpModeStop();
         }
 
-        // Driver 2
-
+        panelsTelemetry.addData("Motor Position", robot.launcher.motor.getCurrentPosition());
+        panelsTelemetry.update();
 
         doTelemetryStuff();
 

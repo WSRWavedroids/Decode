@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.annotation.SuppressLint;
 
+import com.bylazar.panels.Panels;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -71,6 +72,7 @@ public class Robot {
     public Limelight_Randomization_Scanner randomizationScanner;
     public Limelight_Target_Scanner targetScanner;
 
+    public Panels panels;
 
     //Initialize motors and servos
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, OpMode opmode){
