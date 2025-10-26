@@ -77,9 +77,10 @@ public class ArtifactLocator {
     public slotInventory inventory;
 
     public Robot robot;
+
     public ArtifactLocator(Robot robotFile) {
         robot = robotFile;
-        // TODO Should we call initCamera() here or do it in the individual OpModes later?
+        initCamera();
     }
 
     /**
@@ -121,8 +122,8 @@ public class ArtifactLocator {
 
                 .build();
 
+        // Hardware Map
         internalCamera = robot.hardwareMap.get(WebcamName.class, "CamCam");
-        servo = robot.hardwareMap.get(Servo.class, "blenderServo");
         magnet = robot.hardwareMap.get(TouchSensor.class, "placeholder"); //TODO
 
         portal = new VisionPortal.Builder()
@@ -346,6 +347,7 @@ public class ArtifactLocator {
         return null;
     }
 
+    //TODO Move to LauncherHardware???
     /**
      * Uses the blender encoder and offsetPositions to calculate which
      * offset position the blender is currently in.
@@ -359,6 +361,7 @@ public class ArtifactLocator {
         }
     }
 
+    //TODO Move to LauncherHardware??? Maybe replace it with magnets.
     /**
      * Compares the current motor position to offsetPositions to
      * calculate which offset position the blender is closest to.
@@ -377,7 +380,7 @@ public class ArtifactLocator {
         int offset = -1;
 
         for(int i = 0; i<6; i++) {
-            double currentDistanceCheck = offsetPositions.get(i) - ticks;
+            double currentDistanceCheck = Math.abs(offsetPositions.get(i) - ticks);
             if (currentDistanceCheck < lowestDistance) {
                 lowestDistance = currentDistanceCheck;
                 offset = i;
@@ -386,6 +389,7 @@ public class ArtifactLocator {
 
         return offset;
     }
+
     @SuppressLint("DefaultLocale")
     public void cameraTelemetry() {
 
