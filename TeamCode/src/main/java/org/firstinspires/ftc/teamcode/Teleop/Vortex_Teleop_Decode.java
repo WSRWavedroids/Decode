@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.LauncherHardware;
+import org.firstinspires.ftc.teamcode.PanelsTelemetryManagerKt;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.SorterHardware;
 
@@ -233,7 +234,8 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         // Driver 2
 
-
+        PanelsTelemetryManagerKt.addData("Velocity", robot.sorterHardware.motor.getCurrentPosition());
+        PanelsTelemetryManagerKt.updateTelemetry();
         doTelemetryStuff();
 
     }
