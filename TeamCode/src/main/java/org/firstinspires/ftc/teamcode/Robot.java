@@ -47,6 +47,9 @@ public class Robot {
     public CRServo intakeyServoR;
     public CRServo intakeyServoL;
 
+    public CRServo feedServoL;
+    public CRServo feedServoR;
+
     public DigitalChannel magsense;
 
 
@@ -101,6 +104,8 @@ public class Robot {
         expandyServo = hardwareMap.get(CRServo.class, "expandyServo");
         intakeyServoL = hardwareMap.get(CRServo.class, "intakeyServoL");
         intakeyServoR = hardwareMap.get(CRServo.class, "intakeyServoR");
+        feedServoL = hardwareMap.get(CRServo.class, "feedServoL");
+        feedServoR = hardwareMap.get(CRServo.class, "feedServoR");
 
         magsense = hardwareMap.get(DigitalChannel.class, "magsense");
         magsense.setMode(DigitalChannel.Mode.INPUT);
@@ -295,5 +300,20 @@ public class Robot {
     {
         //Reliant functions not present
     }
+
+    public void runBasicIntake(double power)
+    {
+        intakeyServoR.setPower(1);
+        intakeyServoL.setPower(1);
+    }
+
+    public void runAutoIntakeSequence() //Run in an update function for "fast" auto load
+    {
+        //Find first empty
+        runBasicIntake(1);
+        sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]/*replace with first empty*/);
+        sorterHardware.feederSpeed = 1;
+    }
+
 
 }

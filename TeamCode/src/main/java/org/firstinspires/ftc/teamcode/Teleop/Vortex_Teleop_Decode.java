@@ -186,18 +186,15 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         if(gamepad2.cross)
         {
-            robot.intakeyServoR.setPower(1);
-            robot.intakeyServoL.setPower(1);
+            robot.runBasicIntake(1);
         }
         else if(gamepad2.circle)
         {
-            robot.intakeyServoL.setPower(-1);
-            robot.intakeyServoR.setPower(-1);
+            robot.runBasicIntake(-1);
         }
         else
         {
-            robot.intakeyServoR.setPower(0);
-            robot.intakeyServoL.setPower(0);
+           robot.runBasicIntake(0);
         }
 
          // temp measure

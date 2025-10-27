@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -21,6 +22,11 @@ public class SorterHardware {
 
 
     public Servo doorServo;
+
+    public CRServo feedServoL;
+    public CRServo feedServoR;
+    public double feederSpeed = 0.5;
+
     public boolean open;
     public boolean wantToMoveDoor;
     public double doorClosedPosition = 0;
@@ -58,6 +64,8 @@ public class SorterHardware {
         motor = robot.sorterMotor;
         doorServo = robot.doorServo;
         launcher = robot.launcher;
+        feedServoL = robot.feedServoL;
+        feedServoR = robot.feedServoR;
 
         positions = new int[6];
         positions[0] = 0; //Slot one load
@@ -72,29 +80,20 @@ public class SorterHardware {
         //inMagPosition = true;
     }
 
+
+
     public boolean getLimitSwitch()
     {
         return !disRobot.magsense.getState(); //defaults to true if empty so flip
     }
-    /*public int findMagsToTarget(int currentSlot, int targetSlot)
+
+    public void runFeeders(double speed)
     {
-        return Math.abs(targetSlot - currentSlot);
+        feedServoR.setPower(speed);
+        feedServoL.setPower(-speed);
     }
 
-    public boolean countMagsToTarget()
-    {//returns true when at target until other vars are reset
-        
-            if (disRobot.magsense.getValue() == 0) {
-                readyForNextTick = true;
-            } else if (disRobot.magsense.getValue() == 1 && readyForNextTick) {
-                currentTickCount++;
-                readyForNextTick = false;
-            }
-        inMagPosition = currentTickCount == targetClicks;
-        return inMagPosition;
 
-    }*/
-    
     public void resetMagCountAndTarget(boolean startOnPosition)
     {
         currentTickCount = 0;
@@ -209,12 +208,7 @@ public class SorterHardware {
 
     public void prepareNewMovement(int currentTickPose, int targetTickPose/*, int currentSlot, int targetSlot*/)
     {
-        //resetMagCountAndTarget(stoppedCheck());
-        //targetClicks = findMagsToTarget(currentSlot, targetSlot);
-
-
         reference = (findFastestRotationInTicks(currentTickPose, targetTickPose));
-
     }
 
     public void spin()
@@ -225,9 +219,6 @@ public class SorterHardware {
     
     public void updateSorterHardware()
     {
-
-        //countMagsToTarget();
-
         if(moveSafeCheck())
         {
             spin();
@@ -240,6 +231,14 @@ public class SorterHardware {
         if(wantToMoveDoor && positionedCheck())
         {
             moveDoor();
+        }
+
+        if(positionedCheck())
+        {
+            runFeeders(feederSpeed);
+        }
+        else {
+            runFeeders(0);
         }
     }
     
