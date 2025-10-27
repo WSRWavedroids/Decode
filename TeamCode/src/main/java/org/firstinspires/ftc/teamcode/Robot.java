@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import android.annotation.SuppressLint;
 
 import com.bylazar.panels.Panels;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -10,6 +12,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -44,7 +47,7 @@ public class Robot {
     public CRServo intakeyServoR;
     public CRServo intakeyServoL;
 
-    public TouchSensor magsense;
+    public DigitalChannel magsense;
 
 
 
@@ -74,6 +77,8 @@ public class Robot {
 
     public Panels panels;
 
+    public static TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+
     //Initialize motors and servos
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, OpMode opmode){
         this.hardwareMap = hardwareMap;
@@ -97,7 +102,8 @@ public class Robot {
         intakeyServoL = hardwareMap.get(CRServo.class, "intakeyServoL");
         intakeyServoR = hardwareMap.get(CRServo.class, "intakeyServoR");
 
-        magsense = hardwareMap.get(TouchSensor.class, "magsense");
+        magsense = hardwareMap.get(DigitalChannel.class, "magsense");
+        magsense.setMode(DigitalChannel.Mode.INPUT);
 
         CamCam = hardwareMap.get(WebcamName.class, "CamCam");
         //expandyServo = hardwareMap.get(CRServo.class, "expandyServo");
@@ -278,7 +284,9 @@ public class Robot {
         sorterHardware.updateSorterHardware();
         //sorterLogic.update();
         targetTag = targetScanner.tagInfo();
-        //pattern = randomizationScanner.GetRandomization();
+        panelsTelemetry.update();
+
+
 
         dumpAllTelemetryFromUpdate();
     }

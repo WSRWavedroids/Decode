@@ -39,6 +39,7 @@ public class SorterHardware {
     public static double kp = 0.000175;
     public static double ki = 0.00075;
     public static double kd = 0.0000365;
+    public static double kf = 0;
 
     public ElapsedTime pidfTime() {
         return cooldownTimer;
@@ -68,10 +69,14 @@ public class SorterHardware {
 
         doorServo.setPosition(doorClosedPosition);
 
-        inMagPosition = true;
+        //inMagPosition = true;
     }
 
-    public int findMagsToTarget(int currentSlot, int targetSlot)
+    public boolean getLimitSwitch()
+    {
+        return !disRobot.magsense.getState(); //defaults to true if empty so flip
+    }
+    /*public int findMagsToTarget(int currentSlot, int targetSlot)
     {
         return Math.abs(targetSlot - currentSlot);
     }
@@ -88,7 +93,7 @@ public class SorterHardware {
         inMagPosition = currentTickCount == targetClicks;
         return inMagPosition;
 
-    }
+    }*/
     
     public void resetMagCountAndTarget(boolean startOnPosition)
     {
@@ -135,7 +140,7 @@ public class SorterHardware {
 
     public boolean positionedCheck()
     {
-        if(/*inMagPosition &&*/ inProperTickPosition())
+        if(getLimitSwitch() && inProperTickPosition())
         {
             currentlyMoving = false;
             return true;
@@ -214,9 +219,6 @@ public class SorterHardware {
 
     public void spin()
     {
-            //motor.setPower(0.3);
-            //motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
             runPIDMotorStuffLol();
             currentlyMoving = true;
     }
@@ -224,7 +226,7 @@ public class SorterHardware {
     public void updateSorterHardware()
     {
 
-        countMagsToTarget();
+        //countMagsToTarget();
 
         if(moveSafeCheck())
         {
@@ -256,10 +258,12 @@ public class SorterHardware {
         // rate of change of the error
         double derivative = (error - lastError) / pidfTime().seconds();
 
+        double feedforward = kf * reference;
+
         // sum of all error over time
         integralSum = integralSum + (error * pidfTime().seconds());
 
-        double out = (kp * error) + (ki * integralSum) + (kd * derivative);
+        double out = (kp * error) + (ki * integralSum) + (kd * derivative) + feedforward;
 
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setPower(out);
@@ -270,5 +274,7 @@ public class SorterHardware {
         pidfTime().reset();
 
     }
+
+
 
 }

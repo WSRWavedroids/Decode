@@ -231,8 +231,8 @@ public class Vortex_Teleop_Decode extends OpMode {
             requestOpModeStop();
         }
 
-        panelsTelemetry.addData("Motor Position", robot.launcher.motor.getCurrentPosition());
-        panelsTelemetry.update();
+        robot.panelsTelemetry.addData("Motor Position", robot.launcher.motor.getCurrentPosition());
+        robot.panelsTelemetry.update();
 
         doTelemetryStuff();
 

@@ -28,6 +28,9 @@ package org.firstinspires.ftc.teamcode.Autonomous;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.bylazar.panels.Panels;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -55,6 +58,8 @@ public class AutonomousPLUS extends LinearOpMode {
     public double power;
     public double slidePos;
 
+    //static TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+
     //DO NOT DELETE THIS LINE! CAPITALIZATION IS VERY IMPORTANT!!!
     public Robot robot = null;
 
@@ -64,6 +69,8 @@ public class AutonomousPLUS extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot = new Robot(hardwareMap, telemetry, this);
+        robot.panels = Panels.INSTANCE;
+
     }
 
     //These are the basic functions for mechnum movement during auto... Don't mess with these unless something is inverted
@@ -126,13 +133,16 @@ public class AutonomousPLUS extends LinearOpMode {
 
         while (opModeIsActive() && robot.isWheelsBusy()) {
             robot.tellMotorOutput();
+            robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getCurrentPosition());
             robot.updateAllDaThings();
+
         }
 
         robot.stopAllMotors();
         robot.encoderRunningMode();
         sleep(pause);
-        robot.encoderReset();
+
+        //robot.encoderReset();
     }
 
 
@@ -144,13 +154,16 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getCurrentPosition());
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getVelocity());
                 robot.updateAllDaThings();
+
             }
 
             robot.stopAllMotors();
             robot.encoderRunningMode();
             sleep(pause);
-            robot.encoderReset();
+            //robot.encoderReset();
         }
     }
 
@@ -163,13 +176,17 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getCurrentPosition());
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getVelocity());
                 robot.updateAllDaThings();
             }
 
             robot.stopAllMotors();
+            robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getCurrentPosition());
+            robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getVelocity());
             robot.encoderRunningMode();
             sleep(pause);
-            robot.encoderReset();
+            //robot.encoderReset();
         }
     }
 
@@ -182,13 +199,15 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getCurrentPosition());
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getVelocity());
                 robot.updateAllDaThings();
             }
 
             robot.stopAllMotors();
             robot.encoderRunningMode();
             sleep(pause);
-            robot.encoderReset();
+            //robot.encoderReset();
         }
     }
 
@@ -201,13 +220,15 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getCurrentPosition());
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getVelocity());
                 robot.updateAllDaThings();
             }
 
             robot.stopAllMotors();
             robot.encoderRunningMode();
             sleep(pause);
-            robot.encoderReset();
+            //robot.encoderReset();
         }
     }
 
@@ -220,13 +241,15 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getCurrentPosition());
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getVelocity());
                 robot.updateAllDaThings();
             }
 
             robot.stopAllMotors();
             robot.encoderRunningMode();
             sleep(pause);
-            robot.encoderReset();
+            //robot.encoderReset();
 
         }
     }
@@ -241,13 +264,15 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getCurrentPosition());
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getVelocity());
                 robot.updateAllDaThings();
             }
 
             robot.stopAllMotors();
             robot.encoderRunningMode();
             sleep(pause);
-            robot.encoderReset();
+            //robot.encoderReset();
         }
     }
 
@@ -261,13 +286,15 @@ public class AutonomousPLUS extends LinearOpMode {
 
             while (opModeIsActive() && robot.isWheelsBusy()) {
                 robot.tellMotorOutput();
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getCurrentPosition());
+                robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getVelocity());
                 robot.updateAllDaThings();
             }
 
             robot.stopAllMotors();
             robot.encoderRunningMode();
             sleep(pause);
-            robot.encoderReset();
+            //robot.encoderReset();
         }
     }
 
@@ -418,8 +445,6 @@ public class AutonomousPLUS extends LinearOpMode {
 
 
     public void prepareAuto() {
-
-
         robot.encoderReset();
 
 
@@ -427,18 +452,22 @@ public class AutonomousPLUS extends LinearOpMode {
     }
 
 
+    public void calibrateDriveTrain(int tollerance, double pValue) {
+        robot.frontLeftDrive.setTargetPositionTolerance(tollerance);
+        robot.frontRightDrive.setTargetPositionTolerance(tollerance);
+        robot.backLeftDrive.setTargetPositionTolerance(tollerance);
+        robot.backRightDrive.setTargetPositionTolerance(tollerance);
 
+        robot.frontLeftDrive.setPositionPIDFCoefficients(pValue);
+        robot.frontRightDrive.setPositionPIDFCoefficients(pValue);
+        robot.backLeftDrive.setPositionPIDFCoefficients(pValue);
+        robot.backRightDrive.setPositionPIDFCoefficients(pValue);
 
-    public void setDrivetrainTolerances(int ticks) {
-        robot.frontLeftDrive.setTargetPositionTolerance(ticks);
-        robot.frontRightDrive.setTargetPositionTolerance(ticks);
-        robot.backLeftDrive.setTargetPositionTolerance(ticks);
-        robot.backRightDrive.setTargetPositionTolerance(ticks);
     }
 
     public void prepareNextAction(long pause) {
         sleep(pause);
-        robot.encoderReset();
+        //robot.encoderReset();
     }
 
 
