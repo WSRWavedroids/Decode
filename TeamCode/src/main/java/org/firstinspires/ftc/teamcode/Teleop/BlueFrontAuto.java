@@ -82,8 +82,10 @@ public class BlueFrontAuto extends AutonomousPLUS {
             scanner.InitLimeLightTargeting(1, robot.hardwareMap);
         }
 
+        sorter.legalToSpin = true;
+
         //start with launcher facing goal, back of robot against goal
-        moveRobotBackward(1000, 4);
+        moveRobotForward(1000, 4);
         targetData = scanner.tagInfo();
         if (targetData.currentlyDetected) //Angle detect if possible / needed
         {
@@ -144,7 +146,7 @@ public class BlueFrontAuto extends AutonomousPLUS {
             sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[1]);
             sorter.triggerServo("OPEN");
             launcher.fire();
-            launcher.cutSpeed();// Cut launcher to save power
+
             sorter.triggerServo("CLOSED"); //Tell to close*/
 
 

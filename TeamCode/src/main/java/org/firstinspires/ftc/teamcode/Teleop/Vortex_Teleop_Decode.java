@@ -104,7 +104,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         }
 
         robot.panels = Panels.INSTANCE;
-
+        robot.readyHardware();
 
     }
 
@@ -123,7 +123,8 @@ public class Vortex_Teleop_Decode extends OpMode {
         telemetry.addData("HYPE", "Let's do this!!!");
         gamepad1.setLedColor(0, 0, 255, 100000000);
         gamepad2.setLedColor(0, 0, 255, 100000000);
-
+        sorterHardware.legalToSpin = true;
+        robot.readyHardware();
 
     }
 

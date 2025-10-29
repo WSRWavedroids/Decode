@@ -301,18 +301,34 @@ public class Robot {
         //Reliant functions not present
     }
 
-    public void runBasicIntake(double power)
+    public void runBasicIntake(double num)
     {
-        intakeyServoR.setPower(1);
-        intakeyServoL.setPower(1);
+        intakeyServoR.setPower(num);
+        intakeyServoL.setPower(num);
     }
 
     public void runAutoIntakeSequence() //Run in an update function for "fast" auto load
     {
         //Find first empty
         runBasicIntake(1);
+        sorterHardware.tryingToFeed = true;
         sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]/*replace with first empty*/);
         sorterHardware.feederSpeed = 1;
+    }
+
+    public void cancelAutoIntake()
+    {
+        sorterHardware.tryingToFeed = false;
+        runBasicIntake(0);
+    }
+
+    public void readyHardware()
+    {
+        sorterHardware.doorServo.setPosition(0);
+        launcher.hammerServo.setPosition(0);
+        launcher.cutSpeed();
+        //sorterHardware.legalToSpin = false;
+        sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]);
     }
 
 

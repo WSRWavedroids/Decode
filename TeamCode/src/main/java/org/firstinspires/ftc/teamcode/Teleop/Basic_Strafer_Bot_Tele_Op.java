@@ -107,7 +107,7 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
     public void loop() {
-        telemetry.addData("Limit switch Value: ", Bot.magsense.getValue());
+        //telemetry.addData("Limit switch Value: ", Bot.magsense.getValue());
         telemetry.addData("current: ", Bot.sorterMotor.getCurrentPosition());
         telemetry.addData("Target: ", Bot.sorterMotor.getTargetPosition()
         );
@@ -133,7 +133,7 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
             telemetry.addData("Mag Count: ", sorter.inMagPosition);
             telemetry.addData("Mag Count: ", sorter.currentTickCount);
         }else{//
-            sorter.resetMagCountAndTarget(false);
+           // sorter.resetMagCountAndTarget(false);
         }
 
 

@@ -11,24 +11,25 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class SorterHardware {
     public boolean currentlyMoving = false;
 
-    public boolean readyForNextTick = false;
     public boolean inMagPosition;
-    public int targetClicks;
 
     public int currentTickCount;
     public int tickTolerance = 5;
     public int[] positions;
     public int ticksPerRotation = 8192;
+    public int offset = 1536;
+    public boolean legalToSpin = false;
 
 
     public Servo doorServo;
 
-    public CRServo feedServoL;
-    public CRServo feedServoR;
+    private CRServo feedServoL;
+    private CRServo feedServoR;
     public double feederSpeed = 0.5;
+    public boolean tryingToFeed = false;
 
-    public boolean open;
-    public boolean wantToMoveDoor;
+    public boolean open = false;
+    public boolean wantToMoveDoor = false;
     public double doorClosedPosition = 0;
     public double doorOpenPosition = 1;
 
@@ -43,8 +44,10 @@ public class SorterHardware {
     private double cooldownDuration = 0.5;
 
     public static double kp = 0.000175;
-    public static double ki = 0.00075;
-    public static double kd = 0.0000365;
+
+    public static double ki = 0.0000275;
+
+    public static double kd = 0.0000065;
     public static double kf = 0;
 
     public ElapsedTime pidfTime() {
@@ -60,12 +63,16 @@ public class SorterHardware {
 
     public SorterHardware(Robot robot)
     {
+
+
         disRobot = robot;
         motor = robot.sorterMotor;
         doorServo = robot.doorServo;
         launcher = robot.launcher;
         feedServoL = robot.feedServoL;
         feedServoR = robot.feedServoR;
+
+
 
         positions = new int[6];
         positions[0] = 0; //Slot one load
@@ -76,6 +83,8 @@ public class SorterHardware {
         positions[5] = (2*(ticksPerRotation/3)) + (ticksPerRotation/2); //Slot three launch
 
         doorServo.setPosition(doorClosedPosition);
+
+        reference = findFastestRotationInTicks(motor.getCurrentPosition(), 0);
 
         //inMagPosition = true;
     }
@@ -94,16 +103,6 @@ public class SorterHardware {
     }
 
 
-    public void resetMagCountAndTarget(boolean startOnPosition)
-    {
-        currentTickCount = 0;
-        
-        if(startOnPosition) 
-        {
-            targetClicks++;
-        }
-    }
-
     public int findFastestRotationInTicks(int currentPosition, int targetPosition)
     {
         //Finds the shortest route to the slot position reguardless of how high/low we go
@@ -121,7 +120,7 @@ public class SorterHardware {
         {
            if (Math.abs(slotSpaces[i]-currentPosition) < currentLowest)
            {
-               currentLowest = slotSpaces[i];
+               currentLowest = slotSpaces[i]+ offset;
            }
         }
 
@@ -139,7 +138,7 @@ public class SorterHardware {
 
     public boolean positionedCheck()
     {
-        if(getLimitSwitch() && inProperTickPosition())
+        if(/*getLimitSwitch() && */ inProperTickPosition())
         {
             currentlyMoving = false;
             return true;
@@ -185,7 +184,7 @@ public class SorterHardware {
     public boolean moveSafeCheck()
     {
 
-        if(!disRobot.launcher.onCooldown && !positionedCheck() && closedCheck()) //if not on servo timeout and not already there, rotate
+        if(!disRobot.launcher.onCooldown && !positionedCheck() && closedCheck() && legalToSpin) //if not on servo timeout and not already there, rotate
         {
             return true;
         }else
@@ -197,13 +196,8 @@ public class SorterHardware {
     public boolean fireSafeCheck()
     {
 
-        if(!disRobot.launcher.onCooldown && !positionedCheck() && openCheck()) //if not on servo timeout and not already there, rotate
-        {
-            return true;
-        }else
-        {
-            return false;
-        }
+        //if not on servo timeout and there and open, fire
+        return !disRobot.launcher.onCooldown && positionedCheck() && openCheck();
     }
 
     public void prepareNewMovement(int currentTickPose, int targetTickPose/*, int currentSlot, int targetSlot*/)
@@ -228,12 +222,13 @@ public class SorterHardware {
             Estop();
         }
 
-        if(wantToMoveDoor && positionedCheck())
+
+        if(positionedCheck() && wantToMoveDoor)
         {
             moveDoor();
         }
 
-        if(positionedCheck())
+        if(positionedCheck() && tryingToFeed)
         {
             runFeeders(feederSpeed);
         }
