@@ -17,7 +17,7 @@ public class SorterHardware {
     public int tickTolerance = 5;
     public int[] positions;
     public int ticksPerRotation = 8192;
-    public int offset = 1536;
+    public static int offset = 0;
     public boolean legalToSpin = false;
 
 
@@ -43,12 +43,12 @@ public class SorterHardware {
     private boolean onCooldown = false;
     private double cooldownDuration = 0.5;
 
-    public static double kp = 0.000175;
+    public static double kp = 0.00028;
 
-    public static double ki = 0.0000275;
+    public static double ki = 0.00001;//maybe try 275 where 275 is
 
-    public static double kd = 0.0000065;
-    public static double kf = 0;
+    public static double kd = 0.0;
+    public static double kf = 0.0;
 
     public ElapsedTime pidfTime() {
         return cooldownTimer;
@@ -84,7 +84,7 @@ public class SorterHardware {
 
         doorServo.setPosition(doorClosedPosition);
 
-        reference = findFastestRotationInTicks(motor.getCurrentPosition(), 0);
+        reference = 0;//findFastestRotationInTicks(motor.getCurrentPosition(), 0);
 
         //inMagPosition = true;
     }
@@ -120,9 +120,10 @@ public class SorterHardware {
         {
            if (Math.abs(slotSpaces[i]-currentPosition) < currentLowest)
            {
-               currentLowest = slotSpaces[i]+ offset;
+               currentLowest = slotSpaces[i];
            }
         }
+        currentLowest += offset;
 
         return currentLowest;
     }
