@@ -30,7 +30,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+import org.firstinspires.ftc.teamcode.Robot;
 
 import java.util.concurrent.TimeUnit;
 
@@ -60,14 +61,26 @@ import java.util.concurrent.TimeUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 @TeleOp(name = "Sensor: HuskyLens", group = "Sensor")
-@Disabled
 public class SensorHuskyLens extends LinearOpMode {
 
     private final int READ_PERIOD = 1;
+    Robot disRobot;
 
     private HuskyLens huskyLens;
+    scanBox[] boxes = new scanBox[6];
 
-    @Override
+
+    public SensorHuskyLens(Robot robot)
+    {
+        disRobot = robot;
+        //huskyLens = robot.husky;
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
+        Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
+        rateLimit.expire();
+    }
+
+
+
     public void runOpMode()
     {
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
@@ -98,22 +111,8 @@ public class SensorHuskyLens extends LinearOpMode {
             telemetry.addData(">>", "Press start to continue");
         }
 
-        /*
-         * The device uses the concept of an algorithm to determine what types of
-         * objects it will look for and/or what mode it is in.  The algorithm may be
-         * selected using the scroll wheel on the device, or via software as shown in
-         * the call to selectAlgorithm().
-         *
-         * The SDK itself does not assume that the user wants a particular algorithm on
-         * startup, and hence does not set an algorithm.
-         *
-         * Users, should, in general, explicitly choose the algorithm they want to use
-         * within the OpMode by calling selectAlgorithm() and passing it one of the values
-         * found in the enumeration HuskyLens.Algorithm.
-         *
-         * Other algorithm choices for FTC might be: OBJECT_RECOGNITION, COLOR_RECOGNITION or OBJECT_CLASSIFICATION.
-         */
-        huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
+
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
 
         telemetry.update();
         waitForStart();
@@ -152,9 +151,96 @@ public class SensorHuskyLens extends LinearOpMode {
                  *
                  * These values have Java type int (integer).
                  */
+                checkZone(blocks[i]);
             }
 
             telemetry.update();
         }
+
+
+
     }
+
+    void checkZone(HuskyLens.Block blockData)
+    {
+        //Bottom Center
+        boxes[0].maxX = 180;
+        boxes[0].minX = 140;
+        boxes[0].maxY = 120;
+        boxes[0].minY = 0;
+        //Down Right
+        boxes[1].maxX = 320;
+        boxes[1].minX = 160;
+        boxes[1].maxY = 120;
+        boxes[1].minY = 0;
+        //Up right
+        boxes[2].maxX = 320;
+        boxes[2].minX = 160;
+        boxes[2].maxY = 240;
+        boxes[2].minY = 120;
+        //up
+        boxes[3].maxX = 180;
+        boxes[3].minX = 140;
+        boxes[3].maxY = 240;
+        boxes[3].minY = 120;
+        //up left
+        boxes[4].maxX = 160;
+        boxes[4].minX = 0;
+        boxes[4].maxY = 240;
+        boxes[4].minY = 120;
+        //down left
+        boxes[5].maxX = 160;
+        boxes[5].minX = 0;
+        boxes[5].maxY = 120;
+        boxes[5].minY = 0;
+
+        for(int i = 0; i < 6; i++)
+        {
+            if((boxes[i].minX <= blockData.x && blockData.x <= boxes[i].maxX) && (boxes[i].minY <= blockData.y && blockData.y <= boxes[i].maxY))
+            {
+                doTele(i, blockData);
+                //pass scan info to logic to populate that
+            }
+        }
+    }
+
+
+    public void updateBlockScan()
+    {
+        HuskyLens.Block[] blocks = huskyLens.blocks();
+        telemetry.addData("Block count", blocks.length);
+        for (int i = 0; i < blocks.length; i++) {
+            telemetry.addData("Block", blocks[i].toString());
+            /*
+             * Here inside the FOR loop, you could save or evaluate specific info for the currently recognized Bounding Box:
+             * - blocks[i].width and blocks[i].height   (size of box, in pixels)
+             * - blocks[i].left and blocks[i].top       (edges of box)
+             * - blocks[i].x and blocks[i].y            (center location)
+             * - blocks[i].id                           (Color ID)
+             *
+             * These values have Java type int (integer).
+             */
+            checkZone(blocks[i]);
+        }
+    }
+
+    public class scanBox
+    {
+        public int maxX;
+        public int maxY;
+        public int minX;
+        public int minY;
+    }
+
+    public void startHusky()
+    {
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
+    }
+
+    public void doTele(int i, HuskyLens.Block blockData)
+    {
+        telemetry.addData("In zone:"+i, "");
+        telemetry.addData("Color ID Detected: ", blockData.id);
+    }
+
 }

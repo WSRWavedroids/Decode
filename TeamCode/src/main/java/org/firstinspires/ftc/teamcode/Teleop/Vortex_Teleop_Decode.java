@@ -57,6 +57,8 @@ public class Vortex_Teleop_Decode extends OpMode {
     public Limelight_Target_Scanner tagScanner;
     public WaveTag targetData = null;
 
+    //public SensorHuskyLens huskyLens;
+
     public SorterHardware sorterHardware;
     public LauncherHardware launcher;
 
@@ -78,6 +80,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         robot = new Robot(hardwareMap, telemetry, this);
         tagScanner = robot.targetScanner;
         sorterHardware = robot.sorterHardware;
+        //huskyLens = robot.inventoryCam;
         launcher = robot.launcher;
 
         // Tell the driver that initialization is complete.
@@ -200,36 +203,33 @@ public class Vortex_Teleop_Decode extends OpMode {
 
          // temp measure
         //testing rotation
-        if(gamepad2.dpad_down)
+        if (gamepad2.dpad_down)
         {
             sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[slot]);
-        } else if(gamepad2.dpad_up)
-        {
-            sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[slot+1]);
         }
-        else if(gamepad2.dpad_left)
+        else if (gamepad2.dpad_up)
+        {
+            int nextSlot = (slot + 1) % sorterHardware.positions.length;
+            sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[nextSlot]);
+        }
+        else if (gamepad2.dpad_left)
         {
             slot -= 2;
-            if(slot < 0)
-            {
-               slot += 5;
-            }
+            if (slot < 0) slot = 4; // wrap back to last slot pair
         }
-        else if(gamepad2.dpad_right)
+        else if (gamepad2.dpad_right)
         {
             slot += 2;
-            if(slot > 5)
-            {
-                slot -= 5;
-            }
+            if (slot > 4) slot = 0; // wrap to first slot pair
         }
+
         telemetry.addData("currentSlot target: ", slot);
 
         if (gamepad1.touchpad || gamepad2.touchpad) {
             requestOpModeStop();
         }
 
-        robot.panelsTelemetry.addData("Motor Position", robot.launcher.motor.getCurrentPosition());
+        //robot.panelsTelemetry.addData("Motor Position", robot.launcher.motor.getCurrentPosition());
         robot.panelsTelemetry.update();
 
         doTelemetryStuff();
@@ -425,13 +425,19 @@ public class Vortex_Teleop_Decode extends OpMode {
         // It's mostly used for troubleshooting.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
 
-        telemetry.addData("last detected x angle: ", robot.targetTag.angleX);
-        telemetry.addData("last detected y angle: ", robot.targetTag.angleY);
 
-        telemetry.addData("last distance x: ", robot.targetTag.distanceX);
-        telemetry.addData("last detected distance y: ", robot.targetTag.distanceY);
-        telemetry.addData("last detected distance z: ", robot.targetTag.distanceZ);
-        telemetry.addData("Is occupied?: ", robot.targetTag.currentlyDetected);
+        if(robot.targetTag.currentlyDetected)
+        {
+            telemetry.addData("last detected x angle: ", robot.targetTag.angleX);
+            telemetry.addData("last detected y angle: ", robot.targetTag.angleY);
+
+            telemetry.addData("last distance x: ", robot.targetTag.distanceX);
+            telemetry.addData("last detected distance y: ", robot.targetTag.distanceY);
+            telemetry.addData("last detected distance z: ", robot.targetTag.distanceZ);
+
+
+        }
+
 
         telemetry.addData("Last saved pattern: ", blackboard.get(PATTERN_KEY));
 

@@ -14,7 +14,7 @@ public class SorterHardware {
     public boolean inMagPosition;
 
     public int currentTickCount;
-    public int tickTolerance = 5;
+    public static   int tickTolerance = 5;
     public int[] positions;
     public int ticksPerRotation = 8192;
     public static int offset = 0;
@@ -63,15 +63,12 @@ public class SorterHardware {
 
     public SorterHardware(Robot robot)
     {
-
-
         disRobot = robot;
         motor = robot.sorterMotor;
         doorServo = robot.doorServo;
         launcher = robot.launcher;
         feedServoL = robot.feedServoL;
         feedServoR = robot.feedServoR;
-
 
 
         positions = new int[6];
@@ -84,7 +81,7 @@ public class SorterHardware {
 
         doorServo.setPosition(doorClosedPosition);
 
-        reference = 0;//findFastestRotationInTicks(motor.getCurrentPosition(), 0);
+        reference = findFastestRotationInTicks(motor.getCurrentPosition(), positions[0]);
 
         //inMagPosition = true;
     }
@@ -123,7 +120,6 @@ public class SorterHardware {
                currentLowest = slotSpaces[i];
            }
         }
-        currentLowest += offset;
 
         return currentLowest;
     }
@@ -203,7 +199,7 @@ public class SorterHardware {
 
     public void prepareNewMovement(int currentTickPose, int targetTickPose/*, int currentSlot, int targetSlot*/)
     {
-        reference = (findFastestRotationInTicks(currentTickPose, targetTickPose));
+        reference = (findFastestRotationInTicks(currentTickPose, targetTickPose)) + offset;
     }
 
     public void spin()

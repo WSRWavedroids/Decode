@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -22,6 +23,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Teleop.Limelight_Target_Scanner;
+import org.firstinspires.ftc.teamcode.Teleop.SensorHuskyLens;
 import org.firstinspires.ftc.teamcode.Teleop.WaveTag;
 import org.firstinspires.ftc.teamcode.Vision.ArtifactLocator;
 import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
@@ -52,13 +54,11 @@ public class Robot {
 
     public DigitalChannel magsense;
 
-
-
-
     public Limelight3A limelight;
 
-
     public WebcamName CamCam;
+
+    //public HuskyLens husky;
 
     public Telemetry telemetry;
     //public BNO055IMU imu;
@@ -75,8 +75,10 @@ public class Robot {
     public SorterHardware sorterHardware;
     public LauncherHardware launcher;
     public ArtifactLocator sorterLogic;
+    //public SensorHuskyLens inventoryCam;
     public Limelight_Randomization_Scanner randomizationScanner;
     public Limelight_Target_Scanner targetScanner;
+
 
     public Panels panels;
 
@@ -115,6 +117,9 @@ public class Robot {
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
+        //husky = hardwareMap.get(HuskyLens.class, "evenBetterMason");
+
+
 
         imuParameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
@@ -148,6 +153,7 @@ public class Robot {
         sorterHardware = new SorterHardware(this);
         launcher = new LauncherHardware(this);
         //sorterLogic = new ArtifactLocator(this);
+        //inventoryCam = new SensorHuskyLens(this);
         targetScanner = new Limelight_Target_Scanner();
         randomizationScanner = new Limelight_Randomization_Scanner();
 
@@ -290,6 +296,7 @@ public class Robot {
         //sorterLogic.update();
         targetTag = targetScanner.tagInfo();
         panelsTelemetry.update();
+        //inventoryCam.updateBlockScan();
 
 
 
@@ -299,6 +306,8 @@ public class Robot {
     public void dumpAllTelemetryFromUpdate()
     {
         //Reliant functions not present
+        telemetry.addData("Sorter Position: ", sorterHardware.motor.getCurrentPosition());
+        telemetry.addData("Launcher Position: ", launcher.motor.getVelocity());
     }
 
     public void runBasicIntake(double num)

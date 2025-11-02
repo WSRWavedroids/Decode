@@ -91,8 +91,7 @@ public class BlueBackAuto extends AutonomousPLUS {
         if(pattern.equals("PPG"))
         {
             //sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorterLogic.findFirstOfType("Green"));
-            moveXY(450,450,true);
-            turnRobotLeft(450,1);
+            moveXY(450, 450, -450, true);
             targetData = scanner.tagInfo();
             if (targetData.currentlyDetected)
             {
@@ -103,8 +102,7 @@ public class BlueBackAuto extends AutonomousPLUS {
         else if(pattern.equals("PGP"))
         {
             //sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorterLogic.findFirstOfType("Green"));
-            moveXY(450,450,true);
-            turnRobotLeft(450,1);
+            moveXY(450, 450, -450, true);
             targetData = scanner.tagInfo();
             if (targetData.currentlyDetected)
             {
@@ -129,8 +127,7 @@ public class BlueBackAuto extends AutonomousPLUS {
         else//Fire any
         {
             sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[0]);
-            moveXY(450,450,true);
-            turnRobotLeft(450,1);
+            moveXY(450, 450, -450, true);
             targetData = scanner.tagInfo();
             if (targetData.currentlyDetected)
             {
