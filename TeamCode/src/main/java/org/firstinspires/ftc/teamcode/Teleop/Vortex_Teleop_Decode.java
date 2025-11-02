@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import com.bylazar.graph.PanelsGraph;
 import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -13,10 +12,11 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.LauncherHardware;
-import org.firstinspires.ftc.teamcode.PanelsTelemetryManagerKt;
-import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.SorterHardware;
+import org.firstinspires.ftc.teamcode.Core.LauncherHardware;
+import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
+import org.firstinspires.ftc.teamcode.Core.Robot;
+import org.firstinspires.ftc.teamcode.Core.SorterHardware;
+import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 
 /**
  * This file is our iterative (Non-Linear) "OpMode" for TeleOp.

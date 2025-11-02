@@ -1,12 +1,13 @@
-package org.firstinspires.ftc.teamcode.Teleop;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Autonomous.AutonomousPLUS;
-import org.firstinspires.ftc.teamcode.LauncherHardware;
-import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.SorterHardware;
+import org.firstinspires.ftc.teamcode.Core.LauncherHardware;
+import org.firstinspires.ftc.teamcode.Core.Robot;
+import org.firstinspires.ftc.teamcode.Core.SorterHardware;
+import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
 import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
+import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 
 @Autonomous(group = "Basic", name = "Blue Back Start")
 public class BlueBackAuto extends AutonomousPLUS {
@@ -19,7 +20,7 @@ public class BlueBackAuto extends AutonomousPLUS {
     public static final String ALLIANCE_KEY = "Alliance";
     public static final String PATTERN_KEY = "Pattern";
 
-    public WaveTag targetData = null;
+    public WaveTag targetData;
     public LauncherHardware launcher;
     public SorterHardware sorter;
 
