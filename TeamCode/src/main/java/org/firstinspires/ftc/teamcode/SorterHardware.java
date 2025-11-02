@@ -43,11 +43,11 @@ public class SorterHardware {
     private boolean onCooldown = false;
     private double cooldownDuration = 0.5;
 
-    public static double kp = 0.00028;
+    public static double kp = 0.00029;
 
-    public static double ki = 0.00001;//maybe try 275 where 275 is
+    public static double ki = 0.000006;//maybe try 275 where 275 is
 
-    public static double kd = 0.0;
+    public static double kd = 0.000004;
     public static double kf = 0.0;
 
     public ElapsedTime pidfTime() {
@@ -237,6 +237,11 @@ public class SorterHardware {
     public void Estop()
     {
         motor.setPower(0);
+    }
+
+    public void nextPhaseStep()
+    {
+
     }
 
     public void runPIDMotorStuffLol()

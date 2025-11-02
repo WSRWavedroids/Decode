@@ -8,11 +8,10 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.SorterHardware;
 import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 
-@Autonomous(group = "Basic", name = "Blue Back Start")
+@Autonomous(group = "Basic", name = "Blue Front Start")
 public class BlueFrontAuto extends AutonomousPLUS {
 
-    public Limelight_Randomization_Scanner Limelight = new Limelight_Randomization_Scanner();
-    public Limelight_Target_Scanner scanner = new Limelight_Target_Scanner();
+    public Limelight_Target_Scanner scanner;
     public String currentPosition;
     public String pattern;
 
@@ -30,20 +29,25 @@ public class BlueFrontAuto extends AutonomousPLUS {
         super.runOpMode();
 
         robot = new Robot(hardwareMap, telemetry, this);
-        targetData = robot.targetTag;
+        //targetData = robot.targetTag;
         launcher = robot.launcher;
         sorter = robot.sorterHardware;
+        robot.randomizationScanner = new Limelight_Randomization_Scanner();
+        robot.targetScanner = new Limelight_Target_Scanner();
+
+        randomization = new Limelight_Randomization_Scanner();//robot.randomizationScanner;
+        scanner = new Limelight_Target_Scanner();//robot.targetScanner;
 
 
 
         if(opModeInInit())
         {
             prepareAuto();
-            Limelight.InitLimeLight(0, robot.hardwareMap);
+            randomization.InitLimeLight(0, robot.hardwareMap);
             blackboard.put(ALLIANCE_KEY, "BLUE");
             while(opModeInInit())
             {
-                pattern = Limelight.GetRandomization();
+                pattern = randomization.GetRandomization();
                 telemetry.addData(pattern, " Works!");
                 telemetry.update();
 
@@ -85,9 +89,10 @@ public class BlueFrontAuto extends AutonomousPLUS {
         sorter.legalToSpin = true;
 
         //start with launcher facing goal, back of robot against goal
+        randomization.InitLimeLight(0, robot.hardwareMap);
         moveRobotForward(1000, 4);
-        turnRobotRight(900, 15);
-        pattern = Limelight.GetRandomization();
+        turnRobotLeft(900, 15);
+        pattern = randomization.GetRandomization();
         sleep(1000);
 
 
@@ -95,7 +100,7 @@ public class BlueFrontAuto extends AutonomousPLUS {
         {
             //sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorterLogic.findFirstOfType("Purple"));
 
-            turnRobotLeft(900, 15);
+            turnRobotRight(900, 15);
             if (targetData.currentlyDetected) //Angle detect if possible / needed
             {
                 turnRobotRight((int) (targetData.angleX * (1660/360)), 1);
@@ -108,7 +113,7 @@ public class BlueFrontAuto extends AutonomousPLUS {
         else if(pattern.equals("PGP"))
         {
             //sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorterLogic.findFirstOfType("Green"));
-            turnRobotLeft(900,1);
+            turnRobotRight(900,1);
             targetData = scanner.tagInfo();
             if (targetData.currentlyDetected)
             {

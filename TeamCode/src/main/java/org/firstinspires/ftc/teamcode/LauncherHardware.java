@@ -30,13 +30,15 @@ public class LauncherHardware {
     public Servo hammerServo;
 
     private ElapsedTime cooldownTimer = new ElapsedTime();
-    private double timeForMove;
+    private double timeForMove = 0.5;
     public boolean onCooldown = false;
 
     private boolean hammerForward;
     private boolean hammerBack;
-    private double hammerForwardPosition = 1;
-    private double hamemrBackPosition = 0;
+    private double hammerForwardPosition = 0;
+    private double hamemrBackPosition = .25;
+
+    public boolean firingInSequence;
 
 
     public double P;
@@ -100,6 +102,11 @@ public class LauncherHardware {
             hammerBack = true;
             hammerForward = false;
             onCooldown = false;
+
+            if(firingInSequence)
+            {
+                robot.sorterHardware.nextPhaseStep();
+            }
         }
     }
 
@@ -116,9 +123,25 @@ public class LauncherHardware {
         inSpeedRange = motorSpeedCheck(speedTarget);
         timerCheck();
 
+        if(inSpeedRange)
+        {
+            spikeable = true;
+            spikeableValue = motor.getVelocity();
+        }
+
         if (inSpeedRange && robot.sorterHardware.fireSafeCheck() && waitingToFire) {
             fire();
         }
+
+
+
+    }
+
+    public boolean spikeable = false;
+    public double spikeableValue;
+
+    public void deacelerationDetection()
+    {
 
     }
 }

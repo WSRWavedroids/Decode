@@ -43,6 +43,8 @@ public class Vortex_Teleop_Decode extends OpMode {
     private double speed = 0.75;
     private boolean spinTargetAquired = false;
 
+    private boolean cadenRecording = false;
+
     int SpinTargetFrontLeft;
     int SpinTargetFrontRight;
     int SpinTargetBackLeft;
@@ -150,7 +152,7 @@ public class Vortex_Teleop_Decode extends OpMode {
             //gamepad1.rumble(100);
         }
 
-        if (gamepad1.left_bumper || gamepad1.right_bumper) {
+        if (gamepad1.left_bumper || gamepad1.right_bumper || gamepad1.triangle) {
             autoWheel(robot.targetTag.currentlyDetected, robot.targetTag.angleX);
         } else {
             singleJoystickDrive();
@@ -203,6 +205,7 @@ public class Vortex_Teleop_Decode extends OpMode {
 
          // temp measure
         //testing rotation
+
         if (gamepad2.dpad_down)
         {
             sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[slot]);
@@ -222,7 +225,6 @@ public class Vortex_Teleop_Decode extends OpMode {
             slot += 2;
             if (slot > 4) slot = 0; // wrap to first slot pair
         }
-
         telemetry.addData("currentSlot target: ", slot);
 
         if (gamepad1.touchpad || gamepad2.touchpad) {
@@ -234,7 +236,74 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         doTelemetryStuff();
 
+        /*if(gamepad2.share)
+        {
+            cadenRecording = true;
+        }
+        if(gamepad2.dpad_down)//cancel and clear
+        {
+            cadenRecording = false;
+            cadenFirstOccupied = false;
+            cadenSecondOccupied = false;
+            cadenThirdOccupied = false;
+            first = 0;
+            second = 0;
+            third = 0;
+        }
+
+        //Prepare any
+        if(gamepad2.left_trigger > 0.5)
+        {
+            if(cadenRecording)
+            {
+                //add new to current recording
+                //addToCadenRecording(sorterLogic.findFirstOccupied());
+            }
+            else
+            {
+                //queue as normal
+            }
+            //Find first occupied and prepare acion
+        }
+        //prepare green
+        else if(gamepad2.triangle)
+        {
+            //Find first green and prepare action
+            if(cadenRecording)
+            {
+                //addToCadenRecording(sorterLogic.findFirstOfType("Green"));
+            }
+            else
+            {
+                //sorterHardware.prepareNewMovement(sorterLogic.find);
+            }
+        }
+        //prepare purple
+        else if(gamepad2.square)
+        {
+            if(cadenRecording)
+            {
+
+            }
+            else
+            {
+                //queue as normal
+            }
+        }
+
+        if(gamepad2.right_trigger > 0.5)
+        {
+            launcher.readyFire();
+        }
+
+        /*if(gamepad2.dpad_down)
+        {
+           sorterHardware.estop;
+        }*/
+
     }
+
+
 /////
     /*
      * Code to run ONCE after the driver hits STOP
@@ -269,7 +338,7 @@ public class Vortex_Teleop_Decode extends OpMode {
     private void autoWheel(boolean detected, double anglex) {
 
 
-        if (!spinTargetAquired) {
+        if (gamepad1.triangle) {//180
             SpinTargetFrontLeft = robot.frontLeftDrive.getCurrentPosition() + 830*2;
             SpinTargetFrontRight = robot.frontRightDrive.getCurrentPosition() - 830*2;
             SpinTargetBackLeft = robot.backLeftDrive.getCurrentPosition() + 830*2;
@@ -278,14 +347,23 @@ public class Vortex_Teleop_Decode extends OpMode {
             speed = 1;
         }//we so cool if this works
 
+        if(gamepad1.left_bumper)
+        {
+            SpinTargetFrontLeft = robot.frontLeftDrive.getCurrentPosition() + 830*2;
+            SpinTargetFrontRight = robot.frontRightDrive.getCurrentPosition() - 830*2;
+            SpinTargetBackLeft = robot.backLeftDrive.getCurrentPosition() + 830*2;
+            SpinTargetBackRight = robot.backRightDrive.getCurrentPosition() - 830*2;
+            spinTargetAquired = true;
+            speed = 1;
+        }
 
-        if (gamepad1.right_bumper) {
-            //180 Turn
+
+        if (gamepad1.right_bumper && !detected) {
             robot.frontLeftDrive.setTargetPosition(SpinTargetFrontLeft);
             robot.frontRightDrive.setTargetPosition(SpinTargetFrontRight);
             robot.backLeftDrive.setTargetPosition(SpinTargetBackLeft);
             robot.backRightDrive.setTargetPosition(SpinTargetBackRight);
-        } else if (detected && gamepad1.left_bumper) //Turn to face target tag
+        } else if (detected && gamepad1.right_bumper) //Turn to face target tag
         {
             double constant = -1660 / 360; //We will know this later
             speed = 1;
@@ -312,9 +390,9 @@ public class Vortex_Teleop_Decode extends OpMode {
     private void singleJoystickDrive() {
         // We don't really know how this function works, but it makes the wheels drive, so we don't question it.
         // Don't mess with this function unless you REALLY know what you're doing.
-        float leftY = -this.gamepad1.left_stick_y;
+        float leftY = this.gamepad1.left_stick_y;
         float rightX = this.gamepad1.right_stick_x;
-        float leftX = this.gamepad1.left_stick_x;
+        float leftX = -this.gamepad1.left_stick_x;
 
         double leftStickAngle = Math.atan2(leftY, leftX);
         double leftStickMagnitude = Math.sqrt(leftX * 2.0 + leftY * 2.0);
@@ -419,6 +497,34 @@ public class Vortex_Teleop_Decode extends OpMode {
         }
     }
 
+    boolean cadenFirstOccupied = false;
+    boolean cadenSecondOccupied = false;
+    boolean cadenThirdOccupied = false;
+    int first;
+    int second;
+    int third;
+    private void addToCadenRecording(int physicalTargetTicks)
+    {
+        if(!cadenFirstOccupied)
+        {
+            first = physicalTargetTicks;
+            cadenFirstOccupied = true;
+        }
+        else if(cadenFirstOccupied && !cadenSecondOccupied)
+        {
+            second = physicalTargetTicks;
+            cadenSecondOccupied = true;
+        }
+        else if(cadenSecondOccupied && !cadenThirdOccupied)
+        {
+            third = physicalTargetTicks;
+            cadenThirdOccupied = true;
+            cadenRecording = false;
+        }
+
+    }
+
+
 
     private void doTelemetryStuff() {
         // This little section updates the driver hub on the runtime and the motor powers.
@@ -455,6 +561,8 @@ public class Vortex_Teleop_Decode extends OpMode {
         }
         return max;
     }
+
+
 
 }
 

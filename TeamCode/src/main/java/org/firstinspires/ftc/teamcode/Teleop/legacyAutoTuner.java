@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.SorterHardware;
 import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 @Configurable
-@Autonomous(group = "Basic", name = "Blue Back Start")
+@Autonomous(group = "Basic", name = "Legacy Tuner")
 public class legacyAutoTuner extends AutonomousPLUS {
 
     public Limelight_Randomization_Scanner Limelight = new Limelight_Randomization_Scanner();

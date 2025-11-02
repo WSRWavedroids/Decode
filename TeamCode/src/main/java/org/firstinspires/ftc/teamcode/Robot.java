@@ -119,8 +119,6 @@ public class Robot {
 
         //husky = hardwareMap.get(HuskyLens.class, "evenBetterMason");
 
-
-
         imuParameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.DOWN,
@@ -294,7 +292,8 @@ public class Robot {
         launcher.updateLauncherHardware();
         sorterHardware.updateSorterHardware();
         //sorterLogic.update();
-        targetTag = targetScanner.tagInfo();
+
+        //targetTag = targetScanner.tagInfo();
         panelsTelemetry.update();
         //inventoryCam.updateBlockScan();
 
@@ -334,7 +333,7 @@ public class Robot {
     public void readyHardware()
     {
         sorterHardware.doorServo.setPosition(0);
-        launcher.hammerServo.setPosition(0);
+        launcher.hammerServo.setPosition(.25);
         launcher.cutSpeed();
         //sorterHardware.legalToSpin = false;
         sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]);
