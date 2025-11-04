@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.LauncherHardware;
-import org.firstinspires.ftc.teamcode.PanelsTelemetryManagerKt;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.SorterHardware;
 
@@ -232,8 +231,8 @@ public class Vortex_Teleop_Decode extends OpMode {
             requestOpModeStop();
         }
 
-        // Driver 2
-
+        //robot.panelsTelemetry.addData("Motor Position", robot.launcher.motor.getCurrentPosition());
+        robot.panelsTelemetry.update();
 
         doTelemetryStuff();
 
@@ -562,6 +561,9 @@ public class Vortex_Teleop_Decode extends OpMode {
         }
         return max;
     }
+
+
+
 }
 
 
