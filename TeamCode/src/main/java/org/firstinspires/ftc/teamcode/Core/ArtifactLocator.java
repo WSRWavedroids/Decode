@@ -62,6 +62,7 @@ public class ArtifactLocator {
     public slot slotA;
     public slot slotB;
     public slot slotC;
+    public slot noSlot;
     private slotRange zone1;
     private slotRange zone2;
     private slotRange zone3;
@@ -131,9 +132,10 @@ public class ArtifactLocator {
                 .build();
 
         //Define slots
-        slotA = new slot(1);
-        slotB = new slot(2);
-        slotC = new slot(3);
+        slotA = new slot(robot.sorterHardware.positions[0],robot.sorterHardware.positions[1]);
+        slotB = new slot(robot.sorterHardware.positions[2],robot.sorterHardware.positions[3]);
+        slotC = new slot(robot.sorterHardware.positions[4],robot.sorterHardware.positions[5]);
+        noSlot = new slot();
 
         zone1 = new slotRange(0,0,0,0); //TODO fill in values
         zone2 = new slotRange(0,0,0,0); //TODO fill in values
@@ -143,9 +145,9 @@ public class ArtifactLocator {
         zone6 = new slotRange(0,0,0,0); //TODO fill in values
 
         //Sort things into lists
-        offsetPositions.add(slotA.motorLoadPosition); offsetPositions.add(slotB.motorFirePosition);
-        offsetPositions.add(slotC.motorLoadPosition); offsetPositions.add(slotA.motorFirePosition);
-        offsetPositions.add(slotB.motorLoadPosition); offsetPositions.add(slotC.motorFirePosition);
+        offsetPositions.add(slotA.loadPosition); offsetPositions.add(slotB.firePosition);
+        offsetPositions.add(slotC.loadPosition); offsetPositions.add(slotA.firePosition);
+        offsetPositions.add(slotB.loadPosition); offsetPositions.add(slotC.firePosition);
 
         allSlots.add(slotA); allSlots.add(slotB); allSlots.add(slotC);
 
@@ -322,13 +324,22 @@ public class ArtifactLocator {
                 return currentSlot;
             }
         }
-        return null;
+        return noSlot;
+    }
+
+    public slot findFirstNotType(slotState slotType) {
+        for (slot currentSlot : allSlots) {
+            if (currentSlot.occupied != slotType) {
+                return currentSlot;
+            }
+        }
+        return noSlot;
     }
 
     public slot findSlotByZone(slotRange zone) {
         int offset = getCurrentOffset();
         if (offset == -1) {
-            return null;
+            return noSlot;
         }
         int zoneIndex = allZones.indexOf(zone) + 1;
         int x = zoneIndex - offset;
@@ -341,7 +352,7 @@ public class ArtifactLocator {
             case 5:
                 return slotC;
         }
-        return null;
+        return noSlot;
     }
 
     //TODO Move to LauncherHardware???
@@ -387,6 +398,9 @@ public class ArtifactLocator {
         return offset;
     }
 
+    /**
+     * Adds the currently detected blobs to telemetry. Will not update telemetry.
+     */
     @SuppressLint("DefaultLocale")
     public void cameraTelemetry() {
 
@@ -414,23 +428,57 @@ public class ArtifactLocator {
     }
 
     /**
-     * The slot class stores the occupancy state (slotState enum), slotIdentity (effectively starting position),
-     * and correct servo positions to load and fire an Artifact. A constructor must be called to create an
+     * The slot class stores the occupancy state (slotState enum) and correct motor
+     * positions to load and fire an Artifact. A constructor must be called to create an
      * instance of the class, representing one slot in the blender.
      */
     public class slot {
         public slotState occupied;
-        public int slotIdentity;
-        public double motorFirePosition;
-        public double motorLoadPosition;
-        public slot(int slotIdentity) {
-            this.slotIdentity = slotIdentity;
-            switch (this.slotIdentity) {
-                case 1: motorFirePosition = robot.sorterHardware.positions[1]; motorLoadPosition = robot.sorterHardware.positions[0]; break;
-                case 2: motorFirePosition = robot.sorterHardware.positions[3]; motorLoadPosition = robot.sorterHardware.positions[2]; break;
-                case 3: motorFirePosition = robot.sorterHardware.positions[5]; motorLoadPosition = robot.sorterHardware.positions[4]; break;
-                default: throw new IllegalArgumentException("Invalid slotIdentity"); // Fancy code throw error if bad
+        private double firePosition;
+        private double loadPosition;
+        private boolean specialIsNotASlot = false;
+
+        /**
+         * This constructor creates a slot.
+         * @param motorLoadPosition The motor position to go to when firing, in ticks.
+         * @param motorFirePosition The motor position to go to when loading, in ticks.
+         */
+        public slot(double motorLoadPosition, double motorFirePosition) {
+            this.loadPosition = motorLoadPosition;
+            this.firePosition = motorFirePosition;
+        }
+
+        /**
+         * This constructor is a special case. It will create a "fake" slot that always returns the current position.
+         * This is to ensure the findFirstSlot(), findFirstNoSlot(), and findSlotByZone() functions can still return a "no
+         * slot found" option without returning null. Note that it technically could end up with junk data in slotSate occupied.
+         */
+        public slot() {
+            this.specialIsNotASlot = true;
+        }
+
+        /**
+         * Returns the stored firing position for the slot. If the slot is noSlot,
+         * will return the current motor position, effectively not moving.
+         * @return The firing position, in ticks
+         */
+        public double getFirePosition() {
+            if(specialIsNotASlot) {
+                return robot.sorterHardware.motor.getCurrentPosition();
             }
+            else return firePosition;
+        }
+
+        /**
+         * Returns the stored loading position for the slot. If the slot is noSlot,
+         * will return the current motor position.
+         * @return The loading position, in ticks
+         */
+        public double getLoadPosition() {
+            if(specialIsNotASlot) {
+                return robot.sorterHardware.motor.getCurrentPosition();
+            }
+            return loadPosition;
         }
     }
 
@@ -467,8 +515,8 @@ public class ArtifactLocator {
          * The inRange() function checks to see if a given coordinate is within the slotRange. Its intended
          * implementation is to check whether or not an Artifact, represented by a Blob, is within a slot,
          * represented by a slotRange. Input the center coordinates of a Blob to test this.
-         * @param inputX
-         * @param inputY
+         * @param inputX The x-coordinate to test
+         * @param inputY The y-coordinate to test
          * @return Whether or not the point is in the range (Boolean)
          */
         public boolean inRange(float inputX, float inputY) {

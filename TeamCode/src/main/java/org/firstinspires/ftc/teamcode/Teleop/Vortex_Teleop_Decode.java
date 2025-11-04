@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.Core.ArtifactLocator;
 import org.firstinspires.ftc.teamcode.Core.LauncherHardware;
 import org.firstinspires.ftc.teamcode.Core.Robot;
 import org.firstinspires.ftc.teamcode.Core.SorterHardware;
@@ -63,6 +64,7 @@ public class Vortex_Teleop_Decode extends OpMode {
 
     public SorterHardware sorterHardware;
     public LauncherHardware launcher;
+    public ArtifactLocator sorterLogic;
 
     public static final String ALLIANCE_KEY = "Alliance"; //For blackboard
     public static final String PATTERN_KEY = "Pattern";
@@ -84,6 +86,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         sorterHardware = robot.sorterHardware;
         //huskyLens = robot.inventoryCam;
         launcher = robot.launcher;
+        sorterLogic = robot.sorterLogic;
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -235,7 +238,7 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         doTelemetryStuff();
 
-        /*if(gamepad2.share)
+        if(gamepad2.share)
         {
             cadenRecording = true;
         }
@@ -260,7 +263,8 @@ public class Vortex_Teleop_Decode extends OpMode {
             }
             else
             {
-                //queue as normal
+                sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(),
+                        (int) robot.sorterLogic.findFirstNotType(ArtifactLocator.slotState.EMPTY).getFirePosition());
             }
             //Find first occupied and prepare acion
         }
@@ -274,7 +278,8 @@ public class Vortex_Teleop_Decode extends OpMode {
             }
             else
             {
-                //sorterHardware.prepareNewMovement(sorterLogic.find);
+                sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(),
+                        (int) robot.sorterLogic.findFirstType(ArtifactLocator.slotState.GREEN).getFirePosition());
             }
         }
         //prepare purple
@@ -286,7 +291,8 @@ public class Vortex_Teleop_Decode extends OpMode {
             }
             else
             {
-                //queue as normal
+                sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(),
+                        (int) robot.sorterLogic.findFirstType(ArtifactLocator.slotState.PURPLE).getFirePosition());
             }
         }
 
