@@ -9,7 +9,7 @@ public class WaveTag {
 
     int tagID;
 
-    boolean currentlyDetected;
+    boolean currentlyDetected = false;
 
     double distanceZ;
     double distanceY;

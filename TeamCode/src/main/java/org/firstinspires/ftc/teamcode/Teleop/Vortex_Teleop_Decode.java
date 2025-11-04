@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import com.bylazar.graph.PanelsGraph;
 import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -41,7 +40,7 @@ public class Vortex_Teleop_Decode extends OpMode {
     // This section tells the program all of the different pieces of hardware that are on our robot that we will use in the program.
     private ElapsedTime runtime = new ElapsedTime();
     private double speed = 0.75;
-    private boolean spinTargetAquired = false;
+    private boolean spinTargetAcquired = false;
 
     private boolean cadenRecording = false;
 
@@ -146,8 +145,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         controlMode();
         driveSpeed();
 
-        if(robot.targetTag.currentlyDetected)
-        {
+        if(robot.targetTag.currentlyDetected) {
             gamepad1.rumble(0.25, 0.25, 100);
             //gamepad1.rumble(100);
         }
@@ -156,7 +154,7 @@ public class Vortex_Teleop_Decode extends OpMode {
             autoWheel(robot.targetTag.currentlyDetected, robot.targetTag.angleX);
         } else {
             singleJoystickDrive();
-            spinTargetAquired = false;
+            spinTargetAcquired = false;
         }
 
 
@@ -343,7 +341,7 @@ public class Vortex_Teleop_Decode extends OpMode {
             SpinTargetFrontRight = robot.frontRightDrive.getCurrentPosition() - 830*2;
             SpinTargetBackLeft = robot.backLeftDrive.getCurrentPosition() + 830*2;
             SpinTargetBackRight = robot.backRightDrive.getCurrentPosition() - 830*2;
-            spinTargetAquired = true;
+            spinTargetAcquired = true;
             speed = 1;
         }//we so cool if this works
 
@@ -353,7 +351,7 @@ public class Vortex_Teleop_Decode extends OpMode {
             SpinTargetFrontRight = robot.frontRightDrive.getCurrentPosition() - 830*2;
             SpinTargetBackLeft = robot.backLeftDrive.getCurrentPosition() + 830*2;
             SpinTargetBackRight = robot.backRightDrive.getCurrentPosition() - 830*2;
-            spinTargetAquired = true;
+            spinTargetAcquired = true;
             speed = 1;
         }
 

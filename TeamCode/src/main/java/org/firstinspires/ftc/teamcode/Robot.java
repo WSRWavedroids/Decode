@@ -69,7 +69,7 @@ public class Robot {
     public String startingPosition;
     public String controlMode = "Robot Centric";// Robot Centric
     public IMU.Parameters imuParameters;
-    public WaveTag targetTag;
+    public WaveTag targetTag = new WaveTag();
     public String pattern;
 
     public SorterHardware sorterHardware;
