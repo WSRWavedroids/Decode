@@ -39,6 +39,10 @@ public class LauncherHardware {
 
     public boolean firingInSequence;
 
+    public int ticksPerRevolution = 28;
+    public int revolutionsPerSecond = 100;
+
+
 
     public double P;
     public double I;
@@ -104,18 +108,14 @@ public class LauncherHardware {
 
             if(firingInSequence)
             {
-                robot.sorterHardware.nextPhaseStep();
+                //robot.sorterHardware.nextPhaseStep();
             }
         }
     }
 
 
-    public void rampSpeed(double targetspeed) {
-        motor.setVelocity(targetspeed);
-    }
-
-    public void cutSpeed() {
-        motor.setVelocity(0);
+    public void setLauncherSpeed(double targetspeed) {
+        motor.setVelocity(ticksPerRevolution * (revolutionsPerSecond * targetspeed));
     }
 
     public void updateLauncherHardware() {
@@ -143,4 +143,5 @@ public class LauncherHardware {
     {
 
     }
+
 }

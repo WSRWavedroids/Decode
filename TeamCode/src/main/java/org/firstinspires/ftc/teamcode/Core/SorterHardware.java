@@ -30,8 +30,8 @@ public class SorterHardware {
 
     public boolean open = false;
     public boolean wantToMoveDoor = false;
-    public double doorClosedPosition = 0;
-    public double doorOpenPosition = 1;
+    public double doorClosedPosition = 1;
+    public double doorOpenPosition = 0.75;
 
     public Robot disRobot;
     public DcMotorEx motor;
@@ -239,10 +239,6 @@ public class SorterHardware {
         motor.setPower(0);
     }
 
-    public void nextPhaseStep()
-    {
-
-    }
 
     public void runPIDMotorStuffLol()
     {
