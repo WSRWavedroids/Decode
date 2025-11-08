@@ -87,7 +87,7 @@ public class BlueBackAuto extends AutonomousPLUS {
 
         speed = 0.75;
 
-        launcher.rampSpeed(launcher.findSpeed(targetData.distanceZ));
+        launcher.setLauncherSpeed(launcher.findSpeed(targetData.distanceZ));
 
         if(pattern.equals("PPG"))
         {
@@ -160,7 +160,7 @@ public class BlueBackAuto extends AutonomousPLUS {
         if(!skipOne)
         {
             stallTillTrue(robot.sorterHardware.moveSafeCheck()); //Check to see if safe to spin, then do so
-            launcher.rampSpeed(launcher.findSpeed(targetData.distanceZ)); //set Motor target speed
+            launcher.setLauncherSpeed(launcher.findSpeed(targetData.distanceZ)); //set Motor target speed
             sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[one]); //command movement
             stallTillTrue(robot.sorterHardware.positionedCheck());
             stallTillTrue(launcher.inSpeedRange);// If we arent at speed yet, stall till we are
@@ -168,7 +168,7 @@ public class BlueBackAuto extends AutonomousPLUS {
             stallTillTrue(sorter.openCheck()); // Prepare to fire
             launcher.fire();
             stallTillTrue(!robot.launcher.waitingForServo); //Wait till done firing
-            launcher.cutSpeed();// Cut laucher to save power
+            launcher.setLauncherSpeed(0);// Cut laucher to save power
             sorter.triggerServo("CLOSED"); //Tell to close
             stallTillTrue(sorter.closedCheck()); //Wait for close
         }
@@ -176,7 +176,7 @@ public class BlueBackAuto extends AutonomousPLUS {
 
 
         stallTillTrue(robot.sorterHardware.moveSafeCheck()); //Check to see if safe to spin, then do so
-        launcher.rampSpeed(launcher.findSpeed(targetData.distanceZ)); //set Motor target speed
+        launcher.setLauncherSpeed(launcher.findSpeed(targetData.distanceZ)); //set Motor target speed
         sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[two]); //command movement
         stallTillTrue(robot.sorterHardware.positionedCheck());
         stallTillTrue(launcher.inSpeedRange);// If we arent at speed yet, stall till we are
@@ -184,14 +184,14 @@ public class BlueBackAuto extends AutonomousPLUS {
         stallTillTrue(sorter.openCheck()); // Prepare to fire
         launcher.fire();
         stallTillTrue(!robot.launcher.waitingForServo); //Wait till done firing
-        launcher.cutSpeed();// Cut laucher to save power
+        launcher.setLauncherSpeed(0);// Cut laucher to save power
         sorter.triggerServo("CLOSED"); //Tell to close
         stallTillTrue(sorter.closedCheck()); //Wait for close
 
 
 
         stallTillTrue(robot.sorterHardware.moveSafeCheck()); //Check to see if safe to spin, then do so
-        launcher.rampSpeed(launcher.findSpeed(targetData.distanceZ)); //set Motor target speed
+        launcher.setLauncherSpeed(launcher.findSpeed(targetData.distanceZ)); //set Motor target speed
         sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[three]); //command movement
         stallTillTrue(robot.sorterHardware.positionedCheck());
         stallTillTrue(launcher.inSpeedRange);// If we arent at speed yet, stall till we are
@@ -199,7 +199,7 @@ public class BlueBackAuto extends AutonomousPLUS {
         stallTillTrue(sorter.openCheck()); // Prepare to fire
         launcher.fire();
         stallTillTrue(!robot.launcher.waitingForServo); //Wait till done firing
-        launcher.cutSpeed();// Cut laucher to save power
+        launcher.setLauncherSpeed(0);// Cut laucher to save power
         sorter.triggerServo("CLOSED"); //Tell to close
         stallTillTrue(sorter.closedCheck()); //Wait for close
     }

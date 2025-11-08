@@ -285,7 +285,8 @@ public class Vortex_Teleop_Decode extends OpMode {
         //prepare purple
         else if(gamepad2.square)
         {
-            if(cadenRecording)
+            robot.runAutoIntakeSequence();
+            /*if(cadenRecording)
             {
 
             }
@@ -293,7 +294,7 @@ public class Vortex_Teleop_Decode extends OpMode {
             {
                 sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(),
                         (int) robot.sorterLogic.findFirstType(ArtifactLocator.slotState.PURPLE).getFirePosition());
-            }
+            }*/
         }
 
         if(gamepad2.right_trigger > 0.5)
@@ -396,7 +397,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         // We don't really know how this function works, but it makes the wheels drive, so we don't question it.
         // Don't mess with this function unless you REALLY know what you're doing.
         float leftY = this.gamepad1.left_stick_y;
-        float rightX = this.gamepad1.right_stick_x;
+        float rightX = -this.gamepad1.right_stick_x;
         float leftX = -this.gamepad1.left_stick_x;
 
         double leftStickAngle = Math.atan2(leftY, leftX);

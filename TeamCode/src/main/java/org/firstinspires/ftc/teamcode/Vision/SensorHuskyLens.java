@@ -69,20 +69,23 @@ public class SensorHuskyLens extends LinearOpMode {
     scanBox[] boxes = new scanBox[6];
 
 
+
     public SensorHuskyLens(Robot robot)
     {
         disRobot = robot;
-        //huskyLens = robot.husky;
+        huskyLens = robot.husky;
         huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
         Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
         rateLimit.expire();
+
+
     }
 
 
 
     public void runOpMode()
     {
-        huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
+        huskyLens = disRobot.husky;
 
         /*
          * This sample rate limits the reads solely to allow a user time to observe
@@ -162,7 +165,21 @@ public class SensorHuskyLens extends LinearOpMode {
 
     void checkZone(HuskyLens.Block blockData)
     {
-        //Bottom Center
+
+        for(int i = 0; i < 6; i++)
+        {
+            if((boxes[i].minX <= blockData.x && blockData.x <= boxes[i].maxX) && (boxes[i].minY <= blockData.y && blockData.y <= boxes[i].maxY))
+            {
+                doTele(i, blockData);
+                //pass scan info to logic to populate that
+            }
+        }
+    }
+
+
+    public void updateBlockScan()
+    {
+        scanBox[] boxes = new scanBox[6];
         boxes[0].maxX = 180;
         boxes[0].minX = 140;
         boxes[0].maxY = 120;
@@ -193,19 +210,7 @@ public class SensorHuskyLens extends LinearOpMode {
         boxes[5].maxY = 120;
         boxes[5].minY = 0;
 
-        for(int i = 0; i < 6; i++)
-        {
-            if((boxes[i].minX <= blockData.x && blockData.x <= boxes[i].maxX) && (boxes[i].minY <= blockData.y && blockData.y <= boxes[i].maxY))
-            {
-                doTele(i, blockData);
-                //pass scan info to logic to populate that
-            }
-        }
-    }
 
-
-    public void updateBlockScan()
-    {
         HuskyLens.Block[] blocks = huskyLens.blocks();
         telemetry.addData("Block count", blocks.length);
         for (int i = 0; i < blocks.length; i++) {
@@ -229,6 +234,10 @@ public class SensorHuskyLens extends LinearOpMode {
         public int maxY;
         public int minX;
         public int minY;
+
+        //Bottom Center
+
+
     }
 
     public void startHusky()

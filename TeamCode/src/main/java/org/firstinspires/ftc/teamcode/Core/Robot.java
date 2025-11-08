@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -21,6 +22,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Teleop.Limelight_Target_Scanner;
+import org.firstinspires.ftc.teamcode.Vision.SensorHuskyLens;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 
@@ -52,9 +54,9 @@ public class Robot {
 
     public Limelight3A limelight;
 
-    public WebcamName CamCam;
+   // public WebcamName CamCam;
 
-    //public HuskyLens husky;
+    public HuskyLens husky;
 
     public Telemetry telemetry;
     //public BNO055IMU imu;
@@ -71,7 +73,7 @@ public class Robot {
     public SorterHardware sorterHardware;
     public LauncherHardware launcher;
     public ArtifactLocator sorterLogic;
-    //public SensorHuskyLens inventoryCam;
+    public SensorHuskyLens inventoryCam;
     public Limelight_Randomization_Scanner randomizationScanner;
     public Limelight_Target_Scanner targetScanner;
 
@@ -108,12 +110,12 @@ public class Robot {
         magsense = hardwareMap.get(DigitalChannel.class, "magsense");
         magsense.setMode(DigitalChannel.Mode.INPUT);
 
-        CamCam = hardwareMap.get(WebcamName.class, "CamCam");
+        //CamCam = hardwareMap.get(WebcamName.class, "CamCam");
         //expandyServo = hardwareMap.get(CRServo.class, "expandyServo");
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
-        //husky = hardwareMap.get(HuskyLens.class, "evenBetterMason");
+        husky = hardwareMap.get(HuskyLens.class, "evenBetterMason");
 
         imuParameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
@@ -147,7 +149,7 @@ public class Robot {
         sorterHardware = new SorterHardware(this);
         launcher = new LauncherHardware(this);
         //sorterLogic = new ArtifactLocator(this);
-        //inventoryCam = new SensorHuskyLens(this);
+        inventoryCam = new SensorHuskyLens(this);
         targetScanner = new Limelight_Target_Scanner();
         randomizationScanner = new Limelight_Randomization_Scanner();
 
@@ -309,6 +311,8 @@ public class Robot {
     {
         intakeyServoR.setPower(num);
         intakeyServoL.setPower(num);
+
+
     }
 
     public void runAutoIntakeSequence() //Run in an update function for "fast" auto load
@@ -316,8 +320,9 @@ public class Robot {
         //Find first empty
         runBasicIntake(1);
         sorterHardware.tryingToFeed = true;
-        sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]/*replace with first empty*/);
+        sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[1]);/*replace with first empty*/
         sorterHardware.feederSpeed = 1;
+
     }
 
     public void cancelAutoIntake()
@@ -330,8 +335,9 @@ public class Robot {
     {
         sorterHardware.doorServo.setPosition(0);
         launcher.hammerServo.setPosition(.25);
-        launcher.cutSpeed();
+        launcher.setLauncherSpeed(0);
         //sorterHardware.legalToSpin = false;
+        inventoryCam.updateBlockScan();
         sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]);
     }
 

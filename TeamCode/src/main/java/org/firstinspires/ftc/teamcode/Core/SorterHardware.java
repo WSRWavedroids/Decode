@@ -181,7 +181,7 @@ public class SorterHardware {
     public boolean moveSafeCheck()
     {
 
-        if(!disRobot.launcher.onCooldown && !positionedCheck() && closedCheck() && legalToSpin) //if not on servo timeout and not already there, rotate
+        if(!disRobot.launcher.onCooldown && closedCheck() && legalToSpin) //if not on servo timeout and not already there, rotate
         {
             return true;
         }else
