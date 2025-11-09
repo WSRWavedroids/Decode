@@ -305,12 +305,7 @@ public class ArtifactLocator {
      * @return The current nearest blender offset, from 0-5. -2 = error.
      */
     private int findClosestOffset(double ticks) {
-        while (ticks > robot.sorterHardware.ticksPerRotation) {
-            ticks -= robot.sorterHardware.ticksPerRotation;
-        }
-        while (ticks < 0) {
-            ticks += robot.sorterHardware.ticksPerRotation;
-        }
+        ticks = equalizeMotorPositions((int) ticks);
 
         double lowestDistance = 1000000000;
         int offset = -2;
@@ -326,6 +321,15 @@ public class ArtifactLocator {
         return offset;
     }
 
+    public int equalizeMotorPositions(int ticks) {
+        while (ticks > robot.sorterHardware.ticksPerRotation) {
+            ticks -= robot.sorterHardware.ticksPerRotation;
+        }
+        while (ticks < 0) {
+            ticks += robot.sorterHardware.ticksPerRotation;
+        }
+        return ticks;
+    }
     /**
      * Adds the currently detected blobs to telemetry. Will not update telemetry.
      */
