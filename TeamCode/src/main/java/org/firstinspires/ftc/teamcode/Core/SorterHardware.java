@@ -72,8 +72,7 @@ public class SorterHardware {
         feedServoL = robot.feedServoL;
         feedServoR = robot.feedServoR;
 
-        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
 
         positions = new int[6];
         positions[0] = 0; //Slot A load
@@ -105,29 +104,26 @@ public class SorterHardware {
         feedServoL.setPower(-speed);
     }
 
-    public int findFastestRotationInTicks(int currentPosition, int targetPosition)
-    {
-        //Finds the shortest route to the slot position regardless of how high/low we go
-
-        int howManyCycles = (currentPosition / ticksPerRotation);
+    public int findFastestRotationInTicks(int currentPosition, int targetPosition) {
+        int howManyCycles = currentPosition / ticksPerRotation;
 
         int[] slotSpaces = new int[3];
         slotSpaces[0] = targetPosition + (howManyCycles - 1) * ticksPerRotation;
         slotSpaces[1] = targetPosition + howManyCycles * ticksPerRotation;
         slotSpaces[2] = targetPosition + (howManyCycles + 1) * ticksPerRotation;
 
-        int currentLowest = slotSpaces[0];
+        int bestPosition = slotSpaces[0];
+        int smallestDistance = Math.abs(slotSpaces[0] - currentPosition);
 
-        for(int i = 0; i<3; i++)
-        {
-           if (Math.abs(slotSpaces[i] - currentPosition) < currentLowest)
-           {
-               currentLowest = slotSpaces[i];
-           }
+        for (int i = 1; i < 3; i++) {
+            int distance = Math.abs(slotSpaces[i] - currentPosition);
+            if (distance < smallestDistance) {
+                smallestDistance = distance;
+                bestPosition = slotSpaces[i];
+            }
         }
 
-        return currentLowest;
-    }
+        return bestPosition;}
 
     public boolean inProperTickPosition()
     {
@@ -280,6 +276,12 @@ public class SorterHardware {
         // reset the timer for next time
         pidfTime().reset();
 
+    }
+
+    public void resetSorterEncoder()
+    {
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
 

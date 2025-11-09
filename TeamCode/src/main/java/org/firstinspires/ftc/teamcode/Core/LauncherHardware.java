@@ -29,20 +29,18 @@ public class LauncherHardware {
     public Servo hammerServo;
 
     private ElapsedTime cooldownTimer = new ElapsedTime();
-    private double timeForMove = 0.5;
+    private double timeForMove = 0.3;
     public boolean onCooldown = false;
 
     private boolean hammerForward;
     private boolean hammerBack;
-    private double hammerForwardPosition = 0;
-    private double hamemrBackPosition = .25;
+    public double hammerForwardPosition = 0;
+    public double hammerBackPosition = .25;
 
     public boolean firingInSequence;
 
     public int ticksPerRevolution = 28;
     public int revolutionsPerSecond = 100;
-
-
 
     public double P;
     public double I;
@@ -54,8 +52,7 @@ public class LauncherHardware {
         motor = robot.launcherMotor;
         motor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(P, I, D, F));
         hammerServo = robot.hammerServo;
-        hammerServo.setPosition(hamemrBackPosition);
-
+        hammerServo.setPosition(hammerBackPosition);
     }
 
     public boolean motorSpeedCheck(double speedTarget) {
@@ -89,7 +86,7 @@ public class LauncherHardware {
 
         else if(onCooldown && hammerForward)
         {
-            hammerServo.setPosition(hamemrBackPosition);
+            hammerServo.setPosition(hammerBackPosition);
         }
     }
 
@@ -131,8 +128,6 @@ public class LauncherHardware {
         if (inSpeedRange && robot.sorterHardware.fireSafeCheck() && waitingToFire) {
             fire();
         }
-
-
 
     }
 

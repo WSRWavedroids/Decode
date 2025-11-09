@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Core.ArtifactLocator;
 import org.firstinspires.ftc.teamcode.Core.LauncherHardware;
 import org.firstinspires.ftc.teamcode.Core.Robot;
 import org.firstinspires.ftc.teamcode.Core.SorterHardware;
+import org.firstinspires.ftc.teamcode.Vision.SensorHuskyLens;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 
 /**
@@ -65,6 +66,7 @@ public class Vortex_Teleop_Decode extends OpMode {
     public SorterHardware sorterHardware;
     public LauncherHardware launcher;
     public ArtifactLocator sorterLogic;
+    public SensorHuskyLens huskyLens;
 
     public static final String ALLIANCE_KEY = "Alliance"; //For blackboard
     public static final String PATTERN_KEY = "Pattern";
@@ -84,7 +86,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         robot = new Robot(hardwareMap, telemetry, this);
         tagScanner = robot.targetScanner;
         sorterHardware = robot.sorterHardware;
-        //huskyLens = robot.inventoryCam;
+        huskyLens = robot.inventoryCam;
         launcher = robot.launcher;
         sorterLogic = robot.sorterLogic;
 
@@ -132,8 +134,10 @@ public class Vortex_Teleop_Decode extends OpMode {
         telemetry.addData("HYPE", "Let's do this!!!");
         gamepad1.setLedColor(0, 0, 255, 100000000);
         gamepad2.setLedColor(0, 0, 255, 100000000);
+        sorterHardware.resetSorterEncoder();//REMOVE ONCE AUTO -> TELE IS FIGURED OUT
         sorterHardware.legalToSpin = true;
         robot.readyHardware();
+
     }
 
     /*
@@ -194,15 +198,17 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         if(gamepad2.cross)
         {
-            robot.runBasicIntake(1);
+            //robot.runBasicIntake(1);
+            robot.runAutoIntakeSequence();
         }
         else if(gamepad2.circle)
         {
-            robot.runBasicIntake(-1);
+            //robot.runBasicIntake(-1);
+            robot.runAutoIntakeSequence();
         }
         else
         {
-           robot.runBasicIntake(0);
+           robot.cancelAutoIntake();
         }
 
          // temp measure

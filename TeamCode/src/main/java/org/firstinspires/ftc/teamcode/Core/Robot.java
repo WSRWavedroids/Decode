@@ -282,7 +282,8 @@ public class Robot {
 
 
     public void prepareAuto(){
-
+        sorterHardware.triggerServo("CLOSED");
+        launcher.hammerServo.setPosition(launcher.hammerBackPosition);
     }
 
     public void updateAllDaThings()
@@ -318,24 +319,23 @@ public class Robot {
         //Find first empty
         runBasicIntake(1);
         sorterHardware.tryingToFeed = true;
-        sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[1]);/*replace with first empty*/
+        //sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[1]);/*replace with first empty*/
         sorterHardware.feederSpeed = 1;
     }
 
     public void cancelAutoIntake()
     {
+        sorterHardware.feederSpeed = 0;
         sorterHardware.tryingToFeed = false;
         runBasicIntake(0);
     }
 
     public void readyHardware()
     {
-        //sorterHardware.doorServo.setPosition(0);
+        //sorterHardware.resetSorterEncoder();
         launcher.hammerServo.setPosition(.25);
         launcher.setLauncherSpeed(0);
-        //sorterHardware.legalToSpin = false;
         inventoryCam.updateBlockScan();
-        //sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]);
     }
 
 
