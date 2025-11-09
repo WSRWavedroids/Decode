@@ -34,8 +34,6 @@ import org.firstinspires.ftc.teamcode.Vision.WaveTag;
  * Throughout this program, there are comments explaining what everything does because previous programmers
  * did a horrible job of doing that.
  */
-
-
 @TeleOp(name = "Basic Vortex", group = "CompBot")
 public class Vortex_Teleop_Decode extends OpMode {
 
@@ -45,6 +43,7 @@ public class Vortex_Teleop_Decode extends OpMode {
     private boolean spinTargetAcquired = false;
 
     private boolean cadenRecording = false;
+    private boolean contTwoBumpersPressed = false;
 
     int SpinTargetFrontLeft;
     int SpinTargetFrontRight;
@@ -53,6 +52,7 @@ public class Vortex_Teleop_Decode extends OpMode {
 
     int slot = 0; // temp for testing lol
 
+    int targetOffset = 0;
 
     //private double storedSpeed;
     public Robot robot = null;
@@ -88,6 +88,8 @@ public class Vortex_Teleop_Decode extends OpMode {
         launcher = robot.launcher;
         sorterLogic = robot.sorterLogic;
 
+        sorterHardware.doorServo.setPosition(sorterHardware.doorClosedPosition);
+
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
 
@@ -113,7 +115,6 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         robot.panels = Panels.INSTANCE;
         robot.readyHardware();
-
     }
 
     /*
@@ -133,7 +134,6 @@ public class Vortex_Teleop_Decode extends OpMode {
         gamepad2.setLedColor(0, 0, 255, 100000000);
         sorterHardware.legalToSpin = true;
         robot.readyHardware();
-
     }
 
     /*
@@ -208,7 +208,7 @@ public class Vortex_Teleop_Decode extends OpMode {
          // temp measure
         //testing rotation
 
-        if (gamepad2.dpad_down)
+        /*if (gamepad2.dpad_down)
         {
             sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[slot]);
         }
@@ -216,17 +216,27 @@ public class Vortex_Teleop_Decode extends OpMode {
         {
             int nextSlot = (slot + 1) % sorterHardware.positions.length;
             sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[nextSlot]);
-        }
-        else if (gamepad2.dpad_left)
+        }*/
+
+        incrementThroughPositions();
+
+        /*else if (gamepad2.dpad_left & !contTwoBumpersPressed)
         {
             slot -= 2;
             if (slot < 0) slot = 4; // wrap back to last slot pair
+            sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[slot]);
+            contTwoBumpersPressed = true;
         }
-        else if (gamepad2.dpad_right)
+        else if (gamepad2.dpad_right & !contTwoBumpersPressed)
         {
             slot += 2;
             if (slot > 4) slot = 0; // wrap to first slot pair
+            sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[slot]);
+            contTwoBumpersPressed = true;
         }
+        else if (!gamepad2.dpad_left & !gamepad2.dpad_right) {
+            contTwoBumpersPressed = false;
+        }*/
         telemetry.addData("currentSlot target: ", slot);
 
         if (gamepad1.touchpad || gamepad2.touchpad) {
@@ -309,9 +319,7 @@ public class Vortex_Teleop_Decode extends OpMode {
 
     }
 
-
-/////
-    /*
+    /**
      * Code to run ONCE after the driver hits STOP
      */
     public void stop() {
@@ -530,7 +538,37 @@ public class Vortex_Teleop_Decode extends OpMode {
 
     }
 
+    public void incrementThroughPositions() {
 
+        telemetry.addData("Current Offset (by logic)", sorterLogic.getCurrentOffset());
+        //int newOffset = sorterLogic.getCurrentOffset();
+
+        /*if (newOffset < 0) {
+            return;
+        }*/
+
+        if (gamepad2.leftBumperWasPressed()) {
+            targetOffset = makeSureNewOffsetIsOK(targetOffset - 1);
+            sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.offsetPositions.get(targetOffset));
+        }
+
+        else if (gamepad2.rightBumperWasPressed()) {
+            targetOffset = makeSureNewOffsetIsOK(targetOffset + 1);
+            sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.offsetPositions.get(targetOffset));
+        }
+
+        telemetry.addData("Target Offset", targetOffset);
+    }
+
+    private int makeSureNewOffsetIsOK(int oldNewOffset) {
+        if (oldNewOffset < 0) {
+            oldNewOffset = 5;
+        }
+        if (oldNewOffset > 5) {
+            oldNewOffset = 0;
+        }
+        return oldNewOffset;
+    }
 
     private void doTelemetryStuff() {
         // This little section updates the driver hub on the runtime and the motor powers.
@@ -546,16 +584,19 @@ public class Vortex_Teleop_Decode extends OpMode {
             telemetry.addData("last distance x: ", robot.targetTag.distanceX);
             telemetry.addData("last detected distance y: ", robot.targetTag.distanceY);
             telemetry.addData("last detected distance z: ", robot.targetTag.distanceZ);
-
-
         }
-
 
         telemetry.addData("Last saved pattern: ", blackboard.get(PATTERN_KEY));
 
-        telemetry.addData("Last saved Allience: ", blackboard.get(ALLIANCE_KEY));
+        telemetry.addData("Last saved Alliance: ", blackboard.get(ALLIANCE_KEY));
 
-        robot.tellMotorOutput();
+        telemetry.addData("Reference", robot.sorterHardware.reference);
+
+        telemetry.addData("Blender in position", robot.sorterHardware.inProperTickPosition());
+        telemetry.addData("Closed Check", robot.sorterHardware.closedCheck());
+        telemetry.addData("Equalized Target Position", sorterLogic.offsetPositions.get(targetOffset));
+
+        //robot.tellMotorOutput();
     }
     private float getLargestAbsVal( float[] values){
         // This function does some math!

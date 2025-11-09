@@ -148,7 +148,7 @@ public class Robot {
 
         sorterHardware = new SorterHardware(this);
         launcher = new LauncherHardware(this);
-        //sorterLogic = new ArtifactLocator(this);
+        sorterLogic = new ArtifactLocator(this);
         inventoryCam = new SensorHuskyLens(this);
         targetScanner = new Limelight_Target_Scanner();
         randomizationScanner = new Limelight_Randomization_Scanner();
@@ -289,11 +289,11 @@ public class Robot {
     {
         launcher.updateLauncherHardware();
         sorterHardware.updateSorterHardware();
-        //sorterLogic.update();
+        sorterLogic.update();
 
         //targetTag = targetScanner.tagInfo();
         panelsTelemetry.update();
-        //inventoryCam.updateBlockScan();
+        inventoryCam.updateBlockScan();
 
 
 
@@ -311,8 +311,6 @@ public class Robot {
     {
         intakeyServoR.setPower(num);
         intakeyServoL.setPower(num);
-
-
     }
 
     public void runAutoIntakeSequence() //Run in an update function for "fast" auto load
@@ -322,7 +320,6 @@ public class Robot {
         sorterHardware.tryingToFeed = true;
         sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[1]);/*replace with first empty*/
         sorterHardware.feederSpeed = 1;
-
     }
 
     public void cancelAutoIntake()
@@ -333,12 +330,12 @@ public class Robot {
 
     public void readyHardware()
     {
-        sorterHardware.doorServo.setPosition(0);
+        //sorterHardware.doorServo.setPosition(0);
         launcher.hammerServo.setPosition(.25);
         launcher.setLauncherSpeed(0);
         //sorterHardware.legalToSpin = false;
         inventoryCam.updateBlockScan();
-        sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]);
+        //sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]);
     }
 
 

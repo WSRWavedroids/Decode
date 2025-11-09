@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+import org.firstinspires.ftc.teamcode.Core.ArtifactLocator;
 import org.firstinspires.ftc.teamcode.Core.Robot;
 
 import java.util.concurrent.TimeUnit;
@@ -63,29 +64,26 @@ import java.util.concurrent.TimeUnit;
 public class SensorHuskyLens extends LinearOpMode {
 
     private final int READ_PERIOD = 1;
-    Robot disRobot;
+    Robot robot;
 
     private HuskyLens huskyLens;
     scanBox[] boxes = new scanBox[6];
 
 
-
     public SensorHuskyLens(Robot robot)
     {
-        disRobot = robot;
+        this.robot = robot;
         huskyLens = robot.husky;
         huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
         Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
         rateLimit.expire();
-
-
     }
 
 
 
     public void runOpMode()
     {
-        huskyLens = disRobot.husky;
+        huskyLens = robot.husky;
 
         /*
          * This sample rate limits the reads solely to allow a user time to observe
@@ -158,20 +156,16 @@ public class SensorHuskyLens extends LinearOpMode {
 
             telemetry.update();
         }
-
-
-
     }
 
-    void checkZone(HuskyLens.Block blockData)
-    {
-
-        for(int i = 0; i < 6; i++)
-        {
-            if((boxes[i].minX <= blockData.x && blockData.x <= boxes[i].maxX) && (boxes[i].minY <= blockData.y && blockData.y <= boxes[i].maxY))
-            {
-                doTele(i, blockData);
-                //pass scan info to logic to populate that
+    void checkZone(HuskyLens.Block blockData) {
+        for(ArtifactLocator.slotRange checkingZone : robot.sorterLogic.allZones) {
+            if((checkingZone.inRange(blockData.x, blockData.y))) {
+                robot.sorterLogic.sortOutBlobs(checkingZone, blockData.id);
+                doTele(robot.sorterLogic.allZones.indexOf(checkingZone), blockData);
+            }
+            else {
+                robot.sorterLogic.sortOutBlobs(checkingZone, 0);
             }
         }
     }
@@ -179,38 +173,6 @@ public class SensorHuskyLens extends LinearOpMode {
 
     public void updateBlockScan()
     {
-        scanBox[] boxes = new scanBox[6];
-        boxes[0].maxX = 180;
-        boxes[0].minX = 140;
-        boxes[0].maxY = 120;
-        boxes[0].minY = 0;
-        //Down Right
-        boxes[1].maxX = 320;
-        boxes[1].minX = 160;
-        boxes[1].maxY = 120;
-        boxes[1].minY = 0;
-        //Up right
-        boxes[2].maxX = 320;
-        boxes[2].minX = 160;
-        boxes[2].maxY = 240;
-        boxes[2].minY = 120;
-        //up
-        boxes[3].maxX = 180;
-        boxes[3].minX = 140;
-        boxes[3].maxY = 240;
-        boxes[3].minY = 120;
-        //up left
-        boxes[4].maxX = 160;
-        boxes[4].minX = 0;
-        boxes[4].maxY = 240;
-        boxes[4].minY = 120;
-        //down left
-        boxes[5].maxX = 160;
-        boxes[5].minX = 0;
-        boxes[5].maxY = 120;
-        boxes[5].minY = 0;
-
-
         HuskyLens.Block[] blocks = huskyLens.blocks();
         telemetry.addData("Block count", blocks.length);
         for (int i = 0; i < blocks.length; i++) {
@@ -230,14 +192,17 @@ public class SensorHuskyLens extends LinearOpMode {
 
     public class scanBox
     {
+        public scanBox(int minX, int maxX, int minY, int maxY) {
+            this.minX = minX;
+            this.maxX = maxX;
+            this.minY = minY;
+            this.maxY = maxY;
+        }
+
         public int maxX;
         public int maxY;
         public int minX;
         public int minY;
-
-        //Bottom Center
-
-
     }
 
     public void startHusky()

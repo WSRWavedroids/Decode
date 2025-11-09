@@ -10,11 +10,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Configurable
 public class SorterHardware {
     public boolean currentlyMoving = false;
-
+    public enum positionState {FIRE, LOAD, SWITCH}
+    public positionState currentPositionState;
     public boolean inMagPosition;
 
     public int currentTickCount;
-    public static   int tickTolerance = 5;
+    public static int tickTolerance = 50;
     public int[] positions;
     public int ticksPerRotation = 8192;
     public static int offset = 0;
@@ -43,11 +44,10 @@ public class SorterHardware {
     private boolean onCooldown = false;
     private double cooldownDuration = 0.5;
 
-    public static double kp = 0.00029;
-
-    public static double ki = 0.000006;//maybe try 275 where 275 is
-
-    public static double kd = 0.000004;
+    public static double kneecap = .4;
+    public static double kp = 0.001;
+    public static double ki = 0.0000002;//maybe try 275 where 275 is
+    public static double kd = 0.0;
     public static double kf = 0.0;
 
     public ElapsedTime pidfTime() {
@@ -70,18 +70,22 @@ public class SorterHardware {
         feedServoL = robot.feedServoL;
         feedServoR = robot.feedServoR;
 
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         positions = new int[6];
-        positions[0] = 0; //Slot one load
-        positions[1] = (ticksPerRotation / 2);//Slot one launch
-        positions[2] = (ticksPerRotation/3); //Slot two load
-        positions[3] = (ticksPerRotation/3 + (ticksPerRotation/2)); // slot two launch
-        positions[4] = 2*(ticksPerRotation/3);//Slot three load
-        positions[5] = (2*(ticksPerRotation/3)) + (ticksPerRotation/2); //Slot three launch
+        positions[0] = 0; //Slot A load
+        positions[1] = ticksPerRotation / 2; //Slot A launch
+        positions[2] = (2 * ticksPerRotation/3); //Slot B load
+        positions[3] = ticksPerRotation / 6; // slot B launch
+        positions[4] = ticksPerRotation / 3; //Slot C load
+        positions[5] = 5 * ticksPerRotation / 6; //Slot C launch
 
         doorServo.setPosition(doorClosedPosition);
+        //triggerServo("CLOSED");
 
-        reference = findFastestRotationInTicks(motor.getCurrentPosition(), positions[0]);
+        //reference = findFastestRotationInTicks(motor.getCurrentPosition(), positions[0]);
+        reference = 0;
 
         //inMagPosition = true;
     }
@@ -99,10 +103,9 @@ public class SorterHardware {
         feedServoL.setPower(-speed);
     }
 
-
     public int findFastestRotationInTicks(int currentPosition, int targetPosition)
     {
-        //Finds the shortest route to the slot position reguardless of how high/low we go
+        //Finds the shortest route to the slot position regardless of how high/low we go
 
         int howManyCycles = (currentPosition / ticksPerRotation);
 
@@ -115,7 +118,7 @@ public class SorterHardware {
 
         for(int i = 0; i<3; i++)
         {
-           if (Math.abs(slotSpaces[i]-currentPosition) < currentLowest)
+           if (Math.abs(slotSpaces[i] - currentPosition) < currentLowest)
            {
                currentLowest = slotSpaces[i];
            }
@@ -126,7 +129,7 @@ public class SorterHardware {
 
     public boolean inProperTickPosition()
     {
-        if(motor.getCurrentPosition() > motor.getTargetPosition() - tickTolerance &&  motor.getCurrentPosition() < motor.getTargetPosition() + tickTolerance)
+        if(motor.getCurrentPosition() > reference - tickTolerance &&  motor.getCurrentPosition() < reference + tickTolerance)
         {
             return true;
         }
@@ -180,14 +183,8 @@ public class SorterHardware {
 
     public boolean moveSafeCheck()
     {
-
-        if(!disRobot.launcher.onCooldown && closedCheck() && legalToSpin) //if not on servo timeout and not already there, rotate
-        {
-            return true;
-        }else
-        {
-            return false;
-        }
+        //if not on servo timeout and not already there, rotate
+        return !disRobot.launcher.onCooldown && !positionedCheck() && closedCheck() && legalToSpin;
     }
 
     public boolean fireSafeCheck()
@@ -199,17 +196,34 @@ public class SorterHardware {
 
     public void prepareNewMovement(int currentTickPose, int targetTickPose/*, int currentSlot, int targetSlot*/)
     {
-        reference = (findFastestRotationInTicks(currentTickPose, targetTickPose)) + offset;
+        reference = (findFastestRotationInTicks(currentTickPose, targetTickPose));
+        disRobot.telemetry.addLine("New position");
     }
 
     public void spin()
     {
             runPIDMotorStuffLol();
             currentlyMoving = true;
+            disRobot.telemetry.addLine("Moving");
     }
     
     public void updateSorterHardware()
     {
+        switch (disRobot.sorterLogic.getCurrentOffset()) {
+            // Firing positions
+            case 1: currentPositionState = positionState.FIRE;
+            case 3: currentPositionState = positionState.FIRE;
+            case 5: currentPositionState = positionState.FIRE;
+
+            // Loading positions
+            case 0: currentPositionState = positionState.LOAD;
+            case 2: currentPositionState = positionState.LOAD;
+            case 4: currentPositionState = positionState.LOAD;
+
+            // Not in a position (-1)
+            default: currentPositionState = positionState.SWITCH;
+        }
+
         if(moveSafeCheck())
         {
             spin();
@@ -218,7 +232,6 @@ public class SorterHardware {
         {
             Estop();
         }
-
 
         if(positionedCheck() && wantToMoveDoor)
         {
@@ -255,7 +268,7 @@ public class SorterHardware {
         // sum of all error over time
         integralSum = integralSum + (error * pidfTime().seconds());
 
-        double out = (kp * error) + (ki * integralSum) + (kd * derivative) + feedforward;
+        double out = kneecap * ((kp * error) + (ki * integralSum) + (kd * derivative) + feedforward);
 
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setPower(out);
