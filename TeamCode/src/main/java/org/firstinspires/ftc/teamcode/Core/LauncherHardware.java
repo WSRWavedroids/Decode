@@ -67,8 +67,9 @@ public class LauncherHardware {
         return distance * distanceMultiplier;
     }
 
-    public void readyFire() {
+    public void readyFire(int speedTarget) {
         waitingToFire = true;
+        setLauncherSpeed(speedTarget);
     }
 
     public void fire() {
