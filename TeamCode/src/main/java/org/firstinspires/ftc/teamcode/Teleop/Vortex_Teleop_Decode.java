@@ -39,7 +39,7 @@ import org.firstinspires.ftc.teamcode.Vision.WaveTag;
  * Throughout this program, there are comments explaining what everything does because previous programmers
  * did a horrible job of doing that.
  */
-@TeleOp(name = "Basic Vortex", group = "CompBot")
+@TeleOp(name = "DAVE", group = "CompBot")
 public class Vortex_Teleop_Decode extends OpMode {
 
     // This section tells the program all of the different pieces of hardware that are on our robot that we will use in the program.
