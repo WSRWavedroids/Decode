@@ -33,13 +33,13 @@ public class fireQueue {
         if(!(currentSlot++ > 3))
         {
             currentSlot++;
-            balls[currentSlot].thisColor = color;
+            balls[currentSlot].color = color;
         }
     }
 
     public void addToListDirectly(int positionInList, color color)
     {
-        balls[positionInList].thisColor = color;
+        balls[positionInList].color = color;
     }
 
     public void clearList()
@@ -47,14 +47,14 @@ public class fireQueue {
         currentSlot = 0;
         for(int i = 0; i < 4; i++)
         {
-            balls[i].thisColor = color.Empty;
+            balls[i].color = color.Empty;
         }
     }
 }
 
 class queueBall
 {
-    fireQueue.color thisColor;
+    fireQueue.color color;
 }
 
 
