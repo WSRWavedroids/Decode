@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
+import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.OPEN;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Core.LauncherHardware;
@@ -171,24 +174,24 @@ public class BlueFrontAuto extends AutonomousPLUS {
             sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[one]); //command movement
             stallTillTrue(robot.sorterHardware.positionedCheck());
             stallTillTrue(launcher.inSpeedRange);// If we arent at speed yet, stall till we are
-            sorter.triggerServo("OPEN");
+            sorter.triggerServo(OPEN);
             stallTillTrue(sorter.openCheck()); // Prepare to fire
             launcher.fire();
             stallTillTrue(!robot.launcher.waitingForServo); //Wait till done firing
             launcher.setLauncherSpeed(0);// Cut laucher to save power
-            sorter.triggerServo("CLOSED"); //Tell to close
+            sorter.triggerServo(CLOSED); //Tell to close
             stallTillTrue(sorter.closedCheck()); //Wait for close
         }
         else
         {
             stallTillTrue(robot.sorterHardware.positionedCheck());
             stallTillTrue(launcher.inSpeedRange);// If we arent at speed yet, stall till we are
-            sorter.triggerServo("OPEN");
+            sorter.triggerServo(OPEN);
             stallTillTrue(sorter.openCheck()); // Prepare to fire
             launcher.fire();
             stallTillTrue(!robot.launcher.waitingForServo); //Wait till done firing
             launcher.setLauncherSpeed(0);// Cut laucher to save power
-            sorter.triggerServo("CLOSED"); //Tell to close
+            sorter.triggerServo(CLOSED); //Tell to close
             stallTillTrue(sorter.closedCheck());
         }
 
@@ -199,12 +202,12 @@ public class BlueFrontAuto extends AutonomousPLUS {
         sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[two]); //command movement
         stallTillTrue(robot.sorterHardware.positionedCheck());
         stallTillTrue(launcher.inSpeedRange);// If we arent at speed yet, stall till we are
-        sorter.triggerServo("OPEN");
+        sorter.triggerServo(OPEN);
         stallTillTrue(sorter.openCheck()); // Prepare to fire
         launcher.fire();
         stallTillTrue(!robot.launcher.waitingForServo); //Wait till done firing
         launcher.setLauncherSpeed(0);// Cut laucher to save power
-        sorter.triggerServo("CLOSED"); //Tell to close
+        sorter.triggerServo(CLOSED); //Tell to close
         stallTillTrue(sorter.closedCheck()); //Wait for close
 
 
@@ -214,12 +217,12 @@ public class BlueFrontAuto extends AutonomousPLUS {
         sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[three]); //command movement
         stallTillTrue(robot.sorterHardware.positionedCheck());
         stallTillTrue(launcher.inSpeedRange);// If we arent at speed yet, stall till we are
-        sorter.triggerServo("OPEN");
+        sorter.triggerServo(OPEN);
         stallTillTrue(sorter.openCheck()); // Prepare to fire
         launcher.fire();
         stallTillTrue(!robot.launcher.waitingForServo); //Wait till done firing
         launcher.setLauncherSpeed(0);// Cut laucher to save power
-        sorter.triggerServo("CLOSED"); //Tell to close
+        sorter.triggerServo(CLOSED); //Tell to close
         stallTillTrue(sorter.closedCheck()); //Wait for close
     }
 

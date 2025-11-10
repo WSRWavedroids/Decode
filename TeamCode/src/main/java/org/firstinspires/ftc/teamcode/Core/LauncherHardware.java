@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Core;
 
+import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
+import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.OPEN;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -68,7 +71,6 @@ public class LauncherHardware {
         waitingToFire = true;
     }
 
-
     public void fire() {
         waitingToFire = false;
         runHammer();
@@ -124,8 +126,14 @@ public class LauncherHardware {
             spikeable = true;
             spikeableValue = motor.getVelocity();
         }
-
         if (inSpeedRange && robot.sorterHardware.fireSafeCheck() && waitingToFire) {
+            robot.sorterHardware.triggerServo(OPEN);
+        }
+        /*else if (!robot.launcher.onCooldown) {
+            robot.sorterHardware.triggerServo(CLOSED);
+        }*/
+
+        if (inSpeedRange && robot.sorterHardware.fireSafeCheck() && waitingToFire && robot.sorterHardware.openCheck()) {
             fire();
         }
 
@@ -134,7 +142,7 @@ public class LauncherHardware {
     public boolean spikeable = false;
     public double spikeableValue;
 
-    public void deacelerationDetection()
+    public void decelerationDetection()
     {
 
     }

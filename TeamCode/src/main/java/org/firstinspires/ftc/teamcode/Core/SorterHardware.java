@@ -1,13 +1,15 @@
 package org.firstinspires.ftc.teamcode.Core;
 
+import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
+import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.OPEN;
+import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.FIRE;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import java.util.Arrays;
 
 @Configurable
 public class SorterHardware {
@@ -28,7 +30,9 @@ public class SorterHardware {
 
     private CRServo feedServoL;
     private CRServo feedServoR;
-    public double feederSpeed = 0.5;
+    public double feederIntakeSpeed = 1;
+    public double feederRotateSpeed = 1;
+    public double passiveFeederSpeed = 1;
     public boolean tryingToFeed = false;
 
     public boolean open = false;
@@ -40,10 +44,10 @@ public class SorterHardware {
     public DcMotorEx motor;
     public LauncherHardware launcher;
 
-    String doorTarget;
+    public Robot.openClosed doorTarget;
 
     private ElapsedTime cooldownTimer = new ElapsedTime();
-    private boolean onCooldown = false;
+    public boolean onCooldown = false;
     private double cooldownDuration = 0.5;
 
     public static double kneecap = .4;
@@ -100,8 +104,8 @@ public class SorterHardware {
 
     public void runFeeders(double speed)
     {
-        feedServoR.setPower(speed);
-        feedServoL.setPower(-speed);
+        feedServoR.setPower(-speed);
+        feedServoL.setPower( speed);
     }
 
     public int findFastestRotationInTicks(int currentPosition, int targetPosition) {
@@ -123,7 +127,8 @@ public class SorterHardware {
             }
         }
 
-        return bestPosition;}
+        return bestPosition;
+    }
 
     public boolean inProperTickPosition()
     {
@@ -144,7 +149,7 @@ public class SorterHardware {
         else return false;
     }
 
-    public void triggerServo(String goTo)
+    public void triggerServo(Robot.openClosed goTo)
     {
         doorTarget = goTo;
         wantToMoveDoor = true;
@@ -155,14 +160,15 @@ public class SorterHardware {
             wantToMoveDoor = false;
             cooldownTimer.reset();
             onCooldown = true;
+            disRobot.telemetry.addData("Setting door to", doorTarget);
 
-            if(doorTarget.equals("CLOSED"))
+            if(doorTarget == CLOSED)
             {
                 doorServo.setPosition(doorClosedPosition);
                 open = false;
                 //door
             }
-            if(doorTarget.equals("OPEN"))
+            if(doorTarget == OPEN)
             {
                 doorServo.setPosition(doorOpenPosition);
                 open = true;
@@ -179,6 +185,10 @@ public class SorterHardware {
         return !onCooldown && open;
     }
 
+    public boolean inStateCheck(positionState targetState){
+        return currentPositionState == targetState;
+    }
+
     public boolean moveSafeCheck()
     {
         //if not on servo timeout and not already there, rotate
@@ -187,9 +197,8 @@ public class SorterHardware {
 
     public boolean fireSafeCheck()
     {
-
         //if not on servo timeout and there and open, fire
-        return !disRobot.launcher.onCooldown && positionedCheck() && openCheck();
+        return !disRobot.launcher.onCooldown && positionedCheck()  && inStateCheck(FIRE);
     }
 
     public void prepareNewMovement(int currentTickPose, int targetTickPose/*, int currentSlot, int targetSlot*/)
@@ -209,9 +218,9 @@ public class SorterHardware {
     {
         switch (disRobot.sorterLogic.getCurrentOffset()) {
             // Firing positions
-            case 1: currentPositionState = positionState.FIRE;
-            case 3: currentPositionState = positionState.FIRE;
-            case 5: currentPositionState = positionState.FIRE;
+            case 1: currentPositionState = FIRE;
+            case 3: currentPositionState = FIRE;
+            case 5: currentPositionState = FIRE;
 
             // Loading positions
             case 0: currentPositionState = positionState.LOAD;
@@ -236,12 +245,17 @@ public class SorterHardware {
             moveDoor();
         }
 
-        if(positionedCheck() && tryingToFeed)
+        if(tryingToFeed)
         {
-            runFeeders(feederSpeed);
+            runFeeders(feederIntakeSpeed);
+        } else if (moveSafeCheck()) {
+            runFeeders(feederRotateSpeed);
+        } else {
+            runFeeders(passiveFeederSpeed);
         }
-        else {
-            runFeeders(0);
+
+        if (cooldownTimer.seconds() > cooldownDuration){
+            onCooldown = false;
         }
     }
     

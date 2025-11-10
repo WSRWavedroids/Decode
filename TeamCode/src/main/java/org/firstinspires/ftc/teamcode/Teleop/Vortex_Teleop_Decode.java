@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.EMPTY;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.PURPLE;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.GREEN;
+
 import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -280,7 +284,7 @@ public class Vortex_Teleop_Decode extends OpMode {
             else
             {
                 sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(),
-                        (int) robot.sorterLogic.findFirstNotType(ArtifactLocator.slotState.EMPTY).getFirePosition());
+                        (int) robot.sorterLogic.findFirstNotType(EMPTY).getFirePosition());
             }
             //Find first occupied and prepare acion
         }
@@ -295,7 +299,7 @@ public class Vortex_Teleop_Decode extends OpMode {
             else
             {
                 sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(),
-                        (int) robot.sorterLogic.findFirstType(ArtifactLocator.slotState.GREEN).getFirePosition());
+                        (int) robot.sorterLogic.findFirstType(GREEN).getFirePosition());
             }
         }
         //prepare purple
@@ -309,7 +313,7 @@ public class Vortex_Teleop_Decode extends OpMode {
             else
             {
                 sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(),
-                        (int) robot.sorterLogic.findFirstType(ArtifactLocator.slotState.PURPLE).getFirePosition());
+                        (int) robot.sorterLogic.findFirstType(PURPLE).getFirePosition());
             }*/
         }
 
@@ -553,7 +557,8 @@ public class Vortex_Teleop_Decode extends OpMode {
             return;
         }*/
 
-        if (gamepad2.leftBumperWasPressed()) {
+        // This section of code increments by 1
+        /*if (gamepad2.leftBumperWasPressed()) {
             targetOffset = makeSureNewOffsetIsOK(targetOffset - 1);
             sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.offsetPositions.get(targetOffset));
         }
@@ -561,17 +566,44 @@ public class Vortex_Teleop_Decode extends OpMode {
         else if (gamepad2.rightBumperWasPressed()) {
             targetOffset = makeSureNewOffsetIsOK(targetOffset + 1);
             sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.offsetPositions.get(targetOffset));
+        }*/
+
+        // Fire positions
+        if (gamepad2.dpadLeftWasPressed()) {
+            goNextFirePosition(-1);
+        } else if (gamepad2.dpadUpWasReleased()) {
+            goNextFirePosition(1);
+        }
+
+        // Load positions
+        else if (gamepad2.dpadDownWasPressed()){
+            goNextLoadPosition(-1);
+        } else if (gamepad2.dpadRightWasPressed()) {
+            goNextLoadPosition(1);
         }
 
         telemetry.addData("Target Offset", targetOffset);
     }
 
+    private void goNextLoadPosition(int go) {
+        int potentialNewPosition = targetOffset + go;
+        if (!isEven(potentialNewPosition)) {potentialNewPosition += go;}
+        targetOffset = makeSureNewOffsetIsOK(potentialNewPosition);
+        sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.offsetPositions.get(targetOffset));
+    }
+    private void goNextFirePosition(int go) {
+        int potentialNewPosition = targetOffset + go;
+        if (isEven(potentialNewPosition)) {potentialNewPosition += go;}
+        targetOffset = makeSureNewOffsetIsOK(potentialNewPosition);
+        sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.offsetPositions.get(targetOffset));
+    }
+
     private int makeSureNewOffsetIsOK(int oldNewOffset) {
-        if (oldNewOffset < 0) {
-            oldNewOffset = 5;
+        while (oldNewOffset < 0) {
+            oldNewOffset += 6;
         }
-        if (oldNewOffset > 5) {
-            oldNewOffset = 0;
+        while (oldNewOffset > 5) {
+            oldNewOffset -= 6;
         }
         return oldNewOffset;
     }
@@ -601,10 +633,11 @@ public class Vortex_Teleop_Decode extends OpMode {
         telemetry.addData("Blender in position", robot.sorterHardware.inProperTickPosition());
         telemetry.addData("Closed Check", robot.sorterHardware.closedCheck());
         telemetry.addData("Equalized Target Position", sorterLogic.offsetPositions.get(targetOffset));
+        telemetry.addData("Door Open", sorterHardware.open);
 
         //robot.tellMotorOutput();
     }
-    private float getLargestAbsVal( float[] values){
+    private float getLargestAbsVal(float[] values){
         // This function does some math!
         float max = 0;
         for (float val : values) {
@@ -615,8 +648,9 @@ public class Vortex_Teleop_Decode extends OpMode {
         return max;
     }
 
-
-
+    private boolean isEven(int x) {
+        return x % 2 == 0;
+    }
 }
 
 

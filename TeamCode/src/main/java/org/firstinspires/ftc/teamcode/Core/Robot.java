@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Core;
 
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.EMPTY;
+
 import android.annotation.SuppressLint;
 
 import com.bylazar.panels.Panels;
@@ -20,7 +22,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Teleop.Limelight_Target_Scanner;
 import org.firstinspires.ftc.teamcode.Vision.SensorHuskyLens;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
@@ -81,6 +82,8 @@ public class Robot {
     public Panels panels;
 
     public static TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+
+    public enum openClosed{OPEN,CLOSED}
 
     //Initialize motors and servos
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, OpMode opmode){
@@ -282,7 +285,7 @@ public class Robot {
 
 
     public void prepareAuto(){
-        sorterHardware.triggerServo("CLOSED");
+        sorterHardware.triggerServo(openClosed.CLOSED);
         launcher.hammerServo.setPosition(launcher.hammerBackPosition);
     }
 
@@ -319,13 +322,13 @@ public class Robot {
         //Find first empty
         runBasicIntake(1);
         sorterHardware.tryingToFeed = true;
-        //sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[1]);/*replace with first empty*/
-        sorterHardware.feederSpeed = 1;
+        //sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(EMPTY).getLoadPosition());/*replace with first empty*/
+        sorterHardware.feederIntakeSpeed = 1;
     }
 
     public void cancelAutoIntake()
     {
-        sorterHardware.feederSpeed = 0;
+        sorterHardware.feederIntakeSpeed = 0;
         sorterHardware.tryingToFeed = false;
         runBasicIntake(0);
     }
