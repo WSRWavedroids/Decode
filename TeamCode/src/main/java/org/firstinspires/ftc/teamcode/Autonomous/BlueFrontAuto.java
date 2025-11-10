@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Core.LauncherHardware;
 import org.firstinspires.ftc.teamcode.Core.Robot;
 import org.firstinspires.ftc.teamcode.Core.SorterHardware;
-import org.firstinspires.ftc.teamcode.Teleop.Limelight_Target_Scanner;
+import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 
@@ -33,14 +33,14 @@ public class BlueFrontAuto extends AutonomousPLUS {
         super.runOpMode();
 
         robot = new Robot(hardwareMap, telemetry, this);
-        //targetData = robot.targetTag;
+        targetData = robot.targetTag; // comment out if error
         launcher = robot.launcher;
         sorter = robot.sorterHardware;
         robot.randomizationScanner = new Limelight_Randomization_Scanner();
         robot.targetScanner = new Limelight_Target_Scanner();
 
-        randomization = new Limelight_Randomization_Scanner();//robot.randomizationScanner;
-        scanner = new Limelight_Target_Scanner();//robot.targetScanner;
+        randomization = robot.randomizationScanner;
+        scanner = robot.targetScanner;
 
 
 
@@ -73,6 +73,7 @@ public class BlueFrontAuto extends AutonomousPLUS {
 
 
 
+
         telemetry.addData("Our pattern is: ", pattern, " ...yay");
 
         if(pattern.equals("PPG"))
@@ -91,7 +92,7 @@ public class BlueFrontAuto extends AutonomousPLUS {
         }
         else
         {
-            telemetry.addData("It failed: ", "Cry Time");
+            telemetry.addData("It failed ", "cry time");
         }
         telemetry.update();
 

@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.EMPTY;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.PURPLE;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.GREEN;
-
 import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -11,7 +7,6 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -20,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Core.ArtifactLocator;
 import org.firstinspires.ftc.teamcode.Core.LauncherHardware;
 import org.firstinspires.ftc.teamcode.Core.Robot;
 import org.firstinspires.ftc.teamcode.Core.SorterHardware;
+import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
 import org.firstinspires.ftc.teamcode.Vision.SensorHuskyLens;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 

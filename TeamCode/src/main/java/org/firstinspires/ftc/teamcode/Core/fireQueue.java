@@ -72,6 +72,11 @@ public class fireQueue {
         thirdFired = false;
     }
 
+    public void autoModeFire()
+    {
+
+    }
+
     public void fireAll(double speedTarget)
     {
         if(wantToFireQueue && !launcherHardware.waitingToFire && sorterHardware.fireSafeCheck())

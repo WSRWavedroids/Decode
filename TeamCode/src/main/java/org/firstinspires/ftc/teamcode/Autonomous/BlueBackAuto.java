@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Core.LauncherHardware;
 import org.firstinspires.ftc.teamcode.Core.Robot;
 import org.firstinspires.ftc.teamcode.Core.SorterHardware;
-import org.firstinspires.ftc.teamcode.Teleop.Limelight_Target_Scanner;
+import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 

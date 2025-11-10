@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Core;
 
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.EMPTY;
-
 import android.annotation.SuppressLint;
 
 import com.bylazar.panels.Panels;
@@ -22,7 +20,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Teleop.Limelight_Target_Scanner;
+import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
 import org.firstinspires.ftc.teamcode.Vision.SensorHuskyLens;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
