@@ -256,6 +256,22 @@ public class ArtifactLocator {
         return noSlot;
     }
 
+
+    /**
+     * Searches the slots in order of ABC to find the first slot containing a ball.
+     *                 in the form of a slotState enum.
+     * @return The first found slot containing a ball
+     */
+    public slot findFirstOccupied() {
+        for (slot currentSlot : allSlots) {
+            if (currentSlot.contains(GREEN) || currentSlot.contains(PURPLE)) {
+                return currentSlot;
+            }
+        }
+        return noSlot;
+    }
+
+
     /**
      * Searches the slots in order of ABC to find the first slot that is known and does not contain
      * the specified contents. If the input is UNKNOWN, it will find the first known slot.

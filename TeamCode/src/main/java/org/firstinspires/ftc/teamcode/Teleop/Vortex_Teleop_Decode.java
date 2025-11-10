@@ -169,84 +169,41 @@ public class Vortex_Teleop_Decode extends OpMode {
             spinTargetAcquired = false;
         }
 
-
-        if(gamepad2.square)
+        ///This will work once we have inventory Cam
+        /*if(gamepad2.square)
         {
-            robot.expandyServo.setDirection(DcMotorSimple.Direction.FORWARD);
-            robot.expandyServo.setPower(1);
-
-            /*Bot.frontLeftDrive.setPower(.1);
-            Bot.frontRightDrive.setPower(.1);
-            Bot.backLeftDrive.setPower(-0.1);
-            Bot.backRightDrive.setPower(-0.1);*/
-
-
+            sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(PURPLE).getFirePosition());
         }
         else if(gamepad2.triangle)
         {
-            robot.expandyServo.setDirection(DcMotorSimple.Direction.REVERSE);
-            robot.expandyServo.setPower(1);
-
-            //Drivetrain Assist?
-            /*
-            Bot.frontLeftDrive.setPower(-.1);
-            Bot.frontRightDrive.setPower(-.1);
-            Bot.backLeftDrive.setPower(0.1);
-            Bot.backRightDrive.setPower(0.1);*/
-
+            sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(GREEN).getFirePosition());
         }
-        else
+        else if(gamepad2.left_trigger > 0.5)
         {
-            robot.expandyServo.setPower(0);
-        }
+            sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstOccupied().getFirePosition());
+        }*/
+
 
         if(gamepad2.cross)
         {
-            //robot.runBasicIntake(1);
             robot.runAutoIntakeSequence();
+            //sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(EMPTY).getLoadPosition());
         }
         else if(gamepad2.circle)
         {
-            //robot.runBasicIntake(-1);
-            robot.runAutoIntakeSequence();
+            robot.runBasicIntake(-1);
         }
         else
         {
            robot.cancelAutoIntake();
         }
 
-         // temp measure
-        //testing rotation
-
-        /*if (gamepad2.dpad_down)
+        if(gamepad2.right_trigger > 0.5)
         {
-            sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[slot]);
+            launcher.readyFire(1);
         }
-        else if (gamepad2.dpad_up)
-        {
-            int nextSlot = (slot + 1) % sorterHardware.positions.length;
-            sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[nextSlot]);
-        }*/
 
-        incrementThroughPositions();
 
-        /*else if (gamepad2.dpad_left & !contTwoBumpersPressed)
-        {
-            slot -= 2;
-            if (slot < 0) slot = 4; // wrap back to last slot pair
-            sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[slot]);
-            contTwoBumpersPressed = true;
-        }
-        else if (gamepad2.dpad_right & !contTwoBumpersPressed)
-        {
-            slot += 2;
-            if (slot > 4) slot = 0; // wrap to first slot pair
-            sorterHardware.prepareNewMovement(robot.sorterMotor.getCurrentPosition(), sorterHardware.positions[slot]);
-            contTwoBumpersPressed = true;
-        }
-        else if (!gamepad2.dpad_left & !gamepad2.dpad_right) {
-            contTwoBumpersPressed = false;
-        }*/
         telemetry.addData("currentSlot target: ", slot);
 
         if (gamepad1.touchpad || gamepad2.touchpad) {
@@ -257,75 +214,6 @@ public class Vortex_Teleop_Decode extends OpMode {
         robot.panelsTelemetry.update();
 
         doTelemetryStuff();
-
-        if(gamepad2.share)
-        {
-            cadenRecording = true;
-        }
-        if(gamepad2.dpad_down)//cancel and clear
-        {
-            cadenRecording = false;
-            cadenFirstOccupied = false;
-            cadenSecondOccupied = false;
-            cadenThirdOccupied = false;
-            first = 0;
-            second = 0;
-            third = 0;
-        }
-
-        //Prepare any
-        if(gamepad2.left_trigger > 0.5)
-        {
-            if(cadenRecording)
-            {
-                //add new to current recording
-                //addToCadenRecording(sorterLogic.findFirstOccupied());
-            }
-            else
-            {
-                sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(),
-                        (int) robot.sorterLogic.findFirstNotType(EMPTY).getFirePosition());
-            }
-            //Find first occupied and prepare acion
-        }
-        //prepare green
-        else if(gamepad2.triangle)
-        {
-            //Find first green and prepare action
-            if(cadenRecording)
-            {
-                //addToCadenRecording(sorterLogic.findFirstOfType("Green"));
-            }
-            else
-            {
-                sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(),
-                        (int) robot.sorterLogic.findFirstType(GREEN).getFirePosition());
-            }
-        }
-        //prepare purple
-        else if(gamepad2.square)
-        {
-            robot.runAutoIntakeSequence();
-            /*if(cadenRecording)
-            {
-
-            }
-            else
-            {
-                sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(),
-                        (int) robot.sorterLogic.findFirstType(PURPLE).getFirePosition());
-            }*/
-        }
-
-        if(gamepad2.right_trigger > 0.5)
-        {
-            launcher.readyFire();
-        }
-
-        /*if(gamepad2.dpad_down)
-        {
-           sorterHardware.estop;
-        }*/
 
     }
 
@@ -519,33 +407,6 @@ public class Vortex_Teleop_Decode extends OpMode {
         } else if (speed == 0.75) {
             telemetry.addData("Speed", "Normal Boi");
         }
-    }
-
-    boolean cadenFirstOccupied = false;
-    boolean cadenSecondOccupied = false;
-    boolean cadenThirdOccupied = false;
-    int first;
-    int second;
-    int third;
-    private void addToCadenRecording(int physicalTargetTicks)
-    {
-        if(!cadenFirstOccupied)
-        {
-            first = physicalTargetTicks;
-            cadenFirstOccupied = true;
-        }
-        else if(cadenFirstOccupied && !cadenSecondOccupied)
-        {
-            second = physicalTargetTicks;
-            cadenSecondOccupied = true;
-        }
-        else if(cadenSecondOccupied && !cadenThirdOccupied)
-        {
-            third = physicalTargetTicks;
-            cadenThirdOccupied = true;
-            cadenRecording = false;
-        }
-
     }
 
     public void incrementThroughPositions() {
