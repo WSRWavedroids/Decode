@@ -88,13 +88,7 @@ public class SorterHardware {
         positions[4] = ticksPerRotation / 3; //Slot C load
         positions[5] = 5 * ticksPerRotation / 6; //Slot C launch
 
-        doorServo.setPosition(doorClosedPosition);
-        //triggerServo("CLOSED");
-
-        //reference = findFastestRotationInTicks(motor.getCurrentPosition(), positions[0]);
         reference = 0;
-
-        //inMagPosition = true;
     }
 
 

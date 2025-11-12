@@ -56,7 +56,6 @@ public class LauncherHardware {
         // motor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(P, I, D, F));
         motor.setDirection(REVERSE);
         hammerServo = robot.hammerServo;
-        hammerServo.setPosition(hammerBackPosition);
     }
 
     public boolean motorSpeedCheck(double speedTarget) {

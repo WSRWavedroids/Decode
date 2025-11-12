@@ -83,6 +83,10 @@ public class Robot {
 
     public enum openClosed{OPEN,CLOSED}
 
+    public boolean scanningForTargetTag = false;
+
+    public int limelightSideOffsetAngle = 0;
+
     //Initialize motors and servos
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, OpMode opmode){
         this.hardwareMap = hardwareMap;
@@ -293,7 +297,12 @@ public class Robot {
         sorterHardware.updateSorterHardware();
         sorterLogic.update();
 
-        //targetTag = targetScanner.tagInfo();
+        if(scanningForTargetTag)
+        {
+            targetTag = targetScanner.tagInfo();
+        }
+
+
         panelsTelemetry.update();
         inventoryCam.updateBlockScan();
 
@@ -306,7 +315,8 @@ public class Robot {
     {
         //Reliant functions not present
         telemetry.addData("Sorter Position: ", sorterHardware.motor.getCurrentPosition());
-        telemetry.addData("Launcher Position: ", launcher.motor.getVelocity());
+        telemetry.addData("Launcher Velocity: ", launcher.motor.getVelocity());
+
     }
 
     public void runBasicIntake(double num)
@@ -331,12 +341,19 @@ public class Robot {
         runBasicIntake(0);
     }
 
-    public void readyHardware()
+    public void readyHardware(boolean resetEncoder)
     {
         //sorterHardware.resetSorterEncoder();
-        launcher.hammerServo.setPosition(.25);
+        launcher.hammerServo.setPosition(launcher.hammerBackPosition);
+        sorterHardware.doorServo.setPosition(sorterHardware.doorClosedPosition);
         launcher.setLauncherSpeed(0);
         inventoryCam.updateBlockScan();
+
+        if(resetEncoder)
+        {
+            sorterHardware.resetSorterEncoder();
+            encoderReset();
+        }
     }
 
 

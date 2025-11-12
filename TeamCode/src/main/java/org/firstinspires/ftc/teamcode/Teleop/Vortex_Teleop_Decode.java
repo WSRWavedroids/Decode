@@ -90,7 +90,6 @@ public class Vortex_Teleop_Decode extends OpMode {
         launcher = robot.launcher;
         sorterLogic = robot.sorterLogic;
 
-        sorterHardware.doorServo.setPosition(sorterHardware.doorClosedPosition);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -107,16 +106,19 @@ public class Vortex_Teleop_Decode extends OpMode {
             imu.initialize(parameters);
         }
         //if using field centric youl need this lolzeez
-        if (blackboard.get(ALLIANCE_KEY) == "BLUE") {
+        if (blackboard.get(ALLIANCE_KEY).equals("BLUE")) {
             tagScanner.InitLimeLightTargeting(2, robot.hardwareMap);
-        } else if (blackboard.get(ALLIANCE_KEY) == "RED") {
+            robot.scanningForTargetTag = true;
+        } else if (blackboard.get(ALLIANCE_KEY).equals("RED")) {
             tagScanner.InitLimeLightTargeting(1, robot.hardwareMap);
+            robot.scanningForTargetTag = true;
         } else {
             tagScanner.InitLimeLightTargeting(1, robot.hardwareMap);
+            robot.scanningForTargetTag = true;
         }
 
         robot.panels = Panels.INSTANCE;
-        robot.readyHardware();
+        robot.readyHardware(true);
     }
 
     /*
@@ -136,7 +138,6 @@ public class Vortex_Teleop_Decode extends OpMode {
         gamepad2.setLedColor(0, 0, 255, 100000000);
         sorterHardware.resetSorterEncoder();//REMOVE ONCE AUTO -> TELE IS FIGURED OUT
         sorterHardware.legalToSpin = true;
-        robot.readyHardware();
 
     }
 
@@ -296,12 +297,12 @@ public class Vortex_Teleop_Decode extends OpMode {
         {
             double constant = -1660 / 360; //We will know this later
             speed = 1;
-            double turnTicks = robot.targetTag.angleX * constant;
+            int turnTicks = (int) ((robot.targetTag.angleX + robot.limelightSideOffsetAngle) * constant);
 
-            robot.frontLeftDrive.setTargetPosition(robot.frontLeftDrive.getCurrentPosition() + (int) turnTicks);
-            robot.frontRightDrive.setTargetPosition(robot.frontRightDrive.getCurrentPosition() - (int) turnTicks);
-            robot.backLeftDrive.setTargetPosition(robot.backLeftDrive.getCurrentPosition() + (int) turnTicks);
-            robot.backRightDrive.setTargetPosition(robot.backRightDrive.getCurrentPosition() - (int) turnTicks);
+            robot.frontLeftDrive.setTargetPosition(robot.frontLeftDrive.getCurrentPosition() + turnTicks);
+            robot.frontRightDrive.setTargetPosition(robot.frontRightDrive.getCurrentPosition() - turnTicks);
+            robot.backLeftDrive.setTargetPosition(robot.backLeftDrive.getCurrentPosition() + turnTicks);
+            robot.backRightDrive.setTargetPosition(robot.backRightDrive.getCurrentPosition() - turnTicks);
         }
 
 
