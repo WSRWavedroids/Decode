@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.Core;
 
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
 import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.OPEN;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -23,20 +23,20 @@ public class LauncherHardware {
 
     private Robot robot;
 
-    public double toleranceRange = 5;
+    public double toleranceRange = 350;
 
-    public double speedTarget;
+    public double velocityTarget;
 
     public double distanceMultiplier;
 
     public Servo hammerServo;
 
     private ElapsedTime cooldownTimer = new ElapsedTime();
-    private double timeForMove = 0.3;
+    private double cooldownDuration = 0.3;
     public boolean onCooldown = false;
 
     private boolean hammerForward;
-    private boolean hammerBack;
+    private boolean hammerBack = true;
     public double hammerForwardPosition = 0;
     public double hammerBackPosition = .25;
 
@@ -53,14 +53,15 @@ public class LauncherHardware {
     public LauncherHardware(Robot robotFile) {
         robot = robotFile;
         motor = robot.launcherMotor;
-        motor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(P, I, D, F));
+        // motor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(P, I, D, F));
+        motor.setDirection(REVERSE);
         hammerServo = robot.hammerServo;
         hammerServo.setPosition(hammerBackPosition);
     }
 
     public boolean motorSpeedCheck(double speedTarget) {
         //robot.launcher.rampSpeed(2);
-        return (motor.getVelocity() > speedTarget - toleranceRange) && (motor.getVelocity() < speedTarget + toleranceRange);
+        return (motor.getVelocity() > (-speedTarget - toleranceRange)) && (motor.getVelocity() < (-speedTarget + toleranceRange));
     }
 
     public double findSpeed(double distance) {
@@ -74,7 +75,6 @@ public class LauncherHardware {
 
     public void fire() {
         waitingToFire = false;
-        runHammer();
         onCooldown = true;
         cooldownTimer.reset();
 
@@ -95,49 +95,50 @@ public class LauncherHardware {
 
     public void timerCheck()
     {
-        if(cooldownTimer.seconds() >= timeForMove)
-        {
-            hammerBack = false;
-            hammerForward = true;
-        }
-        else if(cooldownTimer.seconds() >= timeForMove *2)
+        robot.telemetry.addLine("Checking the timer");
+
+        if (cooldownTimer.seconds() >= (cooldownDuration * 2))
         {
             hammerBack = true;
             hammerForward = false;
             onCooldown = false;
-
-            if(firingInSequence)
-            {
-                //robot.sorterHardware.nextPhaseStep();
-            }
         }
+        else if(cooldownTimer.seconds() >= cooldownDuration)
+        {
+            hammerBack = false;
+            hammerForward = true;
+        }
+
     }
 
 
     public void setLauncherSpeed(double targetspeed) {
-        motor.setVelocity(ticksPerRevolution * (revolutionsPerSecond * targetspeed));
+        velocityTarget = ticksPerRevolution * (revolutionsPerSecond * targetspeed);
+        motor.setVelocity(velocityTarget);
     }
 
+
     public void updateLauncherHardware() {
-        inSpeedRange = motorSpeedCheck(speedTarget);
+        inSpeedRange = motorSpeedCheck(velocityTarget);
         timerCheck();
+        runHammer();
+
 
         if(inSpeedRange)
         {
             spikeable = true;
             spikeableValue = motor.getVelocity();
         }
-        if (inSpeedRange && robot.sorterHardware.fireSafeCheck() && waitingToFire) {
+        if (robot.sorterHardware.fireSafeCheck() && waitingToFire && inSpeedRange) {
             robot.sorterHardware.triggerServo(OPEN);
         }
-        /*else if (!robot.launcher.onCooldown) {
+        else if (!robot.launcher.onCooldown) {
             robot.sorterHardware.triggerServo(CLOSED);
-        }*/
-
-        if (inSpeedRange && robot.sorterHardware.fireSafeCheck() && waitingToFire && robot.sorterHardware.openCheck()) {
-            fire();
         }
 
+        if (robot.sorterHardware.fireSafeCheck() && waitingToFire && robot.sorterHardware.openCheck()) {
+            fire();
+        }
     }
 
     public boolean spikeable = false;

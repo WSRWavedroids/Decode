@@ -19,7 +19,7 @@ public class SorterHardware {
     public boolean inMagPosition;
 
     public int currentTickCount;
-    public static int tickTolerance = 50;
+    public static int tickTolerance = 100;
     public int[] positions;
     public int ticksPerRotation = 8192;
     public static int offset = 0;
@@ -50,6 +50,8 @@ public class SorterHardware {
     public boolean onCooldown = false;
     private double cooldownDuration = 0.5;
 
+    private ElapsedTime pidfTimer = new ElapsedTime();
+
     public static double kneecap = .4;
     public static double kp = 0.001;
     public static double ki = 0.0000002;//maybe try 275 where 275 is
@@ -57,7 +59,7 @@ public class SorterHardware {
     public static double kf = 0.0;
 
     public ElapsedTime pidfTime() {
-        return cooldownTimer;
+        return pidfTimer;
     }
 
 
@@ -218,14 +220,14 @@ public class SorterHardware {
     {
         switch (disRobot.sorterLogic.getCurrentOffset()) {
             // Firing positions
-            case 1: currentPositionState = FIRE;
-            case 3: currentPositionState = FIRE;
-            case 5: currentPositionState = FIRE;
+            case 1: currentPositionState = FIRE; break;
+            case 3: currentPositionState = FIRE; break;
+            case 5: currentPositionState = FIRE; break;
 
             // Loading positions
-            case 0: currentPositionState = positionState.LOAD;
-            case 2: currentPositionState = positionState.LOAD;
-            case 4: currentPositionState = positionState.LOAD;
+            case 0: currentPositionState = positionState.LOAD; break;
+            case 2: currentPositionState = positionState.LOAD; break;
+            case 4: currentPositionState = positionState.LOAD; break;
 
             // Not in a position (-1)
             default: currentPositionState = positionState.SWITCH;

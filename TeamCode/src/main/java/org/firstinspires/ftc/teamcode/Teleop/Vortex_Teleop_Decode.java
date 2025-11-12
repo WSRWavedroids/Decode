@@ -180,6 +180,8 @@ public class Vortex_Teleop_Decode extends OpMode {
         }*/
 
 
+
+
         if(gamepad2.cross)
         {
             robot.runAutoIntakeSequence();
@@ -194,10 +196,29 @@ public class Vortex_Teleop_Decode extends OpMode {
            robot.cancelAutoIntake();
         }
 
-        if(gamepad2.right_trigger > 0.5)
+
+        if(sorterHardware.fireSafeCheck() && launcher.inSpeedRange)
         {
-            launcher.readyFire(1);
+           gamepad2.rumble(0.35, 0.35, 500);
         }
+        //Slight pull preps motor
+        //Full pull fires
+
+
+        if(gamepad2.right_trigger > 0.10)
+        {
+            launcher.setLauncherSpeed(1);
+
+            if(gamepad2.right_trigger > 0.95){
+                launcher.readyFire(1);
+            }
+        }
+        else
+        {
+            launcher.motor.setPower(0);
+        }
+
+        incrementThroughPositions();
 
 
         telemetry.addData("currentSlot target: ", slot);
@@ -485,12 +506,17 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         telemetry.addData("Last saved Alliance: ", blackboard.get(ALLIANCE_KEY));
 
-        telemetry.addData("Reference", robot.sorterHardware.reference);
+        telemetry.addData("Reference", sorterHardware.reference);
 
-        telemetry.addData("Blender in position", robot.sorterHardware.inProperTickPosition());
-        telemetry.addData("Closed Check", robot.sorterHardware.closedCheck());
+        telemetry.addData("Blender in position", sorterHardware.inProperTickPosition());
+        telemetry.addData("Closed Check", sorterHardware.closedCheck());
         telemetry.addData("Equalized Target Position", sorterLogic.offsetPositions.get(targetOffset));
         telemetry.addData("Door Open", sorterHardware.open);
+        telemetry.addData("Launcher Velocity", launcher.motor.getVelocity());
+        telemetry.addData("Launcher Target Velocity", launcher.velocityTarget);
+        telemetry.addData("Launcher at Speed", launcher.motorSpeedCheck(launcher.velocityTarget));
+        telemetry.addData("Telemetry on Cooldown", robot.launcher.onCooldown);
+        telemetry.addData("Blender State", sorterHardware.currentPositionState);
 
         //robot.tellMotorOutput();
     }
