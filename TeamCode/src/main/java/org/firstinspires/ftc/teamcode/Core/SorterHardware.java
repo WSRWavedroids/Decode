@@ -21,6 +21,7 @@ public class SorterHardware {
     public int currentTickCount;
     public static int tickTolerance = 100;
     public int[] positions;
+    public int lastSafePosition;
     public int ticksPerRotation = 8192;
     public static int offset = 0;
     public boolean legalToSpin = false;
@@ -199,8 +200,10 @@ public class SorterHardware {
 
     public void prepareNewMovement(int currentTickPose, int targetTickPose/*, int currentSlot, int targetSlot*/)
     {
+        lastSafePosition = currentTickPose;
         reference = (findFastestRotationInTicks(currentTickPose, targetTickPose));
         disRobot.telemetry.addLine("New position");
+
     }
 
     public void spin()
@@ -253,6 +256,14 @@ public class SorterHardware {
         if (cooldownTimer.seconds() > cooldownDuration){
             onCooldown = false;
         }
+
+        //jam detection
+
+        if(jamDetection())
+        {
+            disRobot.telemetry.addData("Jammed ", ":(");
+            prepareNewMovement(motor.getCurrentPosition(), lastSafePosition);
+        }
     }
     
     public void Estop()
@@ -292,6 +303,15 @@ public class SorterHardware {
     {
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    public boolean jamDetection()
+    {
+        if(motor.getPower() > (kneecap * 0.35) && motor.getVelocity() < 300 && !positionedCheck())
+        {
+            return true;
+        }
+        return false;
     }
 
 
