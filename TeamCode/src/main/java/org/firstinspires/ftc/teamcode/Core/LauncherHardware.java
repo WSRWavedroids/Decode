@@ -21,6 +21,8 @@ public class LauncherHardware {
     public boolean waitingForServo = false;
     public boolean waitingToFire = false;
 
+    public boolean wantToOpenDoor;
+
     private Robot robot;
 
     public double toleranceRange = 350;
@@ -77,7 +79,7 @@ public class LauncherHardware {
         waitingToFire = false;
         onCooldown = true;
         cooldownTimer.reset();
-        robot.sorterHardware.triggerDoorCooldown();
+        wantToOpenDoor = true;
 
 
     }
@@ -100,11 +102,12 @@ public class LauncherHardware {
     {
         robot.telemetry.addLine("Checking the timer");
 
-        if (cooldownTimer.seconds() >= (cooldownDuration * 2))
+        if (cooldownTimer.seconds() >= (cooldownDuration * 2)) //if hammer timer is over we know we done firing
         {
             hammerBack = true;
             hammerForward = false;
             onCooldown = false;
+            wantToOpenDoor = false;
         }
         else if(cooldownTimer.seconds() >= cooldownDuration)
         {

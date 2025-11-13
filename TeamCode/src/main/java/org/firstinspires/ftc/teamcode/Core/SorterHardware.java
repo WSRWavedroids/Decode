@@ -261,11 +261,15 @@ public class SorterHardware {
             {
                 triggerServo(CLOSED);
             }
-            if (onCooldown && fireSafeCheck()) {
+            if (fireSafeCheck() && disRobot.launcher.wantToOpenDoor) {
                 triggerServo(OPEN);
             }
-            if(wantToMoveDoor)
+            if(wantToMoveDoor && fireSafeCheck())
             {
+                if(doorTarget == OPEN)
+                {
+                    triggerDoorCooldown();
+                }
                 moveDoor();
             }
         }
@@ -335,11 +339,7 @@ public class SorterHardware {
 
     public boolean jamDetection()
     {
-        if(motor.getPower() > (kneecap * 0.35) && motor.getVelocity() < 300 && !positionedCheck())
-        {
-            return true;
-        }
-        return false;
+        return motor.getPower() > (kneecap * 0.35) && motor.getVelocity() < 300 && !positionedCheck();
     }
 
     public void triggerDoorCooldown()
