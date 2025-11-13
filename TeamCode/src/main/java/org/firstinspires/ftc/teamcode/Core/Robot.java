@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Core;
 
+import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
+
 import android.annotation.SuppressLint;
 
 import com.bylazar.panels.Panels;
@@ -287,7 +289,7 @@ public class Robot {
 
 
     public void prepareAuto(){
-        sorterHardware.triggerServo(openClosed.CLOSED);
+        sorterHardware.triggerServo(CLOSED);
         launcher.hammerServo.setPosition(launcher.hammerBackPosition);
     }
 
@@ -346,8 +348,12 @@ public class Robot {
         //sorterHardware.resetSorterEncoder();
         launcher.hammerServo.setPosition(launcher.hammerBackPosition);
         sorterHardware.doorServo.setPosition(sorterHardware.doorClosedPosition);
+        sorterHardware.alreadyClosed = true;
+        sorterHardware.doorTarget  = CLOSED;
         launcher.setLauncherSpeed(0);
         inventoryCam.updateBlockScan();
+
+
 
         if(resetEncoder)
         {

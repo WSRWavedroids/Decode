@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 //package edu.wpi.first.wpilibj;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -56,7 +57,7 @@ import org.firstinspires.ftc.teamcode.Core.ArtifactLocator;
  * did a horrible job of doing that.
  */
 
-
+@Disabled
 @TeleOp(name="Artifact Locator (Partially Implemented with Robot)", group="2artifactLocator")
 public class implementedArtifactLocator extends OpMode {
 

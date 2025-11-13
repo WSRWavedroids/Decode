@@ -41,15 +41,17 @@ public class SorterHardware {
     public double doorClosedPosition = 1;
     public double doorOpenPosition = 0.75;
 
+    public boolean alreadyClosed;
+
     public Robot disRobot;
     public DcMotorEx motor;
     public LauncherHardware launcher;
 
-    public Robot.openClosed doorTarget;
+    public Robot.openClosed doorTarget = CLOSED;
 
-    private ElapsedTime cooldownTimer = new ElapsedTime();
+    public ElapsedTime cooldownTimer = new ElapsedTime();
     public boolean onCooldown = false;
-    private double cooldownDuration = 0.5;
+    private double cooldownDuration = 0.25;
 
     private ElapsedTime pidfTimer = new ElapsedTime();
 
@@ -155,20 +157,25 @@ public class SorterHardware {
     public void moveDoor()//Needs to become a state in update
     {
             wantToMoveDoor = false;
-            cooldownTimer.reset();
-            onCooldown = true;
+
+
             disRobot.telemetry.addData("Setting door to", doorTarget);
 
             if(doorTarget == CLOSED)
             {
                 doorServo.setPosition(doorClosedPosition);
                 open = false;
+                alreadyClosed = true;
+
                 //door
             }
             if(doorTarget == OPEN)
             {
                 doorServo.setPosition(doorOpenPosition);
                 open = true;
+                alreadyClosed = false;
+                //cooldownTimer.reset();
+
             }
     }
 
@@ -195,7 +202,7 @@ public class SorterHardware {
     public boolean fireSafeCheck()
     {
         //if not on servo timeout and there and open, fire
-        return !disRobot.launcher.onCooldown && positionedCheck()  && inStateCheck(FIRE);
+        return positionedCheck()  && inStateCheck(FIRE);
     }
 
     public void prepareNewMovement(int currentTickPose, int targetTickPose/*, int currentSlot, int targetSlot*/)
@@ -215,6 +222,7 @@ public class SorterHardware {
     
     public void updateSorterHardware()
     {
+
         switch (disRobot.sorterLogic.getCurrentOffset()) {
             // Firing positions
             case 1: currentPositionState = FIRE; break;
@@ -239,10 +247,32 @@ public class SorterHardware {
             Estop();
         }
 
-        if(positionedCheck() && wantToMoveDoor)
+
+
+        if(cooldownTimer.seconds() > cooldownDuration)
         {
-            moveDoor();
+            onCooldown = false;
+
         }
+        //Move the door automatically when requested and safe
+        if (positionedCheck())
+        {
+            if(!onCooldown && !alreadyClosed)
+            {
+                triggerServo(CLOSED);
+            }
+            if (onCooldown && fireSafeCheck()) {
+                triggerServo(OPEN);
+            }
+            if(wantToMoveDoor)
+            {
+                moveDoor();
+            }
+        }
+
+
+
+
 
         if(tryingToFeed)
         {
@@ -253,16 +283,14 @@ public class SorterHardware {
             runFeeders(passiveFeederSpeed);
         }
 
-        if (cooldownTimer.seconds() > cooldownDuration){
-            onCooldown = false;
-        }
+
 
         //jam detection
 
         if(jamDetection())
         {
             disRobot.telemetry.addData("Jammed ", ":(");
-            prepareNewMovement(motor.getCurrentPosition(), lastSafePosition);
+            //prepareNewMovement(motor.getCurrentPosition(), lastSafePosition);
         }
     }
     
@@ -312,6 +340,12 @@ public class SorterHardware {
             return true;
         }
         return false;
+    }
+
+    public void triggerDoorCooldown()
+    {
+        onCooldown = true;
+        cooldownTimer.reset();
     }
 
 

@@ -19,7 +19,7 @@ public class LauncherHardware {
 
     public boolean on = false;
     public boolean waitingForServo = false;
-    public boolean waitingToFire;
+    public boolean waitingToFire = false;
 
     private Robot robot;
 
@@ -31,8 +31,8 @@ public class LauncherHardware {
 
     public Servo hammerServo;
 
-    private ElapsedTime cooldownTimer = new ElapsedTime();
-    private double cooldownDuration = 0.3;
+    public ElapsedTime cooldownTimer = new ElapsedTime();
+    private double cooldownDuration = 0.25/2;
     public boolean onCooldown = false;
 
     private boolean hammerForward;
@@ -56,6 +56,7 @@ public class LauncherHardware {
         // motor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(P, I, D, F));
         motor.setDirection(REVERSE);
         hammerServo = robot.hammerServo;
+        waitingToFire = false;
     }
 
     public boolean motorSpeedCheck(double speedTarget) {
@@ -76,6 +77,8 @@ public class LauncherHardware {
         waitingToFire = false;
         onCooldown = true;
         cooldownTimer.reset();
+        robot.sorterHardware.triggerDoorCooldown();
+
 
     }
 
@@ -84,6 +87,7 @@ public class LauncherHardware {
         if(onCooldown && hammerBack)
         {
             hammerServo.setPosition(hammerForwardPosition);
+            //robot.sorterHardware.doorServo.setPosition(robot.sorterHardware.doorClosedPosition);
         }
 
         else if(onCooldown && hammerForward)
@@ -128,14 +132,9 @@ public class LauncherHardware {
             spikeable = true;
             spikeableValue = motor.getVelocity();
         }
-        if (robot.sorterHardware.fireSafeCheck() && waitingToFire && inSpeedRange) {
-            robot.sorterHardware.triggerServo(OPEN);
-        }
-        else if (!robot.launcher.onCooldown) {
-            robot.sorterHardware.triggerServo(CLOSED);
-        }
 
-        if (robot.sorterHardware.fireSafeCheck() && waitingToFire && robot.sorterHardware.openCheck()) {
+
+        if (robot.sorterHardware.fireSafeCheck() && waitingToFire) {
             fire();
         }
     }

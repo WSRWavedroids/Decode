@@ -61,12 +61,12 @@ public class Vortex_Teleop_Decode extends OpMode {
     public Limelight_Target_Scanner tagScanner;
     public WaveTag targetData = null;
 
-    //public SensorHuskyLens huskyLens;
 
     public SorterHardware sorterHardware;
     public LauncherHardware launcher;
     public ArtifactLocator sorterLogic;
     public SensorHuskyLens huskyLens;
+
 
     public static final String ALLIANCE_KEY = "Alliance"; //For blackboard
     public static final String PATTERN_KEY = "Pattern";
@@ -84,7 +84,9 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         // Call the initialization protocol from the Robot class.
         robot = new Robot(hardwareMap, telemetry, this);
+
         tagScanner = robot.targetScanner;
+        tagScanner.InitLimeLightTargeting(1, robot.hardwareMap);
         sorterHardware = robot.sorterHardware;
         huskyLens = robot.inventoryCam;
         launcher = robot.launcher;
@@ -106,7 +108,7 @@ public class Vortex_Teleop_Decode extends OpMode {
             imu.initialize(parameters);
         }
         //if using field centric youl need this lolzeez
-        if (blackboard.get(ALLIANCE_KEY).equals("BLUE")) {
+        /*if (blackboard.get(ALLIANCE_KEY).equals("BLUE")) {
             tagScanner.InitLimeLightTargeting(2, robot.hardwareMap);
             robot.scanningForTargetTag = true;
         } else if (blackboard.get(ALLIANCE_KEY).equals("RED")) {
@@ -115,7 +117,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         } else {
             tagScanner.InitLimeLightTargeting(1, robot.hardwareMap);
             robot.scanningForTargetTag = true;
-        }
+        }*/
 
         robot.panels = Panels.INSTANCE;
         robot.readyHardware(true);
@@ -513,11 +515,14 @@ public class Vortex_Teleop_Decode extends OpMode {
         telemetry.addData("Closed Check", sorterHardware.closedCheck());
         telemetry.addData("Equalized Target Position", sorterLogic.offsetPositions.get(targetOffset));
         telemetry.addData("Door Open", sorterHardware.open);
+        telemetry.addData("Door Target", sorterHardware.doorTarget);
         telemetry.addData("Launcher Velocity", launcher.motor.getVelocity());
         telemetry.addData("Launcher Target Velocity", launcher.velocityTarget);
         telemetry.addData("Launcher at Speed", launcher.motorSpeedCheck(launcher.velocityTarget));
-        telemetry.addData("Telemetry on Cooldown", robot.launcher.onCooldown);
+        telemetry.addData("Launcher on Cooldown", robot.launcher.onCooldown);
         telemetry.addData("Blender State", sorterHardware.currentPositionState);
+        telemetry.addData("Door Cooldown", sorterHardware.cooldownTimer.seconds());
+        telemetry.addData("Launcher Cooldown", launcher.cooldownTimer);
 
         //robot.tellMotorOutput();
     }
