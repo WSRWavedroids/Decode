@@ -110,7 +110,7 @@ public class BlueFrontAuto extends AutonomousPLUS {
         {
             sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[3]);
             launcher.setLauncherSpeed(1);
-
+            targetData = scanner.tagInfo();
             turnRobotRight(900, 15);
             if (targetData.currentlyDetected) //Angle detect if possible / needed
             {
@@ -159,8 +159,9 @@ public class BlueFrontAuto extends AutonomousPLUS {
         }
         speed = 1;
         //Unpark fully and line up with line of balls... may go wrong way
-        moveXY(1200, 0, -900, true);
         sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[0]);
+        moveXY(1200, 0, -900, true);
+
 
         }
 
@@ -169,58 +170,35 @@ public class BlueFrontAuto extends AutonomousPLUS {
         if(!skipOne)
         {
             stallTillTrue(robot.sorterHardware.moveSafeCheck()); //Check to see if safe to spin, then do so
-            //launcher.setLauncherSpeed(1); //set Motor target speed
             sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), one); //command movement
-            stallTillTrue(robot.sorterHardware.positionedCheck());
-            stallTillTrue(launcher.inSpeedRange);// If we arent at speed yet, stall till we are
-            sorter.triggerServo(OPEN);
-            stallTillTrue(sorter.openCheck()); // Prepare to fire
-            launcher.fire();
-            stallTillTrue(!robot.launcher.waitingForServo); //Wait till done firing
-            //launcher.setLauncherSpeed(0);// Cut laucher to save power
-            sorter.triggerServo(CLOSED); //Tell to close
+            stallTillTrue(launcher.inSpeedRange && sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
+            launcher.readyFire(1);
+            stallTillTrue(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
             stallTillTrue(sorter.closedCheck()); //Wait for close
         }
         else
         {
-            stallTillTrue(robot.sorterHardware.positionedCheck());
-            stallTillTrue(launcher.inSpeedRange);// If we arent at speed yet, stall till we are
-            sorter.triggerServo(OPEN);
-            stallTillTrue(sorter.openCheck()); // Prepare to fire
-            launcher.fire();
-            stallTillTrue(!robot.launcher.waitingForServo); //Wait till done firing
-            //launcher.setLauncherSpeed(0);// Cut laucher to save power
-            sorter.triggerServo(CLOSED); //Tell to close
+            stallTillTrue(launcher.inSpeedRange && sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
+            launcher.readyFire(1);
+            stallTillTrue(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
             stallTillTrue(sorter.closedCheck());
         }
 
 
         stallTillTrue(robot.sorterHardware.moveSafeCheck()); //Check to see if safe to spin, then do so
-        //launcher.setLauncherSpeed(1); //set Motor target speed
         sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), two); //command movement
-        stallTillTrue(robot.sorterHardware.positionedCheck());
-        stallTillTrue(launcher.inSpeedRange);// If we arent at speed yet, stall till we are
-        sorter.triggerServo(OPEN);
-        stallTillTrue(sorter.openCheck()); // Prepare to fire
-        launcher.fire();
-        stallTillTrue(!robot.launcher.waitingForServo); //Wait till done firing
-        //launcher.setLauncherSpeed(0);// Cut laucher to save power
-        sorter.triggerServo(CLOSED); //Tell to close
-        stallTillTrue(sorter.closedCheck()); //Wait for close
+        stallTillTrue(launcher.inSpeedRange && sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
+        launcher.readyFire(1);
+        stallTillTrue(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
+        stallTillTrue(sorter.closedCheck());
 
 
         stallTillTrue(robot.sorterHardware.moveSafeCheck()); //Check to see if safe to spin, then do so
-        //launcher.setLauncherSpeed(1); //set Motor target speed
         sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), three); //command movement
-        stallTillTrue(robot.sorterHardware.positionedCheck());
-        stallTillTrue(launcher.inSpeedRange);// If we arent at speed yet, stall till we are
-        sorter.triggerServo(OPEN);
-        stallTillTrue(sorter.openCheck()); // Prepare to fire
-        launcher.fire();
-        stallTillTrue(!robot.launcher.waitingForServo); //Wait till done firing
-        //launcher.setLauncherSpeed(0);// Cut laucher to save power
-        sorter.triggerServo(CLOSED); //Tell to close
-        stallTillTrue(sorter.closedCheck()); //Wait for close
+        stallTillTrue(launcher.inSpeedRange && sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
+        launcher.readyFire(1);
+        stallTillTrue(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
+        stallTillTrue(sorter.closedCheck());
 
         launcher.setLauncherSpeed(0);
     }
