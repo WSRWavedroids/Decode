@@ -479,7 +479,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.offsetPositions.get(targetOffset));
     }
 
-    private int makeSureNewOffsetIsOK(int oldNewOffset) {
+    private int makeSureNewOffsetIsOK(int oldNewOffset) { // is this the cause of our lag
         while (oldNewOffset < 0) {
             oldNewOffset += 6;
         }

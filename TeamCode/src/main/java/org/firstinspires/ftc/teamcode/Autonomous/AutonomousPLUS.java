@@ -492,6 +492,14 @@ public class AutonomousPLUS extends LinearOpMode {
         }
     }
 
+    public void safeSorterSpin(int targetPosition)
+    {
+        while(robot.sorterHardware.motor.getCurrentPosition() > targetPosition - robot.sorterHardware.tickTolerance  && robot.sorterHardware.motor.getCurrentPosition() < targetPosition + robot.sorterHardware.tickTolerance)
+        {
+            //
+        }
+    }
+
 
 
 

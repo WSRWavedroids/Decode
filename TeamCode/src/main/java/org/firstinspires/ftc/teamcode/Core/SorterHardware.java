@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Core;
 import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
 import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.OPEN;
 import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.FIRE;
+import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.LOAD;
+
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -274,11 +276,7 @@ public class SorterHardware {
             }
         }
 
-
-
-
-
-        if(tryingToFeed)
+        if(tryingToFeed && inStateCheck(LOAD))
         {
             runFeeders(feederIntakeSpeed);
         } else if (moveSafeCheck()) {
