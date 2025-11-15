@@ -85,19 +85,19 @@ public class fireQueue {
             {
                 firstFired = true;
                 sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(balls[0].color).getFirePosition());
-                launcherHardware.readyFire(speedTarget);
+                launcherHardware.readyFire(speedTarget, true);
             }
             else if(firstFired && !secondFired)
             {
                 secondFired = true;
                 sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(balls[1].color).getFirePosition());
-                launcherHardware.readyFire(speedTarget);
+                launcherHardware.readyFire(speedTarget, true);
             }
             else if(firstFired && secondFired && !thirdFired)
             {
                 thirdFired = true;
                 sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(balls[2].color).getFirePosition());
-                launcherHardware.readyFire(speedTarget);
+                launcherHardware.readyFire(speedTarget, true);
             }
             else
             {

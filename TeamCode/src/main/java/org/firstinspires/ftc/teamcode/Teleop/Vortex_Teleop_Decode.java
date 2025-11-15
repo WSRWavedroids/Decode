@@ -48,7 +48,8 @@ public class Vortex_Teleop_Decode extends OpMode {
     private boolean cadenRecording = false;
     private boolean contTwoBumpersPressed = false;
     boolean cadenON = false;
-    boolean cadenHoldingTrigger = false;
+    boolean cadenHoldingReady = false;
+    boolean cadenHoldingFire = false;
 
     int SpinTargetFrontLeft;
     int SpinTargetFrontRight;
@@ -215,8 +216,8 @@ public class Vortex_Teleop_Decode extends OpMode {
         if(gamepad2.left_trigger > 0.50)
         {
 
-            if (!cadenHoldingTrigger) {
-                cadenHoldingTrigger = true;
+            if (!cadenHoldingReady) {
+                cadenHoldingReady = true;
                 if (cadenON) {
                     cadenON = false;
                 } else {
@@ -235,11 +236,19 @@ public class Vortex_Teleop_Decode extends OpMode {
         }
         else
         {
-            cadenHoldingTrigger = false;
+            cadenHoldingReady = false;
         }
 
         if(gamepad2.right_trigger > 0.50 && !launcher.wantToOpenDoor){
-            launcher.readyFire(1);
+            if(!cadenHoldingFire)
+            {
+                cadenHoldingFire = true;
+                launcher.readyFire(1, false);
+            }
+        }
+        else
+        {
+            cadenHoldingFire = false;
         }
 
 

@@ -177,14 +177,14 @@ public class RedFrontAuto extends AutonomousPLUS {
             stallTillTrue(robot.sorterHardware.moveSafeCheck()); //Check to see if safe to spin, then do so
             sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), one); //command movement
             stallTillTrue(launcher.inSpeedRange && sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
-            launcher.readyFire(1);
+            launcher.readyFire(1, true);
             stallTillTrue(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
             stallTillTrue(sorter.closedCheck()); //Wait for close
         }
         else
         {
             stallTillTrue(launcher.inSpeedRange && sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
-            launcher.readyFire(1);
+            launcher.readyFire(1, true);
             stallTillTrue(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
             stallTillTrue(sorter.closedCheck());
         }
@@ -193,7 +193,7 @@ public class RedFrontAuto extends AutonomousPLUS {
         stallTillTrue(robot.sorterHardware.moveSafeCheck()); //Check to see if safe to spin, then do so
         sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), two); //command movement
         stallTillTrue(launcher.inSpeedRange && sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
-        launcher.readyFire(1);
+        launcher.readyFire(1, true);
         stallTillTrue(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
         stallTillTrue(sorter.closedCheck());
 
@@ -201,7 +201,7 @@ public class RedFrontAuto extends AutonomousPLUS {
         stallTillTrue(robot.sorterHardware.moveSafeCheck()); //Check to see if safe to spin, then do so
         sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), three); //command movement
         stallTillTrue(launcher.inSpeedRange && sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
-        launcher.readyFire(1);
+        launcher.readyFire(1, true);
         stallTillTrue(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
         stallTillTrue(sorter.closedCheck());
 

@@ -320,6 +320,7 @@ public class Robot {
         telemetry.addData("Launcher Velocity: ", launcher.motor.getVelocity());
         telemetry.addData("DOOR: ", sorterHardware.doorTarget);
         telemetry.addData("Sorter In Position", sorterHardware.positionedCheck());
+        telemetry.addData("Sorter State: ", sorterLogic.getCurrentOffset());
         telemetry.addData("Limelight angleX: ", targetTag.angleX);
 
     }
