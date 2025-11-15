@@ -12,6 +12,8 @@ import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 
+import java.util.Objects;
+
 @Autonomous(group = "Basic", name = "Blue Front Start")
 public class BlueFrontAuto extends AutonomousPLUS {
 
@@ -48,7 +50,7 @@ public class BlueFrontAuto extends AutonomousPLUS {
         {
 
             prepareAuto();
-            robot.readyHardware(true);
+
             randomization.InitLimeLight(0, robot.hardwareMap);
             blackboard.put(ALLIANCE_KEY, "BLUE");
             while(opModeInInit())
@@ -59,7 +61,7 @@ public class BlueFrontAuto extends AutonomousPLUS {
 
             }
         }
-
+        robot.readyHardware(true);
         waitForStart();
 
 
@@ -67,7 +69,8 @@ public class BlueFrontAuto extends AutonomousPLUS {
 
         //start with launcher facing goal, back of robot against goal
         randomization.InitLimeLight(0, robot.hardwareMap);
-        moveXY(0, 2000, -900, true);
+        moveRobotForward(1000,12);
+        turnRobotLeft(950,12);
         pattern = randomization.GetRandomization();
         sleep(500);
 
@@ -95,10 +98,10 @@ public class BlueFrontAuto extends AutonomousPLUS {
         telemetry.update();
 
 
-        if (blackboard.get(ALLIANCE_KEY).equals("BLUE")) {
+        if (Objects.equals(blackboard.get(ALLIANCE_KEY), "BLUE")) {
             scanner.InitLimeLightTargeting(2, robot.hardwareMap);
             robot.scanningForTargetTag = true;
-        } else if (blackboard.get(ALLIANCE_KEY).equals("RED")) {
+        } else if(Objects.equals(blackboard.get(ALLIANCE_KEY), "RED")) {
             scanner.InitLimeLightTargeting(1, robot.hardwareMap);
             robot.scanningForTargetTag = true;
         } else {
@@ -109,12 +112,13 @@ public class BlueFrontAuto extends AutonomousPLUS {
         if(pattern.equals("PPG"))
         {
             sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[3]);
+            stallTillTrue(sorter.positionedCheck());
             launcher.setLauncherSpeed(1);
             targetData = scanner.tagInfo();
-            turnRobotRight(900, 15);
+            turnRobotRight(950, 15);
             if (targetData.currentlyDetected) //Angle detect if possible / needed
             {
-                turnRobotRight((int) ((targetData.angleX +robot.limelightSideOffsetAngle) * (1660/360)), 1);
+                turnRobotLeft((int) ((targetData.angleX +robot.limelightSideOffsetAngle) * (1660/360)), 1);
             }
 
             fireInSequence(sorter.positions[3], sorter.positions[5], sorter.positions[1], true);
@@ -122,8 +126,9 @@ public class BlueFrontAuto extends AutonomousPLUS {
         else if(pattern.equals("PGP"))
         {
             sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[3]);
+            stallTillTrue(sorter.positionedCheck());
             launcher.setLauncherSpeed(1);
-            turnRobotRight(900,1);
+            turnRobotRight(950,1);
             targetData = scanner.tagInfo();
             if (targetData.currentlyDetected)
             {
@@ -135,8 +140,9 @@ public class BlueFrontAuto extends AutonomousPLUS {
         else if(pattern.equals("GPP"))
         {
             sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[1]);
+            stallTillTrue(sorter.positionedCheck());
             launcher.setLauncherSpeed(1);
-            turnRobotRight(900,1);
+            turnRobotRight(950,1);
             targetData = scanner.tagInfo();
             if (targetData.currentlyDetected)
             {
@@ -147,7 +153,9 @@ public class BlueFrontAuto extends AutonomousPLUS {
         }
         else//Fire any*/
         {
+
             sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[0]);
+            stallTillTrue(sorter.positionedCheck());
             launcher.setLauncherSpeed(1);
             turnRobotRight(900,1);
             targetData = scanner.tagInfo();
@@ -155,12 +163,13 @@ public class BlueFrontAuto extends AutonomousPLUS {
             {
                 turnRobotRight((int) ((targetData.angleX +robot.limelightSideOffsetAngle) * (-1660/360)), 1);
             }
+
             fireInSequence(sorter.positions[1], sorter.positions[3], sorter.positions[5], true);
         }
         speed = 1;
         //Unpark fully and line up with line of balls... may go wrong way
         sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), sorter.positions[0]);
-        moveXY(1200, 0, -900, true);
+        moveRobotRight(1000, 12);
 
 
         }
@@ -169,33 +178,33 @@ public class BlueFrontAuto extends AutonomousPLUS {
     {
         if(!skipOne)
         {
-            stallTillTrue(robot.sorterHardware.moveSafeCheck()); //Check to see if safe to spin, then do so
             sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), one); //command movement
-            stallTillTrue(launcher.inSpeedRange && sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
+            stallTillTrue(sorter.fireSafeCheck());
+            prepareNextAction(500);// If we arent at speed yet, stall till we are
             launcher.readyFire(1);
             stallTillTrue(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
             stallTillTrue(sorter.closedCheck()); //Wait for close
         }
         else
         {
-            stallTillTrue(launcher.inSpeedRange && sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
+            stallTillTrue(sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
             launcher.readyFire(1);
             stallTillTrue(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
             stallTillTrue(sorter.closedCheck());
         }
 
 
-        stallTillTrue(robot.sorterHardware.moveSafeCheck()); //Check to see if safe to spin, then do so
         sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), two); //command movement
-        stallTillTrue(launcher.inSpeedRange && sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
+        stallTillTrue(sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
+        prepareNextAction(500);
         launcher.readyFire(1);
         stallTillTrue(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
         stallTillTrue(sorter.closedCheck());
 
 
-        stallTillTrue(robot.sorterHardware.moveSafeCheck()); //Check to see if safe to spin, then do so
         sorter.prepareNewMovement(sorter.motor.getCurrentPosition(), three); //command movement
-        stallTillTrue(launcher.inSpeedRange && sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
+        stallTillTrue(sorter.fireSafeCheck());// If we arent at speed yet, stall till we are
+        prepareNextAction(500);
         launcher.readyFire(1);
         stallTillTrue(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
         stallTillTrue(sorter.closedCheck());

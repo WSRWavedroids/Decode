@@ -19,6 +19,8 @@ import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
 import org.firstinspires.ftc.teamcode.Vision.SensorHuskyLens;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 
+import java.util.Objects;
+
 /**
  * This file is our iterative (Non-Linear) "OpMode" for TeleOp.
  * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
@@ -45,6 +47,8 @@ public class Vortex_Teleop_Decode extends OpMode {
 
     private boolean cadenRecording = false;
     private boolean contTwoBumpersPressed = false;
+    boolean cadenON = false;
+    boolean cadenHoldingTrigger = false;
 
     int SpinTargetFrontLeft;
     int SpinTargetFrontRight;
@@ -108,16 +112,16 @@ public class Vortex_Teleop_Decode extends OpMode {
             imu.initialize(parameters);
         }
         //if using field centric youl need this lolzeez
-        /*if (blackboard.get(ALLIANCE_KEY).equals("BLUE")) {
-            tagScanner.InitLimeLightTargeting(2, robot.hardwareMap);
+        if (Objects.equals(blackboard.get(ALLIANCE_KEY), "BLUE")) {
+            robot.targetScanner.InitLimeLightTargeting(1, robot.hardwareMap);
             robot.scanningForTargetTag = true;
-        } else if (blackboard.get(ALLIANCE_KEY).equals("RED")) {
-            tagScanner.InitLimeLightTargeting(1, robot.hardwareMap);
+        } else if (Objects.equals(blackboard.get(ALLIANCE_KEY), "RED")) {
+            robot.targetScanner.InitLimeLightTargeting(2, robot.hardwareMap);
             robot.scanningForTargetTag = true;
         } else {
-            tagScanner.InitLimeLightTargeting(1, robot.hardwareMap);
+            robot.targetScanner.InitLimeLightTargeting(2, robot.hardwareMap);
             robot.scanningForTargetTag = true;
-        }*/
+        }
 
         robot.panels = Panels.INSTANCE;
         robot.readyHardware(true);
@@ -208,18 +212,38 @@ public class Vortex_Teleop_Decode extends OpMode {
         //Full pull fires
 
 
-        if(gamepad2.right_trigger > 0.10)
+        if(gamepad2.left_trigger > 0.50)
         {
-            launcher.setLauncherSpeed(1);
 
-            if(gamepad2.right_trigger > 0.95){
-                launcher.readyFire(1);
+            if (!cadenHoldingTrigger) {
+                cadenHoldingTrigger = true;
+                if (cadenON) {
+                    cadenON = false;
+                } else {
+                    cadenON = true;
+                }
             }
+
+            if (cadenON) {
+                launcher.setLauncherSpeed(1);
+            }
+            else
+            {
+                launcher.setLauncherSpeed(0);
+            }
+
         }
         else
         {
-            launcher.motor.setPower(0);
+            cadenHoldingTrigger = false;
         }
+
+        if(gamepad2.right_trigger > 0.50 && !launcher.wantToOpenDoor){
+            launcher.readyFire(1);
+        }
+
+
+
 
         incrementThroughPositions();
 
@@ -256,10 +280,10 @@ public class Vortex_Teleop_Decode extends OpMode {
         if (motorPowers.length != 4) {
             return;
         }
-        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         robot.frontLeftDrive.setPower(-motorPowers[0]);
         robot.frontRightDrive.setPower(-motorPowers[1]);

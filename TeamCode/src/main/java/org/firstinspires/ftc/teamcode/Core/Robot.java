@@ -318,6 +318,9 @@ public class Robot {
         //Reliant functions not present
         telemetry.addData("Sorter Position: ", sorterHardware.motor.getCurrentPosition());
         telemetry.addData("Launcher Velocity: ", launcher.motor.getVelocity());
+        telemetry.addData("DOOR: ", sorterHardware.doorTarget);
+        telemetry.addData("Sorter In Position", sorterHardware.positionedCheck());
+        telemetry.addData("Limelight angleX: ", targetTag.angleX);
 
     }
 
