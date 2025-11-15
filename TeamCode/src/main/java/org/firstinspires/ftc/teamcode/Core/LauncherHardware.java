@@ -106,14 +106,14 @@ public class LauncherHardware {
     {
         robot.telemetry.addLine("Checking the timer");
 
-        if (cooldownTimer.seconds() >= (cooldownDuration * 2)) //if hammer timer is over we know we done firing
+        if (cooldownTimer.seconds() > (cooldownDuration * 2)) //if hammer timer is over we know we done firing
         {
             hammerBack = true;
             hammerForward = false;
             onCooldown = false;
             wantToOpenDoor = false;
         }
-        else if(cooldownTimer.seconds() >= cooldownDuration)
+        else if(cooldownTimer.seconds() > cooldownDuration)
         {
             hammerBack = false;
             hammerForward = true;

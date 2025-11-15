@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
+
 import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -20,6 +22,7 @@ import org.firstinspires.ftc.teamcode.Vision.SensorHuskyLens;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This file is our iterative (Non-Linear) "OpMode" for TeleOp.
@@ -252,7 +255,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         }
 
 
-
+        magicFixEverything();
 
         incrementThroughPositions();
 
@@ -520,6 +523,19 @@ public class Vortex_Teleop_Decode extends OpMode {
             oldNewOffset -= 6;
         }
         return oldNewOffset;
+    }
+
+    private void magicFixEverything() {
+        if (gamepad2.shareWasPressed()) {
+            robot.sorterHardware.onCooldown = false;
+            robot.launcher.onCooldown = false;
+            /// These might fix things but are untested
+            robot.launcher.waitingToFire = false;
+            robot.sorterHardware.doorTarget = CLOSED;
+            robot.sorterHardware.wantToMoveDoor = true;
+            robot.updateAllDaThings();
+
+        }
     }
 
     private void doTelemetryStuff() {

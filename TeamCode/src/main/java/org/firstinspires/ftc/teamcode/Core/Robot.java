@@ -295,9 +295,11 @@ public class Robot {
 
     public void updateAllDaThings()
     {
-        launcher.updateLauncherHardware();
         sorterHardware.updateSorterHardware();
+        launcher.updateLauncherHardware();
         sorterLogic.update();
+        sorterHardware.updateSorterHardware();
+        launcher.updateLauncherHardware();
 
         if(scanningForTargetTag)
         {
@@ -317,6 +319,7 @@ public class Robot {
     {
         //Reliant functions not present
         telemetry.addData("Sorter Position: ", sorterHardware.motor.getCurrentPosition());
+        telemetry.addData("Reference", sorterHardware.motor.getCurrentPosition());
         telemetry.addData("Launcher Velocity: ", launcher.motor.getVelocity());
         telemetry.addData("DOOR: ", sorterHardware.doorTarget);
         telemetry.addData("Sorter In Position", sorterHardware.positionedCheck());
@@ -349,7 +352,7 @@ public class Robot {
 
     public void readyHardware(boolean resetEncoder)
     {
-        //sorterHardware.resetSorterEncoder();
+
         launcher.hammerServo.setPosition(launcher.hammerBackPosition);
         sorterHardware.doorServo.setPosition(sorterHardware.doorClosedPosition);
         sorterHardware.alreadyClosed = true;
@@ -357,12 +360,11 @@ public class Robot {
         launcher.setLauncherSpeed(0);
         inventoryCam.updateBlockScan();
 
-
-
         if(resetEncoder)
         {
             sorterHardware.resetSorterEncoder();
             encoderReset();
+            sorterHardware.reference = 0;
         }
     }
 

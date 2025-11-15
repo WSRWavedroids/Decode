@@ -479,7 +479,7 @@ public class AutonomousPLUS extends LinearOpMode {
         while (condition)
         {
             robot.updateAllDaThings();
-            sleep(1);
+            robot.telemetry.update();
         }
     }
 
@@ -488,7 +488,19 @@ public class AutonomousPLUS extends LinearOpMode {
         while (!condition)
         {
             robot.updateAllDaThings();
-            sleep(1);
+            robot.telemetry.update();
+        }
+    }
+
+
+
+    public void stallForTime(double timeInSeconds)
+    {
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
+        while(timer.seconds() < timeInSeconds)
+        {
+            robot.updateAllDaThings();
         }
     }
 

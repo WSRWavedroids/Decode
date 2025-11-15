@@ -22,7 +22,7 @@ public class SorterHardware {
 
     public int currentTickCount;
     public static int tickTolerance = 100;
-    public int[] positions;
+    public final int[] positions;
     public int lastSafePosition;
     public int ticksPerRotation = 8192;
     public static int offset = 0;
@@ -93,7 +93,7 @@ public class SorterHardware {
         positions[4] = ticksPerRotation / 3; //Slot C load
         positions[5] = 5 * ticksPerRotation / 6; //Slot C launch
 
-        reference = 0;
+        //reference = 0;
     }
 
 
