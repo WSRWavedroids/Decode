@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
 import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
+import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.FIRE;
+import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.LOAD;
+import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.SWITCH;
 
 import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -66,14 +69,8 @@ public class Vortex_Teleop_Decode extends OpMode {
     //private double storedSpeed;
     public Robot robot = null;
     public IMU imu;
-    public Limelight_Target_Scanner tagScanner;
-    public WaveTag targetData = null;
 
 
-    public SorterHardware sorterHardware;
-    public LauncherHardware launcher;
-    public ArtifactLocator sorterLogic;
-    public SensorHuskyLens huskyLens;
 
 
     public static final String ALLIANCE_KEY = "Alliance"; //For blackboard
@@ -93,12 +90,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         // Call the initialization protocol from the Robot class.
         robot = new Robot(hardwareMap, telemetry, this);
 
-        tagScanner = robot.targetScanner;
-        tagScanner.InitLimeLightTargeting(1, robot.hardwareMap);
-        sorterHardware = robot.sorterHardware;
-        huskyLens = robot.inventoryCam;
-        launcher = robot.launcher;
-        sorterLogic = robot.sorterLogic;
+        robot.targetScanner.InitLimeLightTargeting(1, robot.hardwareMap);
 
 
         // Tell the driver that initialization is complete.
@@ -146,8 +138,8 @@ public class Vortex_Teleop_Decode extends OpMode {
         telemetry.addData("HYPE", "Let's do this!!!");
         gamepad1.setLedColor(0, 0, 255, 100000000);
         gamepad2.setLedColor(0, 0, 255, 100000000);
-        sorterHardware.resetSorterEncoder();//REMOVE ONCE AUTO -> TELE IS FIGURED OUT
-        sorterHardware.legalToSpin = true;
+        robot.sorterHardware.resetSorterEncoder();//REMOVE ONCE AUTO -> TELE IS FIGURED OUT
+        robot.sorterHardware.legalToSpin = true;
 
     }
 
@@ -195,20 +187,34 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         if(gamepad2.cross)
         {
-            robot.runAutoIntakeSequence();
-            //sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(EMPTY).getLoadPosition());
+            if(robot.sorterHardware.currentPositionState == FIRE)
+            {
+                //if not in load position, go there and make sure we don't jam in the process
+                goNextLoadPosition(1);
+                robot.cancelAutoIntake();
+            }
+            else if(robot.sorterHardware.currentPositionState == SWITCH)
+            {
+                //dont jam while spinning to load
+                robot.cancelAutoIntake();
+            }
+            else
+            {
+                //intake if we good
+                robot.runAutoIntakeSequence();
+            }
         }
-        else if(gamepad2.circle)
+        else if(gamepad2.circle) // dave spits out artifact
         {
             robot.runBasicIntake(-1);
         }
-        else
+        else //dont run intake if we not pulling trigger
         {
            robot.cancelAutoIntake();
         }
 
 
-        if(sorterHardware.fireSafeCheck() && launcher.inSpeedRange)
+        if(robot.sorterHardware.fireSafeCheck() && robot.launcher.inSpeedRange)
         {
            gamepad2.rumble(0.35, 0.35, 500);
         }
@@ -229,11 +235,11 @@ public class Vortex_Teleop_Decode extends OpMode {
             }
 
             if (cadenON) {
-                launcher.setLauncherSpeed(1);
+                robot.launcher.setLauncherSpeed(1);
             }
             else
             {
-                launcher.setLauncherSpeed(0);
+                robot.launcher.setLauncherSpeed(0);
             }
 
         }
@@ -242,11 +248,11 @@ public class Vortex_Teleop_Decode extends OpMode {
             cadenHoldingReady = false;
         }
 
-        if(gamepad2.right_trigger > 0.50 && !launcher.wantToOpenDoor){
+        if(gamepad2.right_trigger > 0.50 && !robot.launcher.wantToOpenDoor){
             if(!cadenHoldingFire)
             {
                 cadenHoldingFire = true;
-                launcher.readyFire(1, false);
+                robot.launcher.readyFire(1, false);
             }
         }
         else
@@ -467,7 +473,7 @@ public class Vortex_Teleop_Decode extends OpMode {
 
     public void incrementThroughPositions() {
 
-        telemetry.addData("Current Offset (by logic)", sorterLogic.getCurrentOffset());
+        telemetry.addData("Current Offset (by logic)", robot.sorterLogic.getCurrentOffset());
         //int newOffset = sorterLogic.getCurrentOffset();
 
         /*if (newOffset < 0) {
@@ -506,13 +512,13 @@ public class Vortex_Teleop_Decode extends OpMode {
         int potentialNewPosition = targetOffset + go;
         if (!isEven(potentialNewPosition)) {potentialNewPosition += go;}
         targetOffset = makeSureNewOffsetIsOK(potentialNewPosition);
-        sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.offsetPositions.get(targetOffset));
+        robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterLogic.offsetPositions.get(targetOffset));
     }
     private void goNextFirePosition(int go) {
         int potentialNewPosition = targetOffset + go;
         if (isEven(potentialNewPosition)) {potentialNewPosition += go;}
         targetOffset = makeSureNewOffsetIsOK(potentialNewPosition);
-        sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.offsetPositions.get(targetOffset));
+        robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterLogic.offsetPositions.get(targetOffset));
     }
 
     private int makeSureNewOffsetIsOK(int oldNewOffset) { // is this the cause of our lag
@@ -558,20 +564,20 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         telemetry.addData("Last saved Alliance: ", blackboard.get(ALLIANCE_KEY));
 
-        telemetry.addData("Reference", sorterHardware.reference);
+        telemetry.addData("Reference", robot.sorterHardware.reference);
 
-        telemetry.addData("Blender in position", sorterHardware.inProperTickPosition());
-        telemetry.addData("Closed Check", sorterHardware.closedCheck());
-        telemetry.addData("Equalized Target Position", sorterLogic.offsetPositions.get(targetOffset));
-        telemetry.addData("Door Open", sorterHardware.open);
-        telemetry.addData("Door Target", sorterHardware.doorTarget);
-        telemetry.addData("Launcher Velocity", launcher.motor.getVelocity());
-        telemetry.addData("Launcher Target Velocity", launcher.velocityTarget);
-        telemetry.addData("Launcher at Speed", launcher.motorSpeedCheck(launcher.velocityTarget));
+        telemetry.addData("Blender in position", robot.sorterHardware.inProperTickPosition());
+        telemetry.addData("Closed Check", robot.sorterHardware.closedCheck());
+        telemetry.addData("Equalized Target Position", robot.sorterLogic.offsetPositions.get(targetOffset));
+        telemetry.addData("Door Open", robot.sorterHardware.open);
+        telemetry.addData("Door Target", robot.sorterHardware.doorTarget);
+        telemetry.addData("Launcher Velocity", robot.launcher.motor.getVelocity());
+        telemetry.addData("Launcher Target Velocity", robot.launcher.velocityTarget);
+        telemetry.addData("Launcher at Speed", robot.launcher.motorSpeedCheck(robot.launcher.velocityTarget));
         telemetry.addData("Launcher on Cooldown", robot.launcher.onCooldown);
-        telemetry.addData("Blender State", sorterHardware.currentPositionState);
-        telemetry.addData("Door Cooldown", sorterHardware.cooldownTimer.seconds());
-        telemetry.addData("Launcher Cooldown", launcher.cooldownTimer);
+        telemetry.addData("Blender State", robot.sorterHardware.currentPositionState);
+        telemetry.addData("Door Cooldown", robot.sorterHardware.cooldownTimer.seconds());
+        telemetry.addData("Launcher Cooldown", robot.launcher.cooldownTimer);
 
         //robot.tellMotorOutput();
     }

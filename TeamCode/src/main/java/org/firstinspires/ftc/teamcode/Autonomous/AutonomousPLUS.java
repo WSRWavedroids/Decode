@@ -48,7 +48,6 @@ public class AutonomousPLUS extends LinearOpMode {
     // This section tells the program all of the different pieces of hardware that are on our robot that we will use in the program.
     private ElapsedTime runtime = new ElapsedTime();
 
-    public Limelight_Randomization_Scanner randomization;
 
     public double speed = 0.6;
     public int sleepTime;
@@ -511,6 +510,50 @@ public class AutonomousPLUS extends LinearOpMode {
             //
         }
     }
+
+    void stallForSpin(boolean condition, int ticks)
+    {
+        robot.sorterHardware.reference  = ticks;
+        while(!condition)
+        {
+            robot.sorterHardware.reference  = ticks;
+            robot.updateAllDaThings();
+        }
+    }
+
+
+    public void fireInSequence(int one, int two, int three)
+    {
+
+        stallForSpin(robot.sorterHardware.fireSafeCheck(), one);
+        robot.launcher.setLauncherSpeed(1);
+        stallTillTrue(robot.launcher.inSpeedRange);
+        robot.launcher.readyFire(1, true);
+        stallTillTrue(!robot.launcher.onCooldown && !robot.sorterHardware.onCooldown); //Wait till done firing
+        stallTillTrue(robot.sorterHardware.closedCheck()); //Wait for close
+
+
+
+        stallForSpin(robot.sorterHardware.fireSafeCheck(), two);
+        robot.launcher.setLauncherSpeed(1);
+        stallTillTrue(robot.launcher.inSpeedRange);
+        robot.launcher.readyFire(1, true);
+        stallTillTrue(!robot.launcher.onCooldown && !robot.sorterHardware.onCooldown); //Wait till done firing
+        stallTillTrue(robot.sorterHardware.closedCheck()); //Wait for close
+
+
+        stallForSpin(robot.sorterHardware.fireSafeCheck(), three);
+        robot.launcher.setLauncherSpeed(1);
+        stallTillTrue(robot.launcher.inSpeedRange);
+        robot.launcher.readyFire(1, true);
+        stallTillTrue(!robot.launcher.onCooldown && !robot.sorterHardware.onCooldown); //Wait till done firing
+        stallTillTrue(robot.sorterHardware.closedCheck()); //Wait for close
+
+        //reset to safe
+        robot.launcher.setLauncherSpeed(0);
+        stallForSpin(robot.sorterHardware.positionedCheck(), robot.sorterHardware.positions[0]);
+    }
+
 
 
 
