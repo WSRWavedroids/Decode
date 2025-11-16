@@ -34,7 +34,7 @@ public class RedFrontAuto extends AutonomousPLUS {
         if(opModeInInit())
         {
 
-            prepareAuto();
+            //prepareAuto();
 
             robot.randomizationScanner.InitLimeLight(0, robot.hardwareMap);
             blackboard.put(ALLIANCE_KEY, "RED");
@@ -157,6 +157,54 @@ public class RedFrontAuto extends AutonomousPLUS {
 
 
     }
+
+    void stallForSpin(boolean condition, int ticks)
+    {
+        robot.sorterHardware.reference  = ticks;
+        while(!condition)
+        {
+            robot.sorterHardware.reference  = ticks;
+            robot.updateAllDaThings();
+
+            robot.sorterHardware.reference = ticks;
+            robot.sorterHardware.updateSorterHardware();
+            robot.sorterHardware.runPIDMotorStuffLol();
+        }
+    }
+
+
+    public void fireInSequence(int one, int two, int three)
+    {
+
+        stallForSpin(robot.sorterHardware.positionedCheck(), one);
+        robot.launcher.setLauncherSpeed(1);
+        stallTillTrue(robot.launcher.inSpeedRange);
+        robot.launcher.readyFire(1, true);
+        stallTillTrue(!robot.launcher.onCooldown && !robot.sorterHardware.onCooldown); //Wait till done firing
+        stallTillTrue(robot.sorterHardware.closedCheck()); //Wait for close
+
+
+
+        stallForSpin(robot.sorterHardware.positionedCheck(), two);
+        robot.launcher.setLauncherSpeed(1);
+        stallTillTrue(robot.launcher.inSpeedRange);
+        robot.launcher.readyFire(1, true);
+        stallTillTrue(!robot.launcher.onCooldown && !robot.sorterHardware.onCooldown); //Wait till done firing
+        stallTillTrue(robot.sorterHardware.closedCheck()); //Wait for close
+
+
+        stallForSpin(robot.sorterHardware.positionedCheck(), three);
+        robot.launcher.setLauncherSpeed(1);
+        stallTillTrue(robot.launcher.inSpeedRange);
+        robot.launcher.readyFire(1, true);
+        stallTillTrue(!robot.launcher.onCooldown && !robot.sorterHardware.onCooldown); //Wait till done firing
+        stallTillTrue(robot.sorterHardware.closedCheck()); //Wait for close
+
+        //reset to safe
+        robot.launcher.setLauncherSpeed(0);
+        stallForSpin(robot.sorterHardware.positionedCheck(), robot.sorterHardware.positions[0]);
+    }
+
 
 
 

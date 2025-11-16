@@ -38,7 +38,7 @@ public class FrontUnpark extends AutonomousPLUS {
         if(opModeInInit())
         {
 
-            prepareAuto();
+            //prepareAuto();
 
             while(opModeInInit())
             {

@@ -47,7 +47,7 @@ public class legacyAutoTuner extends AutonomousPLUS {
         sorter = robot.sorterHardware;
 
         if (opModeInInit()) {
-            prepareAuto();
+            //prepareAuto();
             Limelight.InitLimeLight(0, robot.hardwareMap);
             blackboard.put(ALLIANCE_KEY, "BLUE");
             while (opModeInInit()) {
