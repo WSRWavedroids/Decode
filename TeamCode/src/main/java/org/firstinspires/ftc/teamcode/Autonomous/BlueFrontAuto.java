@@ -111,9 +111,8 @@ public class BlueFrontAuto extends AutonomousPLUS {
 
         if(pattern.equals("PPG"))
         {
-            //robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterHardware.positions[3]);
-            robot.sorterHardware.reference  = 1365;
-            stallForTime(2);
+
+            stallTillready( robot.sorterHardware.positionedCheck(), 1365);
             robot.launcher.setLauncherSpeed(1);
             targetData = robot.targetScanner.tagInfo();
             turnRobotRight(700, 15);
@@ -127,9 +126,8 @@ public class BlueFrontAuto extends AutonomousPLUS {
         else if(pattern.equals("PGP"))
         {
 
-            //robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterHardware.positions[3]);
-            robot.sorterHardware.reference =1365;
-            stallForTime(2);
+
+            stallTillready(robot.sorterHardware.positionedCheck(), 1365);
             robot.launcher.setLauncherSpeed(1);
             targetData = robot.targetScanner.tagInfo();
             turnRobotRight(700, 15);
@@ -141,9 +139,7 @@ public class BlueFrontAuto extends AutonomousPLUS {
         }
         else if(pattern.equals("GPP"))
         {
-            //robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterHardware.positions[3]);
-            robot.sorterHardware.reference = 4096;
-            stallForTime(2);
+            stallTillready(robot.sorterHardware.positionedCheck(), 4096);
             robot.launcher.setLauncherSpeed(1);
             targetData = robot.targetScanner.tagInfo();
             turnRobotRight(700, 15);
@@ -157,8 +153,7 @@ public class BlueFrontAuto extends AutonomousPLUS {
         else//Fire any*/
         {
             //robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterHardware.positions[3]);
-            robot.sorterHardware.reference = 4096;
-            stallForTime(1.5);
+            stallTillready(robot.sorterHardware.positionedCheck(), 1365);
             robot.launcher.setLauncherSpeed(1);
             targetData = robot.targetScanner.tagInfo();
             turnRobotRight(700, 15);
@@ -171,7 +166,7 @@ public class BlueFrontAuto extends AutonomousPLUS {
         }
         speed = 1;
         //Unpark fully and line up with line of balls... may go wrong way
-        robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), 0);
+        stallTillready(robot.sorterHardware.positionedCheck(), 0);
         turnRobotRight(100,12);
         moveRobotRight(1000, 12);
 
@@ -180,40 +175,56 @@ public class BlueFrontAuto extends AutonomousPLUS {
 
     public void fireInSequence(int one, int two, int three, boolean skipOne)
     {
-        if(!skipOne)
-        {
-            robot.sorterHardware.reference = one;
-            stallForTime(2);
-            prepareNextAction(500);// If we arent at speed yet, stall till we are
-            robot.launcher.readyFire(1, true);
-            robot.updateAllDaThings();
-            stallTillTrue(!robot.launcher.onCooldown && !robot.sorterHardware.onCooldown); //Wait till done firing
-            stallTillTrue(robot.sorterHardware.closedCheck()); //Wait for close
-        }
-        else
-        {
-            stallForTime(2);// If we arent at speed yet, stall till we are
-            robot.launcher.readyFire(1, true);
-            robot.updateAllDaThings();
-            stallTillTrue(!robot.launcher.onCooldown && !robot.sorterHardware.onCooldown); //Wait till done firing
-            stallTillTrue(sorter.closedCheck());
-        }
 
-
-        robot.sorterHardware.reference = two; //command movement
-        stallForTime(2);
+        stallTillready(robot.sorterHardware.positionedCheck(), one);
+        robot.launcher.setLauncherSpeed(1);
         robot.launcher.readyFire(1, true);
-        stallTillTrue(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
-        stallTillTrue(sorter.closedCheck());
+        stallTillready(!robot.launcher.onCooldown && !robot.sorterHardware.onCooldown); //Wait till done firing
+        stallTillready(robot.sorterHardware.closedCheck()); //Wait for close
 
 
-        robot.sorterHardware.reference = three; //command movement
-        stallForTime(2);
+
+        stallTillready(robot.sorterHardware.positionedCheck(), two);
+        robot.launcher.setLauncherSpeed(1);
         robot.launcher.readyFire(1, true);
-        stallTillTrue(!robot.launcher.onCooldown && !robot.sorterHardware.onCooldown); //Wait till done firing
-        stallTillTrue(robot.sorterHardware.closedCheck());
+        stallTillready(!robot.launcher.onCooldown && !sorter.onCooldown); //Wait till done firing
+        stallTillready(sorter.closedCheck());
+
+
+        stallTillready(robot.sorterHardware.positionedCheck(), three);
+        robot.launcher.setLauncherSpeed(1);
+
+        robot.launcher.readyFire(1, true);
+        stallTillready(!robot.launcher.onCooldown && !robot.sorterHardware.onCooldown); //Wait till done firing
+        stallTillready(robot.sorterHardware.closedCheck());
 
         robot.launcher.setLauncherSpeed(0);
+    }
+
+    void stallTillready(boolean condition, int ticks)
+    {
+        robot.sorterHardware.reference  = ticks;
+        while(!condition)
+        {
+            robot.sorterHardware.reference  = ticks;
+            robot.launcher.timerCheck();
+            robot.launcher.updateLauncherHardware();
+            robot.sorterHardware.runPIDMotorStuffLol(); // if this don't work all is lost
+            robot.updateAllDaThings();
+        }
+    }
+
+    void stallTillready(boolean condition)
+    {
+        while(!condition)
+        {
+
+            //robot.sorterHardware.runPIDMotorStuffLol(); // if this don't work all is lost
+            robot.updateAllDaThings();
+            robot.launcher.timerCheck();
+            robot.launcher.updateLauncherHardware();
+            robot.sorterHardware.updateSorterHardware();
+        }
     }
 
 }

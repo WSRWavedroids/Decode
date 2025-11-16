@@ -134,11 +134,6 @@ public class LauncherHardware {
         runHammer();
 
 
-        if(inSpeedRange)
-        {
-            spikeable = true;
-            spikeableValue = motor.getVelocity();
-        }
 
 
         if (robot.sorterHardware.fireSafeCheck() && waitingToFire) {

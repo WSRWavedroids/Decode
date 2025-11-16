@@ -28,6 +28,8 @@ public class SorterHardware {
     public static int offset = 0;
     public boolean legalToSpin = false;
 
+    double integralSum = 0;
+
 
     public Servo doorServo;
 
@@ -70,7 +72,6 @@ public class SorterHardware {
 
     public double reference;
 
-    double integralSum = 0;
 
     double lastError = 0;
 
@@ -232,9 +233,9 @@ public class SorterHardware {
             case 5: currentPositionState = FIRE; break;
 
             // Loading positions
-            case 0: currentPositionState = positionState.LOAD; break;
-            case 2: currentPositionState = positionState.LOAD; break;
-            case 4: currentPositionState = positionState.LOAD; break;
+            case 0: currentPositionState = LOAD; break;
+            case 2: currentPositionState = LOAD; break;
+            case 4: currentPositionState = LOAD; break;
 
             // Not in a position (-1)
             default: currentPositionState = positionState.SWITCH;
@@ -309,13 +310,27 @@ public class SorterHardware {
         // calculate the error
         double error = reference - encoderPosition;
 
+        double derivative;
         // rate of change of the error
-        double derivative = (error - lastError) / pidfTime().seconds();
+        if(pidfTime().seconds()!= 0)
+        {
+             derivative = (error - lastError) / pidfTime().seconds();
+        }
+        else
+        {
+             derivative = (error - lastError);
+        }
+
 
         double feedforward = kf * reference;
 
-        // sum of all error over time
-        integralSum = integralSum + (error * pidfTime().seconds());
+
+
+        if(pidfTimer.seconds() != 0)
+        {
+            // sum of all error over time
+            integralSum = integralSum + (error * pidfTime().seconds());
+        }
 
         double out = kneecap * ((kp * error) + (ki * integralSum) + (kd * derivative) + feedforward);
 
