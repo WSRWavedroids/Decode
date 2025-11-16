@@ -219,11 +219,11 @@ public class BlueFrontAuto extends AutonomousPLUS {
         while(!condition)
         {
 
-            //robot.sorterHardware.runPIDMotorStuffLol(); // if this don't work all is lost
-            robot.updateAllDaThings();
             robot.launcher.timerCheck();
             robot.launcher.updateLauncherHardware();
             robot.sorterHardware.updateSorterHardware();
+            robot.sorterHardware.runPIDMotorStuffLol();
+            robot.updateAllDaThings();
         }
     }
 
