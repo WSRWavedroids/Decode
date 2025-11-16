@@ -16,13 +16,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.Core.ArtifactLocator;
-import org.firstinspires.ftc.teamcode.Core.LauncherHardware;
 import org.firstinspires.ftc.teamcode.Core.Robot;
-import org.firstinspires.ftc.teamcode.Core.SorterHardware;
-import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
-import org.firstinspires.ftc.teamcode.Vision.SensorHuskyLens;
-import org.firstinspires.ftc.teamcode.Vision.WaveTag;
+
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -171,15 +166,15 @@ public class Vortex_Teleop_Decode extends OpMode {
         ///This will work once we have inventory Cam
         /*if(gamepad2.square)
         {
-            sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(PURPLE).getFirePosition());
+            robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(PURPLE).getFirePosition());
         }
         else if(gamepad2.triangle)
         {
-            sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(GREEN).getFirePosition());
+            robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(GREEN).getFirePosition());
         }
         else if(gamepad2.left_trigger > 0.5)
         {
-            sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstOccupied().getFirePosition());
+            robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstOccupied().getFirePosition());
         }*/
 
 
@@ -483,12 +478,12 @@ public class Vortex_Teleop_Decode extends OpMode {
         // This section of code increments by 1
         /*if (gamepad2.leftBumperWasPressed()) {
             targetOffset = makeSureNewOffsetIsOK(targetOffset - 1);
-            sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.offsetPositions.get(targetOffset));
+            robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), sorterLogic.offsetPositions.get(targetOffset));
         }
 
         else if (gamepad2.rightBumperWasPressed()) {
             targetOffset = makeSureNewOffsetIsOK(targetOffset + 1);
-            sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.offsetPositions.get(targetOffset));
+            robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), sorterLogic.offsetPositions.get(targetOffset));
         }*/
 
         // Fire positions
