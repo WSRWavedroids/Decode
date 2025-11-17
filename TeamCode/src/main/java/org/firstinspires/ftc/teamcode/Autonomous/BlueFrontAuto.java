@@ -130,7 +130,7 @@ public class BlueFrontAuto extends AutonomousPLUS {
             turnRobotRight(600, 15);
             if (robot.targetTag.currentlyDetected) //Angle detect if possible / needed
             {
-                turnRobotLeft((int) ((robot.targetTag.angleX +robot.limelightSideOffsetAngle) * (1660/360)), 1);
+                turnRobotRight((int) ((robot.targetTag.angleX +robot.limelightSideOffsetAngle) * (1660/360)), 1);
             }
             fireInSequence(robot.sorterHardware.positions[1], robot.sorterHardware.positions[3], robot.sorterHardware.positions[5]);
 
@@ -154,138 +154,11 @@ public class BlueFrontAuto extends AutonomousPLUS {
 
 
         turnRobotRight(-1200,12);
-        moveRobotLeft(850, 12);
+        moveRobotLeft(800, 12);
         moveRobotForward(200, 12);
 
 
         }
-
-    void stallForSpin(boolean condition, int ticks)
-    {
-        robot.sorterHardware.reference  = ticks;
-        while(!condition)
-        {
-
-            robot.sorterHardware.reference  = ticks;
-            robot.updateAllDaThings();
-
-            robot.sorterHardware.reference = ticks;
-            robot.sorterHardware.updateSorterHardware();
-            robot.sorterHardware.runPIDMotorStuffLol();
-            robot.launcher.updateLauncherHardware();
-            robot.launcher.timerCheck();
-            robot.launcher.runHammer();
-            telemetry.addData("Spinning...", "Or stuck in loop :(");
-            telemetry.addData("we in?", robot.sorterHardware.positionedCheck());
-            if(robot.sorterHardware.positionedCheck())
-            {
-                sleep(100);
-                if(robot.sorterHardware.positionedCheck())
-                {
-                    break;
-                }
-            }
-            telemetry.update();
-        }
-    }
-
-    void stallForTime(double time)
-    {
-        stupidTimer.reset();
-        while(stupidTimer.seconds() < time)
-        {
-            robot.updateAllDaThings();
-            robot.sorterHardware.moveDoor();
-            robot.sorterHardware.updateSorterHardware();
-            robot.sorterHardware.runPIDMotorStuffLol();
-
-            robot.launcher.updateLauncherHardware();
-            robot.launcher.timerCheck();
-            //robot.launcher.runHammer();
-        {
-
-        }
-        }
-    }
-
-    void stallForCondition(boolean condition)
-    {
-        while(!condition)
-        {
-            robot.updateAllDaThings();
-            robot.sorterHardware.moveDoor();
-            robot.sorterHardware.updateSorterHardware();
-            robot.sorterHardware.runPIDMotorStuffLol();
-            robot.launcher.updateLauncherHardware();
-            robot.launcher.timerCheck();
-            robot.launcher.runHammer();
-
-            if(condition)
-            {
-               break;
-            }
-        }
-    }
-
-
-    public void fireInSequence(int one, int two, int three)
-    {
-
-        robot.launcher.setLauncherSpeed(1);
-        stallForSpin(robot.sorterHardware.positionedCheck(), one);
-        stallForSpin(robot.sorterHardware.positionedCheck(), one);
-        stallForSpin(robot.sorterHardware.positionedCheck(), one);
-        stallForSpin(robot.sorterHardware.positionedCheck(), one);
-        stallForSpin(robot.sorterHardware.positionedCheck(), one);
-        stallForSpin(robot.sorterHardware.positionedCheck(), one);
-        stallForSpin(robot.sorterHardware.positionedCheck(), one);
-        stallForSpin(robot.sorterHardware.positionedCheck(), one);
-        stallForSpin(robot.sorterHardware.positionedCheck(), one);
-        stallForSpin(robot.sorterHardware.positionedCheck(), one);
-        robot.doorServo.setPosition(robot.sorterHardware.doorOpenPosition);
-        sleep(500);
-        robot.doorServo.setPosition(robot.sorterHardware.doorClosedPosition);
-        stallForTime(0.5);
-
-
-        robot.launcher.setLauncherSpeed(1);
-        stallForSpin(robot.sorterHardware.positionedCheck(), two);
-        stallForSpin(robot.sorterHardware.positionedCheck(), two);
-        stallForSpin(robot.sorterHardware.positionedCheck(), two);
-        stallForSpin(robot.sorterHardware.positionedCheck(), two);
-        stallForSpin(robot.sorterHardware.positionedCheck(), two);
-        stallForSpin(robot.sorterHardware.positionedCheck(), two);
-        stallForSpin(robot.sorterHardware.positionedCheck(), two);
-        stallForSpin(robot.sorterHardware.positionedCheck(), two);
-        stallForSpin(robot.sorterHardware.positionedCheck(), two);
-        stallForSpin(robot.sorterHardware.positionedCheck(), two);
-        robot.doorServo.setPosition(robot.sorterHardware.doorOpenPosition);
-        sleep(500);
-        robot.doorServo.setPosition(robot.sorterHardware.doorClosedPosition);
-        stallForTime(0.5);
-
-
-        robot.launcher.setLauncherSpeed(1);
-        stallForSpin(robot.sorterHardware.positionedCheck(), three);
-        stallForSpin(robot.sorterHardware.positionedCheck(), three);
-        stallForSpin(robot.sorterHardware.positionedCheck(), three);
-        stallForSpin(robot.sorterHardware.positionedCheck(), three);
-        stallForSpin(robot.sorterHardware.positionedCheck(), three);
-        stallForSpin(robot.sorterHardware.positionedCheck(), three);
-        stallForSpin(robot.sorterHardware.positionedCheck(), three);
-        stallForSpin(robot.sorterHardware.positionedCheck(), three);
-        stallForSpin(robot.sorterHardware.positionedCheck(), three);
-        stallForSpin(robot.sorterHardware.positionedCheck(), three);
-        robot.doorServo.setPosition(robot.sorterHardware.doorOpenPosition);
-        sleep(500);
-        robot.doorServo.setPosition(robot.sorterHardware.doorClosedPosition);
-        stallForTime(0.5);
-
-        //reset to safe
-        robot.launcher.setLauncherSpeed(0);
-        stallForSpin(robot.sorterHardware.positionedCheck(), robot.sorterHardware.positions[0]);
-        stallForSpin(robot.sorterHardware.positionedCheck(), robot.sorterHardware.positions[0]);
-    }
 
 
 

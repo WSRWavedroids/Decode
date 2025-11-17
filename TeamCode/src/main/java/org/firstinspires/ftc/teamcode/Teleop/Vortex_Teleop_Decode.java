@@ -202,10 +202,12 @@ public class Vortex_Teleop_Decode extends OpMode {
         else if(gamepad2.circle) // dave spits out artifact
         {
             robot.runBasicIntake(-1);
+            robot.sorterHardware.overidingFeeders = true;
         }
         else //dont run intake if we not pulling trigger
         {
            robot.cancelAutoIntake();
+           robot.sorterHardware.overidingFeeders = false;
         }
 
 

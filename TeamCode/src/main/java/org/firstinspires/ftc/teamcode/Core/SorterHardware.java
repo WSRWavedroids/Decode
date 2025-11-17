@@ -39,6 +39,7 @@ public class SorterHardware {
     public double feederRotateSpeed = 1;
     public double passiveFeederSpeed = 1;
     public boolean tryingToFeed = false;
+    public boolean overidingFeeders = false;
 
     public boolean open = false;
     public boolean wantToMoveDoor = false;
@@ -282,7 +283,12 @@ public class SorterHardware {
             runFeeders(feederIntakeSpeed);
         } else if (moveSafeCheck()) {
             runFeeders(feederRotateSpeed);
-        } else {
+        }
+        else if(overidingFeeders)
+        {
+            runFeeders(-1);
+        }
+        else {
             runFeeders(passiveFeederSpeed);
         }
 
