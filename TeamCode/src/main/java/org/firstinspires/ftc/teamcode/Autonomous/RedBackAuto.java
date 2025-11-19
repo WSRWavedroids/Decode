@@ -1,16 +1,8 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.OPEN;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Core.LauncherHardware;
 import org.firstinspires.ftc.teamcode.Core.Robot;
-import org.firstinspires.ftc.teamcode.Core.SorterHardware;
-import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
-import org.firstinspires.ftc.teamcode.Vision.WaveTag;
-import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 
 @Autonomous(group = "Basic", name = "Red Back Start")
 public class RedBackAuto extends AutonomousPLUS {
@@ -34,7 +26,7 @@ public class RedBackAuto extends AutonomousPLUS {
         {
             //prepareAuto();
             robot.readyHardware(true);
-            robot.randomizationScanner.InitLimeLight(0, robot.hardwareMap);
+            robot.randomizationScanner.InitLimeLight(0);
             blackboard.put(ALLIANCE_KEY, "RED");
             while(opModeInInit())
             {

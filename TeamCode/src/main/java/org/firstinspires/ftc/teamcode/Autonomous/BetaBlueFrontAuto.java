@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.F
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.FIRST_SPIN;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.LAUNCHER_ON;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.SET_APRILTAG_PIPELINE;
+import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.START;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.TAG_TELEMETRY;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.TURN_BACK_TOWARDS_GOAL;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.UNPARK_1;
@@ -57,14 +58,13 @@ public class BetaBlueFrontAuto extends OpMode {
     public IMU imu;
 
     enum step {
+        START,
         CHECK_MOVE_1, CHECK_MOVE_2, CHECK_TAG, TAG_TELEMETRY, SET_APRILTAG_PIPELINE,
         FIRST_SPIN, LAUNCHER_ON, TURN_BACK_TOWARDS_GOAL, FINE_TUNE_TARGETING, FIRE_FIRST_PATTERN,
         UNPARK_1, UNPARK_2, UNPARK_3,
         YAY
-
     }
-    private step currentStep;
-
+    private step currentStep = START;
 
     public static final String ALLIANCE_KEY = "Alliance"; //For blackboard
     public static final String PATTERN_KEY = "Pattern";
@@ -75,13 +75,14 @@ public class BetaBlueFrontAuto extends OpMode {
     public void init() {
 
         // Call the initialization protocol from the Robot class.
+        // Go find pizza
         robot = new Robot(hardwareMap, telemetry, this);
         auto = new AutonomousPlusPLUS(robot);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
 
-        robot.randomizationScanner.InitLimeLight(0, robot.hardwareMap);
+        robot.randomizationScanner.InitLimeLight(0);
         blackboard.put(ALLIANCE_KEY, "BLUE");
     }
 
@@ -102,11 +103,8 @@ public class BetaBlueFrontAuto extends OpMode {
     public void start() {
         runtime.reset();
         telemetry.addData("HYPE", "Let's do this!!!");
-        gamepad1.setLedColor(0, 0, 255, 100000000);
-        gamepad2.setLedColor(0, 0, 255, 100000000);
         robot.sorterHardware.resetSorterEncoder();//REMOVE ONCE AUTO -> TELE IS FIGURED OUT
         robot.sorterHardware.legalToSpin = true;
-
     }
 
     /*
@@ -114,56 +112,63 @@ public class BetaBlueFrontAuto extends OpMode {
      */
     public void loop() {
         switch (currentStep) {
+            case START:
+                nextStep(CHECK_MOVE_1);
+                break;
             case CHECK_MOVE_1:
                 auto.moveRobotForward(1000);
                 nextStep(CHECK_MOVE_2);
+                break;
             case CHECK_MOVE_2:
                 if (auto.checkMovement()) {
                     auto.turnRobotLeft(600);
                     nextStep(CHECK_TAG);
                 }
+                break;
             case CHECK_TAG:
                 if (auto.checkMovement()) {
                     robot.pattern = robot.randomizationScanner.GetRandomization();
                     robot.sorterHardware.legalToSpin = true;
-                    nextStep(TAG_TELEMETRY);
+                    nextStep(SET_APRILTAG_PIPELINE);
                 }
-            case TAG_TELEMETRY:
+                break;
+            case TAG_TELEMETRY: // Skipped
                 telemetry.addData("Our pattern is: ", robot.pattern, " ...yay");
 
-                if(robot.pattern.equals("PPG"))
-                {
-                    telemetry.addData("We doin", " PPG now");
-                    blackboard.put(PATTERN_KEY, "PPG");
-                }
-                else if(robot.pattern.equals("GPP"))
-                {
-                    telemetry.addData("We doin", " GPP now");
-                    blackboard.put(PATTERN_KEY, "GPP");
-                } else if (robot.pattern.equals("PGP"))
-                {
-                    telemetry.addData("We doin", " PGP now");
-                    blackboard.put(PATTERN_KEY, "PGP");
-                }
-                else
-                {
-                    telemetry.addData("It failed ", "cry time");
+                switch (robot.pattern) {
+                    case "PPG":
+                        telemetry.addData("We doin", " PPG now");
+                        blackboard.put(PATTERN_KEY, "PPG");
+                        break;
+                    case "GPP":
+                        telemetry.addData("We doin", " GPP now");
+                        blackboard.put(PATTERN_KEY, "GPP");
+                        break;
+                    case "PGP":
+                        telemetry.addData("We doin", " PGP now");
+                        blackboard.put(PATTERN_KEY, "PGP");
+                        break;
+                    default:
+                        telemetry.addData("It failed ", "cry time");
+                        break;
                 }
 
                 nextStep(SET_APRILTAG_PIPELINE);
+                break;
             case SET_APRILTAG_PIPELINE:
-                if (Objects.equals(blackboard.get(ALLIANCE_KEY), "BLUE")) {
-                    robot.targetScanner.InitLimeLightTargeting(2, robot.hardwareMap);
+                if (blackboard.get(ALLIANCE_KEY) == "BLUE") {
+                    robot.targetScanner.InitLimeLightTargeting(2, robot);
                     robot.scanningForTargetTag = true;
-                } else if(Objects.equals(blackboard.get(ALLIANCE_KEY), "RED")) {
-                    robot.targetScanner.InitLimeLightTargeting(1, robot.hardwareMap);
+                } else if(blackboard.get(ALLIANCE_KEY) == "RED") {
+                    robot.targetScanner.InitLimeLightTargeting(1, robot);
                     robot.scanningForTargetTag = true;
                 } else {
-                    robot.targetScanner.InitLimeLightTargeting(1, robot.hardwareMap);
+                    robot.targetScanner.InitLimeLightTargeting(1, robot);
                     robot.scanningForTargetTag = true;
                 }
 
                 nextStep(FIRST_SPIN);
+                break;
             case FIRST_SPIN:
                 if (robot.pattern.equals("PGP") || robot.pattern.equals("PPG")) {
                     robot.sorterHardware.prepareNewMovement(
@@ -176,12 +181,14 @@ public class BetaBlueFrontAuto extends OpMode {
                 }
 
                 nextStep(LAUNCHER_ON);
+                break;
             case LAUNCHER_ON:
                 if (robot.sorterHardware.positionedCheck()) {
                     robot.launcher.setLauncherSpeed(1);
                     robot.targetTag = robot.targetScanner.tagInfo();
                     nextStep(TURN_BACK_TOWARDS_GOAL);
                 }
+                break;
             case TURN_BACK_TOWARDS_GOAL:
                 auto.turnRobotRight(600);
                 nextStep(FINE_TUNE_TARGETING);
@@ -193,33 +200,40 @@ public class BetaBlueFrontAuto extends OpMode {
                     }
                     nextStep(FIRE_FIRST_PATTERN);
                 }
+                break;
             case FIRE_FIRST_PATTERN:
                 if (auto.checkMovement()) {
                     if (robot.pattern.equals("PPG")) {
-                        auto.fireInSequence(robot.sorterHardware.positions[3],robot.sorterHardware.positions[5],robot.sorterHardware.positions[1]);
+                        auto.fireInSequence(robot.sorterLogic.slotB, robot.sorterLogic.slotC, robot.sorterLogic.slotA);
                     } else if (robot.pattern.equals("PGP")) {
-                        auto.fireInSequence(robot.sorterHardware.positions[3], robot.sorterHardware.positions[1], robot.sorterHardware.positions[5]);
+                        auto.fireInSequence(robot.sorterLogic.slotB, robot.sorterLogic.slotA, robot.sorterLogic.slotC);
                     } else {
-                        auto.fireInSequence(robot.sorterHardware.positions[1], robot.sorterHardware.positions[3], robot.sorterHardware.positions[5]);
+                        auto.fireInSequence(robot.sorterLogic.slotA, robot.sorterLogic.slotB, robot.sorterLogic.slotC);
                     }
 
                     nextStep(UNPARK_1);
                 }
+                break;
             case UNPARK_1:
                 auto.turnRobotRight(-1200);
                 nextStep(UNPARK_2);
+                break;
             case UNPARK_2:
                 if (auto.checkMovement()) {
                     auto.moveRobotLeft(800);
                     nextStep(UNPARK_3);
                 }
+                break;
             case UNPARK_3:
                 if (auto.checkMovement()) {
                     auto.moveRobotForward(200);
                     nextStep(YAY);
                 }
+                break;
             case YAY:
                 super.requestOpModeStop();
+                robot.telemetry.addLine("YAY");
+                break;
         }
 
         robot.updateAllDaThings();
@@ -232,6 +246,7 @@ public class BetaBlueFrontAuto extends OpMode {
      */
     public void stop() {
         telemetry.addData("Status", "Robot Stopped");
+        doTelemetryStuff();
     }
 
 
@@ -250,7 +265,7 @@ public class BetaBlueFrontAuto extends OpMode {
         // This little section updates the driver hub on the runtime and the motor powers.
         // It's mostly used for troubleshooting.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-
+        telemetry.addData("Step", currentStep);
 
         if(robot.targetTag.currentlyDetected)
         {

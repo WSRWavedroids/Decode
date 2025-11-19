@@ -36,10 +36,8 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.Core.Robot;
 
 import java.util.List;
 
@@ -65,93 +63,24 @@ import java.util.List;
  *   and the ip address the Limelight device assigned the Control Hub and which is displayed in small text
  *   below the name of the Limelight on the top level configuration screen.
  */
-@Autonomous(name = "Randomization", group = "Sensor")
-public class Limelight_Randomization_Scanner extends org.firstinspires.ftc.teamcode.Autonomous.AutonomousPLUS {
+//@Autonomous(name = "Randomization", group = "Sensor")
+public class Limelight_Randomization_Scanner /*extends org.firstinspires.ftc.teamcode.Autonomous.AutonomousPLUS*/ {
 
     private Limelight3A limelight;
+    private Robot robot;
 
-    @Override
-    public void runOpMode()
+    public Limelight_Randomization_Scanner(Robot robotLocal)
     {
-        super.runOpMode();
-        limelight = robot.limelight;
-
-        telemetry.setMsTransmissionInterval(11);
-
-        limelight.pipelineSwitch(0);
-
-        /*
-         * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
-         */
-        limelight.start();
-
-        telemetry.addData(">", "Robot Ready.  Press Play.");
-        telemetry.update();
-        waitForStart();
-
-        while (opModeIsActive()) {
-            LLStatus status = limelight.getStatus();
-            telemetry.addData("Name", "%s",
-                    status.getName());
-            telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d",
-                    status.getTemp(), status.getCpu(),(int)status.getFps());
-            telemetry.addData("Pipeline", "Index: %d, Type: %s",
-                    status.getPipelineIndex(), status.getPipelineType());
-
-            LLResult result = limelight.getLatestResult();
-            if (result.isValid()) {
-                // Access general information
-                Pose3D botpose = result.getBotpose();
-                double captureLatency = result.getCaptureLatency();
-                double targetingLatency = result.getTargetingLatency();
-                double parseLatency = result.getParseLatency();
-                telemetry.addData("LL Latency", captureLatency + targetingLatency);
-                telemetry.addData("Parse Latency", parseLatency);
-                telemetry.addData("PythonOutput", java.util.Arrays.toString(result.getPythonOutput()));
-
-                telemetry.addData("tx", result.getTx());
-                telemetry.addData("txnc", result.getTxNC());
-                telemetry.addData("ty", result.getTy());
-                telemetry.addData("tync", result.getTyNC());
-
-                telemetry.addData("Botpose", botpose.toString());
-
-                // Access barcode results
-
-                // Access fiducial results
-                List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
-                for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                    telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
-
-                    if(fr.getFiducialId() == 21)
-                    {
-                        telemetry.addData("Pattern: ", "GPP");
-                    }
-                    else if (fr.getFiducialId() == 22)
-                    {
-                        telemetry.addData("Pattern: ", "PGP");
-                    }
-                    else if (fr.getFiducialId() == 23)
-                    {
-                        telemetry.addData("Pattern: ", "PPG");
-                    }
-                }
-
-            } else {
-                telemetry.addData("Limelight", "No data available");
-            }
-
-            telemetry.update();
-        }
-        limelight.stop();
+        robot = robotLocal;
     }
 
-    public void InitLimeLight(int pipeline, HardwareMap hardwareMap)
+
+    public void InitLimeLight(int pipeline)
     {
 
-        limelight = hardwareMap.get(Limelight3A.class , "limelight");
+        limelight = robot.hardwareMap.get(Limelight3A.class , "limelight");
 
-        telemetry.setMsTransmissionInterval(11);
+        robot.telemetry.setMsTransmissionInterval(11);
 
         limelight.pipelineSwitch(pipeline);
 
@@ -166,11 +95,11 @@ public class Limelight_Randomization_Scanner extends org.firstinspires.ftc.teamc
         String current = "GPP";
 
         LLStatus status = limelight.getStatus();
-        telemetry.addData("Name", "%s",
+        robot.telemetry.addData("Name", "%s",
                 status.getName());
-        telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d",
+        robot.telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d",
                 status.getTemp(), status.getCpu(),(int)status.getFps());
-        telemetry.addData("Pipeline", "Index: %d, Type: %s",
+        robot.telemetry.addData("Pipeline", "Index: %d, Type: %s",
                 status.getPipelineIndex(), status.getPipelineType());
 
         LLResult result = limelight.getLatestResult();
@@ -178,21 +107,21 @@ public class Limelight_Randomization_Scanner extends org.firstinspires.ftc.teamc
             // Access fiducial results
             List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
             for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
+                robot.telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
 
                 if(fr.getFiducialId() == 21)
                 {
-                    telemetry.addData("Pattern: ", "GPP");
+                    robot.telemetry.addData("Pattern: ", "GPP");
                     current = "GPP";
                 }
                 else if (fr.getFiducialId() == 22)
                 {
-                    telemetry.addData("Pattern: ", "PGP");
+                    robot.telemetry.addData("Pattern: ", "PGP");
                     current = "PGP";
                 }
                 else if (fr.getFiducialId() == 23)
                 {
-                    telemetry.addData("Pattern: ", "PPG");
+                    robot.telemetry.addData("Pattern: ", "PPG");
                     current = "PPG";
                 }
                 else

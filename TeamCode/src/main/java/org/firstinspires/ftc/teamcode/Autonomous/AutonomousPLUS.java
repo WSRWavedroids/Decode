@@ -60,14 +60,13 @@ public class AutonomousPLUS extends LinearOpMode {
     //DO NOT DELETE THIS LINE! CAPITALIZATION IS VERY IMPORTANT!!!
     public Robot robot = null;
 
-    /*public AutonomousPLUS(){
+    public AutonomousPLUS(){
         robot = new Robot(hardwareMap, telemetry, this);
-    }*/
+    }
     @Override
     public void runOpMode() {
         robot = new Robot(hardwareMap, telemetry, this);
         robot.panels = Panels.INSTANCE;
-
     }
 
     //These are the basic functions for mechnum movement during auto... Don't mess with these unless something is inverted
@@ -128,11 +127,11 @@ public class AutonomousPLUS extends LinearOpMode {
         }
         robot.powerSet(speed);
 
+
         while (opModeIsActive() && robot.isWheelsBusy()) {
             robot.tellMotorOutput();
             robot.panelsTelemetry.addData("FRD Position", robot.frontRightDrive.getCurrentPosition());
             robot.updateAllDaThings();
-
         }
 
         robot.stopAllMotors();

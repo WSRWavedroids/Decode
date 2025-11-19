@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Core;
 
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
 
 import android.annotation.SuppressLint;
@@ -26,8 +29,6 @@ import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
 import org.firstinspires.ftc.teamcode.Vision.SensorHuskyLens;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
-
-import java.util.Objects;
 
 
 public class Robot {
@@ -94,10 +95,12 @@ public class Robot {
     public int limelightSideOffsetAngle = 0;
 
     //Initialize motors and servos
-    public Robot(HardwareMap hardwareMap, Telemetry telemetry, OpMode opmode){
+    public Robot(HardwareMap hardwareMap, Telemetry telemetry, OpMode opmode) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
         this.opmode = opmode;
+
+        // There's pizza here!
 
         // This section turns the names of the pieces of hardware into variables that we can program with.
         // Make sure that the device name is the exact same thing you typed in on the configuration on the driver hub.
@@ -167,11 +170,8 @@ public class Robot {
         sorterLogic = new ArtifactLocator(this);
         inventoryCam = new SensorHuskyLens(this);
         queue = new fireQueue(this);
-        targetScanner = new Limelight_Target_Scanner();
-        randomizationScanner = new Limelight_Randomization_Scanner();
-
-
-
+        targetScanner = new Limelight_Target_Scanner(this);
+        randomizationScanner = new Limelight_Randomization_Scanner(this);
     }
 
 
@@ -190,58 +190,60 @@ public class Robot {
 
         //This is all inverted (big sigh)
 
-        if (Objects.equals(direction, "Right")){
-            frontLeftDrive.setTargetPosition(-ticks + frontLeftDrive.getCurrentPosition());
-            frontRightDrive.setTargetPosition(ticks + frontRightDrive.getCurrentPosition());
-            backLeftDrive.setTargetPosition(ticks + backLeftDrive.getCurrentPosition());
-            backRightDrive.setTargetPosition(-ticks + backRightDrive.getCurrentPosition());
-
-        } else if (direction == "Left"){
-            frontLeftDrive.setTargetPosition(ticks + frontLeftDrive.getCurrentPosition());
-            frontRightDrive.setTargetPosition(-ticks + frontRightDrive.getCurrentPosition());
-            backLeftDrive.setTargetPosition(-ticks + backLeftDrive.getCurrentPosition());
-            backRightDrive.setTargetPosition(ticks + backRightDrive.getCurrentPosition());
-
-        } else if (direction == "Forward"){
-            frontLeftDrive.setTargetPosition(-ticks + frontLeftDrive.getCurrentPosition());
-            frontRightDrive.setTargetPosition(-ticks + frontRightDrive.getCurrentPosition());
-            backLeftDrive.setTargetPosition(-ticks + backLeftDrive.getCurrentPosition());
-            backRightDrive.setTargetPosition(-ticks + backRightDrive.getCurrentPosition());
-
-        } else if (direction == "Backward") {
-            frontLeftDrive.setTargetPosition(ticks + frontLeftDrive.getCurrentPosition());
-            frontRightDrive.setTargetPosition(ticks + frontRightDrive.getCurrentPosition());
-            backLeftDrive.setTargetPosition(ticks + backLeftDrive.getCurrentPosition());
-            backRightDrive.setTargetPosition(ticks + backRightDrive.getCurrentPosition());
-
-        } else if (direction == "Turn Right") {
-            frontLeftDrive.setTargetPosition(-ticks + frontLeftDrive.getCurrentPosition());
-            frontRightDrive.setTargetPosition(ticks + frontRightDrive.getCurrentPosition());
-            backLeftDrive.setTargetPosition(-ticks + backLeftDrive.getCurrentPosition());
-            backRightDrive.setTargetPosition(ticks + backRightDrive.getCurrentPosition());
-
-        } else if (direction == "Turn Left") {
-            frontLeftDrive.setTargetPosition(ticks + frontLeftDrive.getCurrentPosition());
-            frontRightDrive.setTargetPosition(-ticks + frontRightDrive.getCurrentPosition());
-            backLeftDrive.setTargetPosition(ticks + backLeftDrive.getCurrentPosition());
-            backRightDrive.setTargetPosition(-ticks + backRightDrive.getCurrentPosition());
-        }
-        else if (direction == "Diagonal Right") {
-            frontLeftDrive.setTargetPosition(-ticks + frontLeftDrive.getCurrentPosition());
-            frontRightDrive.setPower(0);
-            backLeftDrive.setPower(0);
-            backRightDrive.setTargetPosition(-ticks + backRightDrive.getCurrentPosition());
-        }
-        else if (direction == "Diagonal Left") {
-            frontLeftDrive.setPower(0);
-            frontRightDrive.setTargetPosition(-ticks + frontRightDrive.getCurrentPosition());
-            backLeftDrive.setTargetPosition(-ticks + backLeftDrive.getCurrentPosition());
-            backRightDrive.setPower(0);
+        switch (direction) {
+            case "Right":
+                frontLeftDrive.setTargetPosition(-ticks + frontLeftDrive.getCurrentPosition());
+                frontRightDrive.setTargetPosition(ticks + frontRightDrive.getCurrentPosition());
+                backLeftDrive.setTargetPosition(ticks + backLeftDrive.getCurrentPosition());
+                backRightDrive.setTargetPosition(-ticks + backRightDrive.getCurrentPosition());
+                break;
+            case "Left":
+                frontLeftDrive.setTargetPosition(ticks + frontLeftDrive.getCurrentPosition());
+                frontRightDrive.setTargetPosition(-ticks + frontRightDrive.getCurrentPosition());
+                backLeftDrive.setTargetPosition(-ticks + backLeftDrive.getCurrentPosition());
+                backRightDrive.setTargetPosition(ticks + backRightDrive.getCurrentPosition());
+                break;
+            case "Forward":
+                frontLeftDrive.setTargetPosition(-ticks + frontLeftDrive.getCurrentPosition());
+                frontRightDrive.setTargetPosition(-ticks + frontRightDrive.getCurrentPosition());
+                backLeftDrive.setTargetPosition(-ticks + backLeftDrive.getCurrentPosition());
+                backRightDrive.setTargetPosition(-ticks + backRightDrive.getCurrentPosition());
+                break;
+            case "Backward":
+                frontLeftDrive.setTargetPosition(ticks + frontLeftDrive.getCurrentPosition());
+                frontRightDrive.setTargetPosition(ticks + frontRightDrive.getCurrentPosition());
+                backLeftDrive.setTargetPosition(ticks + backLeftDrive.getCurrentPosition());
+                backRightDrive.setTargetPosition(ticks + backRightDrive.getCurrentPosition());
+                break;
+            case "Turn Right":
+                frontLeftDrive.setTargetPosition(-ticks + frontLeftDrive.getCurrentPosition());
+                frontRightDrive.setTargetPosition(ticks + frontRightDrive.getCurrentPosition());
+                backLeftDrive.setTargetPosition(-ticks + backLeftDrive.getCurrentPosition());
+                backRightDrive.setTargetPosition(ticks + backRightDrive.getCurrentPosition());
+                break;
+            case "Turn Left":
+                frontLeftDrive.setTargetPosition(ticks + frontLeftDrive.getCurrentPosition());
+                frontRightDrive.setTargetPosition(-ticks + frontRightDrive.getCurrentPosition());
+                backLeftDrive.setTargetPosition(ticks + backLeftDrive.getCurrentPosition());
+                backRightDrive.setTargetPosition(-ticks + backRightDrive.getCurrentPosition());
+                break;
+            case "Diagonal Right":
+                frontLeftDrive.setTargetPosition(-ticks + frontLeftDrive.getCurrentPosition());
+                frontRightDrive.setPower(0);
+                backLeftDrive.setPower(0);
+                backRightDrive.setTargetPosition(-ticks + backRightDrive.getCurrentPosition());
+                break;
+            case "Diagonal Left":
+                frontLeftDrive.setPower(0);
+                frontRightDrive.setTargetPosition(-ticks + frontRightDrive.getCurrentPosition());
+                backLeftDrive.setTargetPosition(-ticks + backLeftDrive.getCurrentPosition());
+                backRightDrive.setPower(0);
+                break;
         }
 
     }
 
-    public void positionRunningMode(){
+    public void positionRunningMode() {
 
         frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -251,10 +253,10 @@ public class Robot {
 
     public void powerRunningMode()
     {
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontLeftDrive.setMode(RUN_WITHOUT_ENCODER);
+        frontRightDrive.setMode(RUN_WITHOUT_ENCODER);
+        backLeftDrive.setMode(RUN_WITHOUT_ENCODER);
+        backRightDrive.setMode(RUN_WITHOUT_ENCODER);
     }
     public void powerSet(double speed) {
         frontLeftDrive.setPower(speed);
@@ -264,20 +266,18 @@ public class Robot {
 
     }
 
-    public DcMotor.RunMode encoderRunningMode(){
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        return null;
+    public void encoderRunningMode(){
+        frontLeftDrive.setMode(RUN_USING_ENCODER);
+        frontRightDrive.setMode(RUN_USING_ENCODER);
+        backLeftDrive.setMode(RUN_USING_ENCODER);
+        backRightDrive.setMode(RUN_USING_ENCODER);
     }
 
     public void encoderReset(){
-        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeftDrive.setMode(STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(STOP_AND_RESET_ENCODER);
+        backLeftDrive.setMode(STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(STOP_AND_RESET_ENCODER);
     }
 
     @SuppressLint("DefaultLocale")

@@ -85,7 +85,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         // Call the initialization protocol from the Robot class.
         robot = new Robot(hardwareMap, telemetry, this);
 
-        robot.targetScanner.InitLimeLightTargeting(1, robot.hardwareMap);
+        robot.targetScanner.InitLimeLightTargeting(1, robot);
 
 
         // Tell the driver that initialization is complete.
@@ -104,13 +104,13 @@ public class Vortex_Teleop_Decode extends OpMode {
         }
         //if using field centric youl need this lolzeez
         if (Objects.equals(blackboard.get(ALLIANCE_KEY), "BLUE")) {
-            robot.targetScanner.InitLimeLightTargeting(1, robot.hardwareMap);
+            robot.targetScanner.InitLimeLightTargeting(1, robot);
             robot.scanningForTargetTag = true;
         } else if (Objects.equals(blackboard.get(ALLIANCE_KEY), "RED")) {
-            robot.targetScanner.InitLimeLightTargeting(2, robot.hardwareMap);
+            robot.targetScanner.InitLimeLightTargeting(2, robot);
             robot.scanningForTargetTag = true;
         } else {
-            robot.targetScanner.InitLimeLightTargeting(2, robot.hardwareMap);
+            robot.targetScanner.InitLimeLightTargeting(2, robot);
             robot.scanningForTargetTag = true;
         }
 

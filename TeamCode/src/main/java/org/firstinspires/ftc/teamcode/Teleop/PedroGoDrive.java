@@ -71,15 +71,15 @@ public class PedroGoDrive extends OpMode {
 
         //if using field centric youl need this lolzeez
         if (blackboard.get(ALLIANCE_KEY) == "BLUE") {
-            scanner.InitLimeLightTargeting(2, robot.hardwareMap);
+            scanner.InitLimeLightTargeting(2, robot);
             tagPosition = (new Pose(12, 132, Math.toRadians(54)));
 
         } else if (blackboard.get(ALLIANCE_KEY) == "RED") {
-            scanner.InitLimeLightTargeting(1, robot.hardwareMap);
+            scanner.InitLimeLightTargeting(1, robot);
             tagPosition = new Pose(132, 132, Math.toRadians(-54));
 
         } else {
-            scanner.InitLimeLightTargeting(1, robot.hardwareMap);
+            scanner.InitLimeLightTargeting(1, robot);
             tagPosition = (enterStandardCoords(58.3464567, 55.6299213, Math.toRadians(-54)));
             //set tag pose
 

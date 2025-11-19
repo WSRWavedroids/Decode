@@ -58,12 +58,12 @@ public class ArtifactLocator {
     public slot slotB;
     public slot slotC;
     public slot noSlot;
-    private slotRange zone1;
-    private slotRange zone2;
-    private slotRange zone3;
-    private slotRange zone4;
-    private slotRange zone5;
-    private slotRange zone6;
+    public slotRange zone1;
+    public slotRange zone2;
+    public slotRange zone3;
+    public slotRange zone4;
+    public slotRange zone5;
+    public slotRange zone6;
     public ArrayList<slot> allSlots = new ArrayList<>();
     public ArrayList<slotRange> allZones = new ArrayList<slotRange>();
     public ArrayList<Integer> offsetPositions = new ArrayList<>();
@@ -82,51 +82,10 @@ public class ArtifactLocator {
      * Might take a couple seconds to run, as it has to wait for the camera to initialize.
      */
     public void initCamera() {
-
-/*        purpleLocator = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(CustomColorRange.ARTIFACT_PURPLE)   // Use a predefined color match
-                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
-                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
-                .setDrawContours(true)   // Show contours on the Stream Preview
-                .setBoxFitColor(Color.rgb(255, 0, 255))       // Disable the drawing of rectangles
-                //.setCircleFitColor(Color.rgb(255, 0, 255)) // Draw a circle
-                .setBlurSize(5)          // Smooth the transitions between different colors in image
-
-                // the following options have been added to fill in perimeter holes.
-                /*.setDilateSize(15)       // Expand blobList to fill any divots on the edges
-                .setErodeSize(15)        // Shrink blobList back to original size
-                .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)*/
-
-/*                .build();
-
-        greenLocator = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(CustomColorRange.ARTIFACT_GREEN)   // Use a predefined color match
-                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
-                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
-                .setDrawContours(true)   // Show contours on the Stream Preview
-                .setBoxFitColor(Color.rgb(0, 255, 0))       // Disable the drawing of rectangles
-                //.setCircleFitColor(Color.rgb(0, 255, 0)) // Draw a circle
-                .setBlurSize(5)          // Smooth the transitions between different colors in image
-
-                // the following options have been added to fill in perimeter holes.
-                /*.setDilateSize(15)       // Expand blobList to fill any divots on the edges
-                .setErodeSize(15)        // Shrink blobList back to original size
-                .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)*/
-
-/*                .build();
-
-        portal = new VisionPortal.Builder()
-                .addProcessor(purpleLocator)
-                .addProcessor(greenLocator)
-                .setCameraResolution(new Size(320, 240))
-                .setCamera(robot.)
-                .build();
-*/
-
         //Define slots
-        slotA = new slot(robot.sorterHardware.positions[0],robot.sorterHardware.positions[1]);
-        slotB = new slot(robot.sorterHardware.positions[2],robot.sorterHardware.positions[3]);
-        slotC = new slot(robot.sorterHardware.positions[4],robot.sorterHardware.positions[5]);
+        slotA = new slot(robot.sorterHardware.positions[0], robot.sorterHardware.positions[1]);
+        slotB = new slot(robot.sorterHardware.positions[2], robot.sorterHardware.positions[3]);
+        slotC = new slot(robot.sorterHardware.positions[4], robot.sorterHardware.positions[5]);
         noSlot = new slot();
 
         zone1 = new slotRange(140, 180, 0, 120);
@@ -163,6 +122,7 @@ public class ArtifactLocator {
      * Sets the proper camera settings. Must be called after the camera is initialized,
      * otherwise the program crashes.
      */
+    @Deprecated
     public void setCameraSettings() {
         exposureControl = portal.getCameraControl(ExposureControl.class);
         exposureControl.setMode(ExposureControl.Mode.Manual);
@@ -178,27 +138,7 @@ public class ArtifactLocator {
      */
     public void update() {
         // Read the current list
-        //purpleBlobList = purpleLocator.getBlobs();
-        //greenBlobList = greenLocator.getBlobs();
-
-        //FILTERS
-        /*ColorBlobLocatorProcessor.Util.filterByCriteria(
-                ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
-                50, 20000, purpleBlobList);  // filter out very small blobs.
-        ColorBlobLocatorProcessor.Util.filterByCriteria(
-                ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
-                50, 20000, greenBlobList);  // filter out very small blobs.
-
-        ColorBlobLocatorProcessor.Util.filterByCriteria(
-                ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
-                0.6, 1, purpleBlobList);     // filter out non-circular blobs.
-
-        ColorBlobLocatorProcessor.Util.filterByCriteria(
-                ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
-                0.6, 1, greenBlobList);     // filter out non-circular blobs.*/
-
         this.takeInventory();
-
     }
 
     /**
@@ -208,10 +148,10 @@ public class ArtifactLocator {
         slotState newState;
 
         switch (state) {
-            case 0: newState = EMPTY;
-            case 1: newState = PURPLE;
-            case 2: newState = GREEN;
-            default: newState = EMPTY;
+            case 0: newState = EMPTY;  break;
+            case 1: newState = PURPLE; break;
+            case 2: newState = GREEN;  break;
+            default: newState = UNKNOWN;
         }
 
         this.findSlotByZone(currentZone).setOccupied(newState);

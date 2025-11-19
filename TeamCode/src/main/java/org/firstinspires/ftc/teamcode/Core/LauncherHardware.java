@@ -70,6 +70,10 @@ public class LauncherHardware {
         return distance * distanceMultiplier;
     }
 
+    public void readyFire() {
+        readyFire(0, false);
+    }
+
     public void readyFire(double speedTarget, boolean useSpeedTarget) {
         waitingToFire = true;
         if(useSpeedTarget)
@@ -132,9 +136,6 @@ public class LauncherHardware {
         inSpeedRange = motorSpeedCheck(velocityTarget);
         timerCheck();
         runHammer();
-
-
-
 
         if (robot.sorterHardware.fireSafeCheck() && waitingToFire) {
             fire();

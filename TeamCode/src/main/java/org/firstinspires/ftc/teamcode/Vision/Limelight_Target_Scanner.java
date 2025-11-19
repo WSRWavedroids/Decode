@@ -41,6 +41,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.Autonomous.AutonomousPLUS;
+import org.firstinspires.ftc.teamcode.Core.Robot;
 
 import java.util.List;
 
@@ -67,13 +68,15 @@ import java.util.List;
  *   below the name of the Limelight on the top level configuration screen.
  */
 
-@Autonomous(name = "Limelight Score Target", group = "Sensor")
-public class Limelight_Target_Scanner extends AutonomousPLUS {
+//@Autonomous(name = "Limelight Score Target", group = "Sensor")
+public class Limelight_Target_Scanner /*extends AutonomousPLUS*/ {
 
     private Limelight3A limelight;
     public static final String ALLIANCE_KEY = "Alliance";
+    private Robot robot;
+    private HardwareMap hardwareMap;
 
-    @Override
+    /*@Override
     public void runOpMode()
     {
 
@@ -88,7 +91,7 @@ public class Limelight_Target_Scanner extends AutonomousPLUS {
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
          */
-        limelight.start();
+/*        limelight.start();
 
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
@@ -154,65 +157,62 @@ public class Limelight_Target_Scanner extends AutonomousPLUS {
 
             telemetry.update();
         }}
+*/
+    public Limelight_Target_Scanner() {}
 
-        public void InitLimeLightTargeting(int pipeline, HardwareMap hardwareMap)
-        {
+    public Limelight_Target_Scanner(Robot robot) {
+        this.robot = robot;
+    }
+    public void InitLimeLightTargeting(int pipeline, Robot robot)
+    {
 
-            limelight = hardwareMap.get(Limelight3A.class , "limelight");
+        limelight = robot.hardwareMap.get(Limelight3A.class , "limelight");
 
-            telemetry.setMsTransmissionInterval(11);
-            limelight.pipelineSwitch(pipeline);
+        robot.telemetry.setMsTransmissionInterval(11);
+        limelight.pipelineSwitch(pipeline);
 
 
-            /*
-             * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
-             */
-            limelight.start();
+        /*
+         * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
+         */
+        limelight.start();
 
+    }
+
+
+    public WaveTag tagInfo()
+    {
+        WaveTag current = new WaveTag();
+
+        current.currentlyDetected = false;
+
+        LLResult result = limelight.getLatestResult();
+
+        List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
+        for (LLResultTypes.FiducialResult fr : fiducialResults) {
+            robot.telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
+
+            current.currentlyDetected = true;
+             Pose3D targetPoseRs = fr.getTargetPoseRobotSpace();
+             Pose3D robotPoseFromTag = fr.getRobotPoseTargetSpace();
+             //current.pos = targetPose;
+
+
+
+             current.tagID = fr.getFiducialId();
+
+             current.distanceZ = targetPoseRs.getPosition().z;
+            current.distanceY = targetPoseRs.getPosition().y;
+            current.distanceX = targetPoseRs.getPosition().x;
+
+            current.angleX = fr.getTargetXDegrees();
+            current.angleY = fr.getTargetYDegrees();
+
+            current.tagPosFromRobot = targetPoseRs;
+            current.robotFromTagPos = robotPoseFromTag;
 
         }
 
-
-        public WaveTag tagInfo()
-        {
-            WaveTag current = new WaveTag();
-
-            current.currentlyDetected = false;
-
-            LLResult result = limelight.getLatestResult();
-
-            List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
-            for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
-
-                current.currentlyDetected = true;
-                 Pose3D targetPoseRs = fr.getTargetPoseRobotSpace();
-                 Pose3D robotPoseFromTag = fr.getRobotPoseTargetSpace();
-                 //current.pos = targetPose;
-
-
-
-                 current.tagID = fr.getFiducialId();
-
-                 current.distanceZ = targetPoseRs.getPosition().z;
-                current.distanceY = targetPoseRs.getPosition().y;
-                current.distanceX = targetPoseRs.getPosition().x;
-
-                current.angleX = fr.getTargetXDegrees();
-                current.angleY = fr.getTargetYDegrees();
-
-                current.tagPosFromRobot = targetPoseRs;
-                current.robotFromTagPos = robotPoseFromTag;
-
-            }
-
-            return current;
-
-
-
-
-
-
-
+        return current;
     }
 }

@@ -15,8 +15,7 @@ import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 @Autonomous(group = "Basic", name = "Legacy Tuner")
 public class legacyAutoTuner extends AutonomousPLUS {
 
-    public Limelight_Randomization_Scanner Limelight = new Limelight_Randomization_Scanner();
-    public Limelight_Target_Scanner scanner = new Limelight_Target_Scanner();
+
     public String currentPosition;
     public String pattern;
 
@@ -42,13 +41,16 @@ public class legacyAutoTuner extends AutonomousPLUS {
         super.runOpMode();
 
         robot = new Robot(hardwareMap, telemetry, this);
+
+        Limelight_Randomization_Scanner Limelight = new Limelight_Randomization_Scanner(robot);
+        Limelight_Target_Scanner scanner = new Limelight_Target_Scanner();
         targetData = robot.targetTag;
         launcher = robot.launcher;
         sorter = robot.sorterHardware;
 
         if (opModeInInit()) {
             //prepareAuto();
-            Limelight.InitLimeLight(0, robot.hardwareMap);
+            Limelight.InitLimeLight(0);
             blackboard.put(ALLIANCE_KEY, "BLUE");
             while (opModeInInit()) {
                 pattern = Limelight.GetRandomization();

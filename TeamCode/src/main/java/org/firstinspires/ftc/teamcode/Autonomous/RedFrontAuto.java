@@ -1,16 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.OPEN;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Core.LauncherHardware;
 import org.firstinspires.ftc.teamcode.Core.Robot;
-import org.firstinspires.ftc.teamcode.Core.SorterHardware;
-import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
-import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 
 import java.util.Objects;
 
@@ -36,7 +29,7 @@ public class RedFrontAuto extends AutonomousPLUS {
         if(opModeInInit())
         {
             robot.readyHardware(true);
-            robot.randomizationScanner.InitLimeLight(0, robot.hardwareMap);
+            robot.randomizationScanner.InitLimeLight(0);
             blackboard.put(ALLIANCE_KEY, "RED");
             while(opModeInInit())
             {
@@ -53,7 +46,7 @@ public class RedFrontAuto extends AutonomousPLUS {
         robot.sorterHardware.legalToSpin = true;
 
         //start with launcher facing goal, back of robot against goal
-        robot.randomizationScanner.InitLimeLight(0, robot.hardwareMap);
+        robot.randomizationScanner.InitLimeLight(0);
         moveRobotForward(1000,12);
         turnRobotRight(600,12);
         robot.pattern = robot.randomizationScanner.GetRandomization();
@@ -83,13 +76,13 @@ public class RedFrontAuto extends AutonomousPLUS {
 
 
         if (Objects.equals(blackboard.get(ALLIANCE_KEY), "BLUE")) {
-            robot.targetScanner.InitLimeLightTargeting(2, robot.hardwareMap);
+            robot.targetScanner.InitLimeLightTargeting(2, robot);
             robot.scanningForTargetTag = true;
         } else if(Objects.equals(blackboard.get(ALLIANCE_KEY), "RED")) {
-            robot.targetScanner.InitLimeLightTargeting(1, robot.hardwareMap);
+            robot.targetScanner.InitLimeLightTargeting(1, robot);
             robot.scanningForTargetTag = true;
         } else {
-            robot.targetScanner.InitLimeLightTargeting(1, robot.hardwareMap);
+            robot.targetScanner.InitLimeLightTargeting(1, robot);
             robot.scanningForTargetTag = true;
         }
 
