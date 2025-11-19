@@ -50,7 +50,8 @@ public class ArtifactLocator {
     private VisionPortal portal;
     private List<ColorBlobLocatorProcessor.Blob> purpleBlobList;
     private List<ColorBlobLocatorProcessor.Blob> greenBlobList;
-    public enum slotState{EMPTY, PURPLE, GREEN, UNKNOWN}
+    public enum slotState{EMPTY, PURPLE, GREEN, UNKNOWN;
+    }
 
 
     public slot slotA;

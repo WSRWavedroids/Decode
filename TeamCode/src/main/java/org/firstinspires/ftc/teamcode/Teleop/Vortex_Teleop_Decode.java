@@ -211,10 +211,16 @@ public class Vortex_Teleop_Decode extends OpMode {
         }
 
 
-        if(robot.sorterHardware.fireSafeCheck() && robot.launcher.inSpeedRange)
+        if(robot.sorterHardware.fireSafeCheck())
         {
-           gamepad2.rumble(0.35, 0.35, 500);
+           gamepad2.rumble(0.5, 0, 50);
         }
+        if(robot.launcher.inSpeedRange)
+        {
+            gamepad2.rumble(0, 0.5, 50);
+        }
+
+
         //Slight pull preps motor
         //Full pull fires
 
@@ -255,6 +261,18 @@ public class Vortex_Teleop_Decode extends OpMode {
         else
         {
             cadenHoldingFire = false;
+        }
+
+        if(gamepad2.triangleWasPressed())
+        {
+            robot.queue.clearList();
+            robot.queue.addToNextSpotSimple();
+            robot.queue.addToNextSpotSimple();
+            robot.queue.addToNextSpotSimple();
+        }
+        if(gamepad2.triangle)
+        {
+            robot.queue.fireAllDumb(1);
         }
 
 

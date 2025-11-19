@@ -34,7 +34,7 @@ public class LauncherHardware {
     public Servo hammerServo;
 
     public ElapsedTime cooldownTimer = new ElapsedTime();
-    private double cooldownDuration = 0.25/2;
+    public static double launcherCooldownDuration = 0.25/2;
     public boolean onCooldown = false;
 
     private boolean hammerForward;
@@ -106,14 +106,14 @@ public class LauncherHardware {
     {
         robot.telemetry.addLine("Checking the timer");
 
-        if (cooldownTimer.seconds() > (cooldownDuration * 2)) //if hammer timer is over we know we done firing
+        if (cooldownTimer.seconds() > (launcherCooldownDuration * 2)) //if hammer timer is over we know we done firing
         {
             hammerBack = true;
             hammerForward = false;
             onCooldown = false;
             wantToOpenDoor = false;
         }
-        else if(cooldownTimer.seconds() > cooldownDuration)
+        else if(cooldownTimer.seconds() > launcherCooldownDuration)
         {
             hammerBack = false;
             hammerForward = true;

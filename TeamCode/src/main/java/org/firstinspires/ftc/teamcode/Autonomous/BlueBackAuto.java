@@ -47,7 +47,7 @@ public class BlueBackAuto extends AutonomousPLUS {
 
         waitForStart();
         telemetry.addData("Our pattern is: ", robot.pattern, " ...yay");
-
+/*
         if(robot.pattern.equals("PPG"))
         {
             telemetry.addData("We doin", " PPG now");
@@ -193,5 +193,8 @@ public class BlueBackAuto extends AutonomousPLUS {
         stallForSpin(robot.sorterHardware.positionedCheck(), robot.sorterHardware.positions[0]);
     }
 
+    */
 
-}
+
+
+}}

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Core;
 
 import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.EMPTY;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
 import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.OPEN;
 
@@ -41,17 +42,31 @@ public class fireQueue {
         launcherHardware = robot.launcher;
         inventoryCam = robot.inventoryCam;
 
-
         balls = new queueBall[3];
+
+        for(int i = 0; i < 3; i++)
+        {
+           balls[i] = new queueBall();
+           balls[i].color = EMPTY;
+        }
 
     }
 
-    public void addToNextSpot(ArtifactLocator.slotState color)
+    public void addToNextSpotColor(ArtifactLocator.slotState color)
     {
-        if(!(currentSlot++ > 3))
+        if(currentSlot < 3)
         {
-            currentSlot++;
             balls[currentSlot].color = color;
+            currentSlot++;
+        }
+    }
+
+    public void addToNextSpotSimple()
+    {
+        if(currentSlot < 3)
+        {
+            balls[currentSlot].color = UNKNOWN;
+            currentSlot++;
         }
     }
 
@@ -77,33 +92,73 @@ public class fireQueue {
 
     }
 
-    public void fireAll(double speedTarget)
+    public void fireAllSmart(double speedTarget)
     {
-        if(wantToFireQueue && !launcherHardware.waitingToFire && sorterHardware.fireSafeCheck())
+        if(!robot.launcher.waitingToFire && !robot.launcher.onCooldown && !robot.sorterHardware.onCooldown)
         {
-            if(!firstFired)
+            if(!firstFired && !balls[0].color.equals(EMPTY))
             {
                 firstFired = true;
                 sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(balls[0].color).getFirePosition());
                 launcherHardware.readyFire(speedTarget, true);
             }
-            else if(firstFired && !secondFired)
+            else if(firstFired && !secondFired && !balls[1].color.equals(EMPTY))
             {
                 secondFired = true;
                 sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(balls[1].color).getFirePosition());
                 launcherHardware.readyFire(speedTarget, true);
             }
-            else if(firstFired && secondFired && !thirdFired)
+            else if(firstFired && secondFired && !thirdFired && !balls[2].color.equals(EMPTY))
             {
                 thirdFired = true;
                 sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(balls[2].color).getFirePosition());
                 launcherHardware.readyFire(speedTarget, true);
             }
-            else
+            else if(balls[0].color.equals(EMPTY) && balls[1].color.equals(EMPTY) && balls[2].color.equals(EMPTY))
             {
                 clearList();
                 wantToFireQueue = false;
                 launcherHardware.setLauncherSpeed(0);
+                sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]);
+            }
+        }
+
+    }
+
+
+    public void fireAllDumb(double speedTarget)
+    {
+        launcherHardware.setLauncherSpeed(1);
+        if(!robot.launcher.waitingToFire && !robot.launcher.onCooldown && !robot.sorterHardware.onCooldown)
+        {
+
+            if(!firstFired && !balls[0].color.equals(EMPTY))
+            {
+                sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[1]);
+                launcherHardware.readyFire(speedTarget, true);
+                firstFired = true;
+                balls[0].color = (EMPTY);
+            }
+            else if(firstFired && !secondFired && !balls[1].color.equals(EMPTY))
+            {
+                sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[3]);
+                launcherHardware.readyFire(speedTarget, true);
+                secondFired = true;
+                balls[1].color = (EMPTY);
+            }
+            else if(firstFired && secondFired && !thirdFired && !balls[2].color.equals(EMPTY))
+            {
+                sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[5]);
+                launcherHardware.readyFire(speedTarget, true);
+                balls[2].color = (EMPTY);
+                thirdFired = true;
+            }
+            else if(balls[0].color.equals(EMPTY) && balls[1].color.equals(EMPTY) && balls[2].color.equals(EMPTY))
+            {
+                clearList();
+                wantToFireQueue = false;
+                launcherHardware.setLauncherSpeed(0);
+                sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]);
             }
         }
 

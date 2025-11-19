@@ -51,6 +51,9 @@ public class Robot {
     public CRServo feedServoL;
     public CRServo feedServoR;
 
+    public CRServo transferServoL;
+    public CRServo transferServoR;
+
     public DigitalChannel magsense;
 
     public Limelight3A limelight;
@@ -77,6 +80,7 @@ public class Robot {
     public SensorHuskyLens inventoryCam;
     public Limelight_Randomization_Scanner randomizationScanner;
     public Limelight_Target_Scanner targetScanner;
+    public fireQueue queue;
 
 
     public Panels panels;
@@ -114,6 +118,9 @@ public class Robot {
         feedServoL = hardwareMap.get(CRServo.class, "feedServoL");
         feedServoR = hardwareMap.get(CRServo.class, "feedServoR");
 
+        transferServoL = hardwareMap.get(CRServo.class, "transferServoL");
+        transferServoR = hardwareMap.get(CRServo.class, "transferServoR");
+
         magsense = hardwareMap.get(DigitalChannel.class, "magsense");
         magsense.setMode(DigitalChannel.Mode.INPUT);
 
@@ -142,6 +149,8 @@ public class Robot {
         intakeyServoL.setDirection(DcMotorSimple.Direction.FORWARD);
         intakeyServoR.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        transferServoL.setDirection(DcMotorSimple.Direction.FORWARD);
+        transferServoR.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // This tells the motors to chill when we're not powering them.
         frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -157,8 +166,10 @@ public class Robot {
         launcher = new LauncherHardware(this);
         sorterLogic = new ArtifactLocator(this);
         inventoryCam = new SensorHuskyLens(this);
+        queue = new fireQueue(this);
         targetScanner = new Limelight_Target_Scanner();
         randomizationScanner = new Limelight_Randomization_Scanner();
+
 
 
     }
@@ -333,6 +344,8 @@ public class Robot {
     {
         intakeyServoR.setPower(num);
         intakeyServoL.setPower(num);
+        transferServoR.setPower(num);
+        transferServoL.setPower(num);
     }
 
     public void runAutoIntakeSequence() //Run in an update function for "fast" auto load
