@@ -96,7 +96,7 @@ public class LauncherHardware {
 
         if(onCooldown && hammerBack)
         {
-            hammerServo.setPosition(hammerForwardPosition);
+            hammerServo.setPosition(hammerBackPosition);
             //robot.sorterHardware.doorServo.setPosition(robot.sorterHardware.doorClosedPosition);
         }
 

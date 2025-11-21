@@ -64,23 +64,22 @@ public class BlueFrontAuto extends AutonomousPLUS {
 
         telemetry.addData("Our pattern is: ", robot.pattern, " ...yay");
 
-        if(robot.pattern.equals("PPG"))
-        {
-            telemetry.addData("We doin", " PPG now");
-            blackboard.put(PATTERN_KEY, "PPG");
-        }
-        else if(robot.pattern.equals("GPP"))
-        {
-            telemetry.addData("We doin", " GPP now");
-            blackboard.put(PATTERN_KEY, "GPP");
-        } else if (robot.pattern.equals("PGP"))
-        {
-            telemetry.addData("We doin", " PGP now");
-            blackboard.put(PATTERN_KEY, "PGP");
-        }
-        else
-        {
-            telemetry.addData("It failed ", "cry time");
+        switch (robot.pattern) {
+            case "PPG":
+                telemetry.addData("We doin", " PPG now");
+                blackboard.put(PATTERN_KEY, "PPG");
+                break;
+            case "GPP":
+                telemetry.addData("We doin", " GPP now");
+                blackboard.put(PATTERN_KEY, "GPP");
+                break;
+            case "PGP":
+                telemetry.addData("We doin", " PGP now");
+                blackboard.put(PATTERN_KEY, "PGP");
+                break;
+            default:
+                telemetry.addData("It failed ", "cry time");
+                break;
         }
         telemetry.update();
 
@@ -96,64 +95,66 @@ public class BlueFrontAuto extends AutonomousPLUS {
             robot.scanningForTargetTag = true;
         }
 
-        if(robot.pattern.equals("PPG"))
-        {
-            robot.launcher.setLauncherSpeed(1);
-            robot.targetTag = robot.targetScanner.tagInfo();
-            turnRobotRight(600, 1);
-            if (robot.targetTag.currentlyDetected) //Angle detect if possible / needed
-            {
-                turnRobotLeft((int) ((robot.targetTag.angleX +robot.limelightSideOffsetAngle) * (1660/360)), 1);
-            }
+        switch (robot.pattern) {
+            case "PPG":
+                robot.launcher.setLauncherSpeed(1);
+                robot.targetTag = robot.targetScanner.tagInfo();
+                turnRobotRight(600, 1);
+                if (robot.targetTag.currentlyDetected) //Angle detect if possible / needed
+                {
+                    turnRobotLeft((int) ((robot.targetTag.angleX + robot.limelightSideOffsetAngle) * (1660 / 360)), 1);
+                }
 
-            fireInSequence(robot.sorterHardware.positions[3],robot.sorterHardware.positions[5],robot.sorterHardware.positions[1]);
-            goGrabAPurple();
-        }
-        else if(robot.pattern.equals("PGP"))
-        {
-            robot.launcher.setLauncherSpeed(1);
-            robot.targetTag = robot.targetScanner.tagInfo();
-            turnRobotRight(600, 1);
-            if (robot.targetTag.currentlyDetected) //Angle detect if possible / needed
-            {
-                turnRobotRight((int) ((robot.targetTag.angleX +robot.limelightSideOffsetAngle) * (1660/360)), 12);
-            }
-            fireInSequence(robot.sorterHardware.positions[3], robot.sorterHardware.positions[1], robot.sorterHardware.positions[5]);
-            goGrabAPurple();
+                fireInSequence(robot.sorterHardware.positions[3], robot.sorterHardware.positions[5], robot.sorterHardware.positions[1]);
+                //goGrabAPurple();
+                break;
+            case "PGP":
+                robot.launcher.setLauncherSpeed(1);
+                robot.targetTag = robot.targetScanner.tagInfo();
+                turnRobotRight(600, 1);
+                if (robot.targetTag.currentlyDetected) //Angle detect if possible / needed
+                {
+                    turnRobotRight((int) ((robot.targetTag.angleX + robot.limelightSideOffsetAngle) * (1660 / 360)), 12);
+                }
+                fireInSequence(robot.sorterHardware.positions[3], robot.sorterHardware.positions[1], robot.sorterHardware.positions[5]);
+                //goGrabAPurple();
 
-        }
-        else if(robot.pattern.equals("GPP"))
-        {
-            robot.launcher.setLauncherSpeed(1);
-            robot.targetTag = robot.targetScanner.tagInfo();
-            turnRobotRight(600, 1);
-            if (robot.targetTag.currentlyDetected) //Angle detect if possible / needed
-            {
-                turnRobotRight((int) ((robot.targetTag.angleX +robot.limelightSideOffsetAngle) * (1660/360)), 1);
-            }
-            fireInSequence(robot.sorterHardware.positions[1], robot.sorterHardware.positions[3], robot.sorterHardware.positions[5]);
-            goGrabAGreen();
+                break;
+            case "GPP":
+                robot.launcher.setLauncherSpeed(1);
+                robot.targetTag = robot.targetScanner.tagInfo();
+                turnRobotRight(600, 1);
+                if (robot.targetTag.currentlyDetected) //Angle detect if possible / needed
+                {
+                    turnRobotRight((int) ((robot.targetTag.angleX + robot.limelightSideOffsetAngle) * (1660 / 360)), 1);
+                }
+                fireInSequence(robot.sorterHardware.positions[1], robot.sorterHardware.positions[3], robot.sorterHardware.positions[5]);
+                //goGrabAGreen();
 
-        }
-        else//Fire any*/
-        {
-            //robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterHardware.positions[3]);
-            stallForSpin(robot.sorterHardware.positionedCheck(), robot.sorterHardware.positions[1]);
-            robot.launcher.setLauncherSpeed(1);
-            robot.targetTag = robot.targetScanner.tagInfo();
-            turnRobotRight(600, 15);
-            if (robot.targetTag.currentlyDetected) //Angle detect if possible / needed
-            {
-                turnRobotLeft((int) ((robot.targetTag.angleX +robot.limelightSideOffsetAngle) * (1660/360)), 1);
-            }
+                break;
+            default:
+//Fire any*/
 
-            fireInSequence(robot.sorterHardware.positions[1], robot.sorterHardware.positions[3], robot.sorterHardware.positions[5]);
-            goGrabAGreen();
+                //robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterHardware.positions[3]);
+                stallForSpin(robot.sorterHardware.positionedCheck(), robot.sorterHardware.positions[1]);
+                robot.launcher.setLauncherSpeed(1);
+                robot.targetTag = robot.targetScanner.tagInfo();
+                turnRobotRight(600, 15);
+                if (robot.targetTag.currentlyDetected) //Angle detect if possible / needed
+                {
+                    turnRobotLeft((int) ((robot.targetTag.angleX + robot.limelightSideOffsetAngle) * (1660 / 360)), 1);
+                }
+
+                fireInSequence(robot.sorterHardware.positions[1], robot.sorterHardware.positions[3], robot.sorterHardware.positions[5]);
+                //goGrabAGreen();
+                break;
         }
         speed = 1;
         //Unpark fully and line up with line of balls... may go wrong way
 
-        turnRobotRight(-1200,12);
+        turnRobotRight(-1200,5);
+        moveRobotLeft(800, 5);
+        moveRobotForward(200, 5);
 
         }
 
@@ -329,8 +330,19 @@ public class BlueFrontAuto extends AutonomousPLUS {
         stallForSpin(robot.sorterHardware.positionedCheck(), three);
         stallForSpin(robot.sorterHardware.positionedCheck(), three);
         stallForSpin(robot.sorterHardware.positionedCheck(), three);
+        stallForSpin(robot.sorterHardware.positionedCheck(), three);
+        stallForSpin(robot.sorterHardware.positionedCheck(), three);
+        stallForSpin(robot.sorterHardware.positionedCheck(), three);
+        stallForSpin(robot.sorterHardware.positionedCheck(), three);
+        stallForSpin(robot.sorterHardware.positionedCheck(), three);
+        stallForSpin(robot.sorterHardware.positionedCheck(), three);
+        stallForSpin(robot.sorterHardware.positionedCheck(), three);
+        stallForSpin(robot.sorterHardware.positionedCheck(), three);
+        stallForSpin(robot.sorterHardware.positionedCheck(), three);
+        stallForSpin(robot.sorterHardware.positionedCheck(), three);
+
         robot.doorServo.setPosition(robot.sorterHardware.doorOpenPosition);
-        sleep(500);
+        sleep(700);
         robot.doorServo.setPosition(robot.sorterHardware.doorClosedPosition);
         stallForTime(0.5);
 

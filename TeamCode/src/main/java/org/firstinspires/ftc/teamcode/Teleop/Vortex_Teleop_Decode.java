@@ -263,14 +263,14 @@ public class Vortex_Teleop_Decode extends OpMode {
             cadenHoldingFire = false;
         }
 
-        if(gamepad2.triangleWasPressed())
+        if(gamepad2.rightBumperWasPressed())
         {
             robot.queue.clearList();
             robot.queue.addToNextSpotSimple();
             robot.queue.addToNextSpotSimple();
             robot.queue.addToNextSpotSimple();
         }
-        if(gamepad2.triangle)
+        if(gamepad2.right_bumper)
         {
             robot.queue.fireAllDumb(1);
         }

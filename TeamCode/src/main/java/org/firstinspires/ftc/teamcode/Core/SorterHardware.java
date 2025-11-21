@@ -56,7 +56,7 @@ public class SorterHardware {
 
     public ElapsedTime cooldownTimer = new ElapsedTime();
     public boolean onCooldown = false;
-    public static double doorCooldownDuration = 0.25;
+    public static double doorCooldownDuration = 0.06;
 
     private ElapsedTime pidfTimer = new ElapsedTime();
 

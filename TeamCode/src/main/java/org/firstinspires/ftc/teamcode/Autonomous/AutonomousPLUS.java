@@ -60,9 +60,6 @@ public class AutonomousPLUS extends LinearOpMode {
     //DO NOT DELETE THIS LINE! CAPITALIZATION IS VERY IMPORTANT!!!
     public Robot robot = null;
 
-    public AutonomousPLUS(){
-        robot = new Robot(hardwareMap, telemetry, this);
-    }
     @Override
     public void runOpMode() {
         robot = new Robot(hardwareMap, telemetry, this);
