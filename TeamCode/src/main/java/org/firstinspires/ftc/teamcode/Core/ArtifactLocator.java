@@ -22,10 +22,8 @@
 package org.firstinspires.ftc.teamcode.Core;
 
 import static android.os.SystemClock.sleep;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.EMPTY;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.PURPLE;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.GREEN;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.*;
+import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.*;
 
 
 import android.annotation.SuppressLint;
@@ -50,9 +48,7 @@ public class ArtifactLocator {
     private VisionPortal portal;
     private List<ColorBlobLocatorProcessor.Blob> purpleBlobList;
     private List<ColorBlobLocatorProcessor.Blob> greenBlobList;
-    public enum slotState{EMPTY, PURPLE, GREEN, UNKNOWN;
-    }
-
+    public enum slotState{EMPTY, PURPLE, GREEN, UNKNOWN;}
 
     public slot slotA;
     public slot slotB;
@@ -156,6 +152,9 @@ public class ArtifactLocator {
 
         this.findSlotByZone(currentZone).setOccupied(newState);
     }
+    public void sortOutBlobs(int state) {
+        sortOutBlobs(zone1,state);
+    }
 
     /**
      * Totals the number of Artifacts stored in the blender and updates the inventory class.
@@ -251,6 +250,30 @@ public class ArtifactLocator {
                 return slotC;
         }
         return noSlot;
+    }
+
+    /**
+     * Finds a slot in the FIRE or LOAD position, if there is one.
+     * @param targetPosition FIRE or LOAD. FIRE is the position ready to launch, and LOAD is the load position
+     * @return A slot, if there's one in position. If there isn't, will return noSlot.
+     */
+    public slot findCurrentSlotInPosition(SorterHardware.positionState targetPosition) {
+        SorterHardware.positionState actualPositionState;
+        slot foundSlot;
+
+        switch (getCurrentOffset()) {
+            case 0:  foundSlot = slotA; actualPositionState = LOAD; break;
+            case 1:  foundSlot = slotB; actualPositionState = FIRE; break;
+            case 2:  foundSlot = slotC; actualPositionState = LOAD; break;
+            case 3:  foundSlot = slotA; actualPositionState = FIRE; break;
+            case 4:  foundSlot = slotB; actualPositionState = LOAD; break;
+            case 5:  foundSlot = slotC; actualPositionState = FIRE; break;
+            default: foundSlot = noSlot; actualPositionState = SWITCH;
+        }
+
+        if (targetPosition == actualPositionState) {
+            return foundSlot;
+        } else return noSlot;
     }
 
     //TODO Move to LauncherHardware???

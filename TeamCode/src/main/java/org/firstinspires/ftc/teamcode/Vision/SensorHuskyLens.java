@@ -40,6 +40,7 @@ import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.Core.ArtifactLocator;
 import org.firstinspires.ftc.teamcode.Core.Robot;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -140,7 +141,7 @@ public class SensorHuskyLens extends LinearOpMode {
              */
             HuskyLens.Block[] blocks = huskyLens.blocks();
             telemetry.addData("Block count", blocks.length);
-            for (int i = 0; i < blocks.length; i++) {
+            /*for (int i = 0; i < blocks.length; i++) {
                 telemetry.addData("Block", blocks[i].toString());
                 /*
                  * Here inside the FOR loop, you could save or evaluate specific info for the currently recognized Bounding Box:
@@ -151,13 +152,17 @@ public class SensorHuskyLens extends LinearOpMode {
                  *
                  * These values have Java type int (integer).
                  */
-                checkZone(blocks[i]);
-            }
+                //checkZone(blocks[i]);
+            //}
+
+            robot.sorterLogic.sortOutBlobs(blocks[0].id);
+
 
             telemetry.update();
         }
     }
 
+    @Deprecated
     void checkZone(HuskyLens.Block blockData) {
         for(ArtifactLocator.slotRange checkingZone : robot.sorterLogic.allZones) {
             if((checkingZone.inRange(blockData.x, blockData.y))) {

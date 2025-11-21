@@ -3,10 +3,9 @@ package org.firstinspires.ftc.teamcode.Teleop;
 import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.EMPTY;
 import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.GREEN;
 import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.PURPLE;
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
-import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.FIRE;
-import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.LOAD;
-import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.SWITCH;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.*;
+import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.*;
+import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.*;
 
 import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -232,6 +231,7 @@ public class Vortex_Teleop_Decode extends OpMode {
            robot.runBasicIntake(0.01); //Always keep a slight power flow to servos to prevent input delay from module
         }
 
+        //WSeñorMichael
 
         if(robot.sorterHardware.fireSafeCheck())
         {
@@ -343,10 +343,10 @@ public class Vortex_Teleop_Decode extends OpMode {
         if (motorPowers.length != 4) {
             return;
         }
-        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.frontLeftDrive.setMode(RUN_WITHOUT_ENCODER);
+        robot.frontRightDrive.setMode(RUN_WITHOUT_ENCODER);
+        robot.backLeftDrive.setMode(RUN_WITHOUT_ENCODER);
+        robot.backRightDrive.setMode(RUN_WITHOUT_ENCODER);
 
         robot.frontLeftDrive.setPower(-motorPowers[0]);
         robot.frontRightDrive.setPower(-motorPowers[1]);
@@ -400,10 +400,10 @@ public class Vortex_Teleop_Decode extends OpMode {
         robot.backLeftDrive.setPower(speed);
         robot.backRightDrive.setPower(speed);
 
-        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.frontLeftDrive.setMode(RUN_TO_POSITION);
+        robot.frontRightDrive.setMode(RUN_TO_POSITION);
+        robot.backLeftDrive.setMode(RUN_TO_POSITION);
+        robot.backRightDrive.setMode(RUN_TO_POSITION);
     }
 
     private void singleJoystickDrive() {

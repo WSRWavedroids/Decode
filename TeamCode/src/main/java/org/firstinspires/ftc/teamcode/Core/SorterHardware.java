@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.Core;
 
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.OPEN;
-import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.FIRE;
-import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.LOAD;
+import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.*;
+import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.*;
 
 
 import com.bylazar.configurables.annotations.Configurable;

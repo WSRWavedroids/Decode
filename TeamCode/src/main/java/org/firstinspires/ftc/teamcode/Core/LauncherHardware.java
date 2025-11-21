@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.Core;
 
-import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.OPEN;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.*;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.*;
+import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.*;
+import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.*;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -139,6 +140,10 @@ public class LauncherHardware {
 
         if (robot.sorterHardware.fireSafeCheck() && waitingToFire) {
             fire();
+        }
+
+        if (hammerForward) {
+            robot.sorterLogic.findCurrentSlotInPosition(FIRE).setOccupied(EMPTY);
         }
     }
 
