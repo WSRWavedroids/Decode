@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.Core.Robot;
 
 import java.util.Objects;
 
-@Autonomous(group = "Basic", name = "Blue Front Start")
+@Autonomous(group = "Basic", name = "BLUE FRONT Start")
 public class BlueFrontAuto extends AutonomousPLUS {
 
     private ElapsedTime stupidTimer;
@@ -417,6 +417,16 @@ public class BlueFrontAuto extends AutonomousPLUS {
         robot.launcher.setLauncherSpeed(0);
         stallForSpin(robot.sorterHardware.positionedCheck(), robot.sorterHardware.positions[0]);
         stallForSpin(robot.sorterHardware.positionedCheck(), robot.sorterHardware.positions[0]);
+    }
+
+    void trySpammingSpin(boolean condition, int target, int numberOfSpams)
+    {
+
+        for(int i = 0; i < numberOfSpams; i++)
+        {
+            stallForSpin(condition, target);
+        }
+
     }
 }
 

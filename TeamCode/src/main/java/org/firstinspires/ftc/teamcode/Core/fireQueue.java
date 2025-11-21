@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Core;
 
 import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.EMPTY;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.GREEN;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.PURPLE;
 import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
 import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.OPEN;
@@ -32,8 +34,10 @@ public class fireQueue {
     private boolean secondFired = false;
     private boolean thirdFired = false;
     public boolean wantToFireQueue = false;
+
+    public boolean noBallsQueued = true;
     int currentSlot = 0;
-    queueBall[] balls;
+    public queueBall[] balls;
 
     public fireQueue(Robot robotFile) {
         robot = robotFile;
@@ -58,6 +62,7 @@ public class fireQueue {
         {
             balls[currentSlot].color = color;
             currentSlot++;
+            noBallsQueued = false;
         }
     }
 
@@ -65,6 +70,7 @@ public class fireQueue {
     {
         if(currentSlot < 3)
         {
+            noBallsQueued = false;
             balls[currentSlot].color = UNKNOWN;
             currentSlot++;
         }
@@ -73,10 +79,12 @@ public class fireQueue {
     public void addToListDirectly(int positionInList, ArtifactLocator.slotState color)
     {
         balls[positionInList].color = color;
+        noBallsQueued = false;
     }
 
     public void clearList()
     {
+        noBallsQueued = true;
         currentSlot = 0;
         for(int i = 0; i < 3; i++)
         {
@@ -90,6 +98,56 @@ public class fireQueue {
     public void autoModeFire()
     {
 
+    }
+
+    public boolean checkForExistingQueue()
+    {
+        for(int i = 0; i < 3; i++)
+        {
+            if(!balls[i].color.equals(EMPTY))
+            {
+                return  noBallsQueued = false;
+            }
+        }
+        return noBallsQueued = true;
+
+    }
+
+    public void fillSimple()
+    {
+        balls[0].color = UNKNOWN;
+        balls[1].color = UNKNOWN;
+        balls[2].color = UNKNOWN;
+        noBallsQueued = false;
+    }
+
+    public void addPattern(Object Pattern)
+    {
+        if(Pattern == "PGP")
+        {
+            balls[0].color = PURPLE;
+            balls[1].color = GREEN;
+            balls[2].color = PURPLE;
+            noBallsQueued = false;
+        }
+        else if(Pattern == "PPG")
+        {
+            balls[0].color = PURPLE;
+            balls[1].color = PURPLE;
+            balls[2].color = GREEN;
+            noBallsQueued = false;
+        }
+        else if(Pattern == "GPP")
+        {
+            balls[0].color = GREEN;
+            balls[1].color = PURPLE;
+            balls[2].color = PURPLE;
+            noBallsQueued = false;
+        }
+        else
+        {
+            fillSimple();
+        }
     }
 
     public void fireAllSmart(double speedTarget)

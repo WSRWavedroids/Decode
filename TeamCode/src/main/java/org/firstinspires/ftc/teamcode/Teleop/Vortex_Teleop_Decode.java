@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.EMPTY;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.GREEN;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.PURPLE;
 import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
 import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.FIRE;
 import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.LOAD;
@@ -98,7 +101,7 @@ public class Vortex_Teleop_Decode extends OpMode {
             imu = hardwareMap.get(IMU.class, "imu");
             IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                     RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                    RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD)); //Forward = left fsr
+                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)); //Forward = left fsr
             // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
             imu.initialize(parameters);
         }
@@ -163,22 +166,40 @@ public class Vortex_Teleop_Decode extends OpMode {
             spinTargetAcquired = false;
         }
 
+
         ///This will work once we have inventory Cam
-        /*if(gamepad2.square)
+        /// Preps color of choice
+        /*
+        if(gamepad2.square && !gamepad2.left_bumper)
         {
-            robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(PURPLE).getFirePosition());
+            robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterLogic.findFirstType(PURPLE).getFirePosition());
         }
-        else if(gamepad2.triangle)
+        else if(gamepad2.triangle && !gamepad2.left_bumper)
         {
-            robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(GREEN).getFirePosition());
+            robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterLogic.findFirstType(GREEN).getFirePosition());
         }
-        else if(gamepad2.left_trigger > 0.5)
+        else if(gamepad2.left_trigger > 0.5 && !gamepad2.left_bumper && robot.sorterHardware.currentPositionState == LOAD)//ok this might not be great... don't have the button map with me atm
         {
-            robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstOccupied().getFirePosition());
-        }*/
+            robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterLogic.findFirstOccupied().getFirePosition());
+        }
 
+        /// Clears list each time the button is deliberately pressed, so ready for queueing
+        /// Without this we have no way to empty it without firing
+        if(gamepad2.leftBumperWasPressed())
+        {
+           robot.queue.clearList();
+        }
 
-
+        /// Adds color to queue
+        if(gamepad2.squareWasPressed() && gamepad2.left_bumper)
+        {
+            robot.queue.addToNextSpotColor(PURPLE);
+        }
+        else if(gamepad2.triangleWasPressed() && gamepad2.left_bumper)
+        {
+            robot.queue.addToNextSpotColor(GREEN);
+        }
+        */
 
         if(gamepad2.cross)
         {
@@ -208,6 +229,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         {
            robot.cancelAutoIntake();
            robot.sorterHardware.overidingFeeders = false;
+           robot.runBasicIntake(0.01); //Always keep a slight power flow to servos to prevent input delay from module
         }
 
 
@@ -219,10 +241,6 @@ public class Vortex_Teleop_Decode extends OpMode {
         {
             gamepad2.rumble(0, 0.5, 50);
         }
-
-
-        //Slight pull preps motor
-        //Full pull fires
 
 
         if(gamepad2.left_trigger > 0.50)
@@ -266,13 +284,25 @@ public class Vortex_Teleop_Decode extends OpMode {
         if(gamepad2.rightBumperWasPressed())
         {
             robot.queue.clearList();
-            robot.queue.addToNextSpotSimple();
-            robot.queue.addToNextSpotSimple();
-            robot.queue.addToNextSpotSimple();
+            robot.queue.fillSimple(); // replace with the if when cam ready
+
+
+            /*
+            //automatically sets up the pattern in the queue if its possible to do so...
+            //... and if caden hasn't already made a list of his own
+
+            if(robot.sorterLogic.inventory.purpleCount == 2 && robot.sorterLogic.inventory.greenCount == 1 && !robot.queue.checkForExistingQueue())
+            {
+                robot.queue.addPattern(blackboard.get(PATTERN_KEY));
+            }*/
+
         }
         if(gamepad2.right_bumper)
         {
-            robot.queue.fireAllDumb(1);
+            robot.queue.fireAllDumb(1);//Replace with following line once cam done
+            //robot.queue.fireAllSmart(1);
+
+
         }
 
 
