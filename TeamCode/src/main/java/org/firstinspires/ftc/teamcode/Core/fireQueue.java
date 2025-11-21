@@ -10,10 +10,6 @@ import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.OPEN;
 import android.telephony.IccOpenLogicalChannelResponse;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Vision.SensorHuskyLens;
 
@@ -95,10 +91,6 @@ public class fireQueue {
         thirdFired = false;
     }
 
-    public void autoModeFire()
-    {
-
-    }
 
     public boolean checkForExistingQueue()
     {
@@ -199,14 +191,14 @@ public class fireQueue {
             }
             else if(firstFired && !secondFired && !balls[1].color.equals(EMPTY))
             {
-                sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[3]);
+                sorterHardware.prepareNewMovement(sorterHardware.positions[1], sorterHardware.positions[3]);
                 launcherHardware.readyFire(speedTarget, true);
                 secondFired = true;
                 balls[1].color = (EMPTY);
             }
             else if(firstFired && secondFired && !thirdFired && !balls[2].color.equals(EMPTY))
             {
-                sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[5]);
+                sorterHardware.prepareNewMovement(sorterHardware.positions[3], sorterHardware.positions[5]);
                 launcherHardware.readyFire(speedTarget, true);
                 balls[2].color = (EMPTY);
                 thirdFired = true;

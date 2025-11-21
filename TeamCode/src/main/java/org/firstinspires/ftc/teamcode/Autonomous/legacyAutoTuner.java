@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 
 @Configurable
-@Autonomous(group = "Basic", name = "Legacy Tuner")
+@Autonomous(group = "Basic", name = "Legacy Auto Tuner")
 public class legacyAutoTuner extends AutonomousPLUS {
 
 

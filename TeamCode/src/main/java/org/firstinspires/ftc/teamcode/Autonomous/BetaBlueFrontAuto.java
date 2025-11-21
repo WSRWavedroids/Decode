@@ -41,7 +41,7 @@ import java.util.Objects;
  * Throughout this program, there are comments explaining what everything does because previous programmers
  * did a horrible job of doing that.
  */
-@Autonomous(group = "Basic", name = "Beta Blue Front Start")
+@Autonomous(group = "Basic", name = "BETA Blue Front")
 public class BetaBlueFrontAuto extends OpMode {
 
     // This section tells the program all of the different pieces of hardware that are on our robot that we will use in the program.
