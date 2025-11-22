@@ -211,7 +211,6 @@ public class fireQueue {
                 sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]);
             }
         }
-
     }
 }
 

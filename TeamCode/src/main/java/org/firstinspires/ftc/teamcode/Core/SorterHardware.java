@@ -263,9 +263,11 @@ public class SorterHardware {
             {
                 triggerServo(CLOSED);
             }
+
             if (fireSafeCheck() && disRobot.launcher.wantToOpenDoor) {
                 triggerServo(OPEN);
             }
+
             if(wantToMoveDoor && fireSafeCheck())
             {
                 if(doorTarget == OPEN)
@@ -274,6 +276,11 @@ public class SorterHardware {
                 }
                 moveDoor();
             }
+        }
+
+        // Make sure the door can close even if the launcher isn't in position
+        if (wantToMoveDoor && doorTarget == CLOSED && !onCooldown && !alreadyClosed) {
+            moveDoor();
         }
 
         if(tryingToFeed && inStateCheck(LOAD))
@@ -296,7 +303,7 @@ public class SorterHardware {
 
         if(jamDetection())
         {
-            disRobot.telemetry.addData("Jammed ", ":(");
+            disRobot.telemetry.addData("Jammed", ":(");
             //prepareNewMovement(motor.getCurrentPosition(), lastSafePosition);
         }
     }
@@ -364,7 +371,4 @@ public class SorterHardware {
         onCooldown = true;
         cooldownTimer.reset();
     }
-
-
-
 }

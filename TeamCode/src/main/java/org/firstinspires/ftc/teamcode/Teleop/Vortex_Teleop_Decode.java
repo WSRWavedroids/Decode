@@ -582,9 +582,8 @@ public class Vortex_Teleop_Decode extends OpMode {
             robot.launcher.onCooldown = false;
             /// These might fix things but are untested
             robot.launcher.waitingToFire = false;
-            robot.sorterHardware.doorTarget = CLOSED;
-            robot.sorterHardware.wantToMoveDoor = true;
-
+            //robot.sorterHardware.doorTarget = CLOSED;
+            //robot.sorterHardware.wantToMoveDoor = true;
 
         }
     }

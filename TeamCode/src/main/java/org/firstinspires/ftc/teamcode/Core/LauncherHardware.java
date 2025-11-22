@@ -81,7 +81,6 @@ public class LauncherHardware {
         {
             setLauncherSpeed(speedTarget);
         }
-
     }
 
     public void fire() {
@@ -89,8 +88,6 @@ public class LauncherHardware {
         onCooldown = true;
         cooldownTimer.reset();
         wantToOpenDoor = true;
-
-
     }
 
     public void runHammer() {
