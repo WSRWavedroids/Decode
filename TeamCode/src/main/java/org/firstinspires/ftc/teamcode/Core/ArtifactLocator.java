@@ -139,6 +139,8 @@ public class ArtifactLocator {
 
     /**
      * Sorts the color blobs into the proper slots.
+     * @param currentZone The zone to put the artifact into.
+     * @param state The HuskyLens ID. 0 = EMPTY, 1 = PURPLE, 2 = GREEN.
      */
     public void sortOutBlobs(slotRange currentZone, int state) {
         slotState newState;
@@ -152,6 +154,11 @@ public class ArtifactLocator {
 
         this.findSlotByZone(currentZone).setOccupied(newState);
     }
+
+    /**
+     * Sorts the HushyLens output into the appropriate slot.
+     * @param state The HuskyLens ID. 0 = EMPTY, 1 = PURPLE, 2 = GREEN.
+     */
     public void sortOutBlobs(int state) {
         sortOutBlobs(zone1,state);
     }
@@ -254,7 +261,8 @@ public class ArtifactLocator {
 
     /**
      * Finds a slot in the FIRE or LOAD position, if there is one.
-     * @param targetPosition FIRE or LOAD. FIRE is the position ready to launch, and LOAD is the load position
+     * @param targetPosition FIRE or LOAD. FIRE is the position ready to launch, and LOAD is the
+     *                       load position.
      * @return A slot, if there's one in position. If there isn't, will return noSlot.
      */
     public slot findCurrentSlotInPosition(SorterHardware.positionState targetPosition) {
@@ -278,8 +286,8 @@ public class ArtifactLocator {
 
     //TODO Move to LauncherHardware???
     /**
-     * Uses the blender encoder and offsetPositions to calculate which
-     * offset position the blender is currently in.
+     * Uses the blender encoder and offsetPositions to calculate which offset position the blender
+     * is currently in.
      * @return The current offset, 0-5. -1 means it's in transit.
      */
     public int getCurrentOffset() {
@@ -322,7 +330,8 @@ public class ArtifactLocator {
     }
 
     /**
-     * Does some basic math to equalize a motor position between 0 and SorterHardware.ticksPerRotation (8192).
+     * Does some basic math to equalize a motor position between 0 and
+     * SorterHardware.ticksPerRotation (8192).
      * @param ticks The number to be equalized.
      * @return The equalized position, between 0-8192.
      */
