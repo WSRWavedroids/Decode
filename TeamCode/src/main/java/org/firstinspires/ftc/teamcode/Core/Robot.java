@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Core;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.*;
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.*;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.*;
 import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.*;
 
 import android.annotation.SuppressLint;
@@ -140,25 +142,25 @@ public class Robot {
         );
 
         // This section sets the direction of all of the motors. Depending on the motor, this may change later in the program.
-        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftDrive.setDirection(FORWARD);
+        frontRightDrive.setDirection(REVERSE);
+        backLeftDrive.setDirection(FORWARD);
+        backRightDrive.setDirection(REVERSE);
 
-        sorterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        sorterMotor.setDirection(REVERSE);
 
-        intakeyServoL.setDirection(DcMotorSimple.Direction.FORWARD);
-        intakeyServoR.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeyServoL.setDirection(FORWARD);
+        intakeyServoR.setDirection(REVERSE);
 
-        transferServoL.setDirection(DcMotorSimple.Direction.FORWARD);
-        transferServoR.setDirection(DcMotorSimple.Direction.REVERSE);
+        transferServoL.setDirection(FORWARD);
+        transferServoR.setDirection(REVERSE);
 
         // This tells the motors to chill when we're not powering them.
-        frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        sorterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRightDrive.setZeroPowerBehavior(BRAKE);
+        backLeftDrive.setZeroPowerBehavior(BRAKE);
+        backRightDrive.setZeroPowerBehavior(BRAKE);
+        frontLeftDrive.setZeroPowerBehavior(BRAKE);
+        sorterMotor.setZeroPowerBehavior(BRAKE);
 
         //This is new..
         telemetry.addData("Status", "Initialized");
@@ -184,6 +186,11 @@ public class Robot {
         backRightDrive.setPower(0);
     }
 
+    /**
+     * Runs the drive train in a cardinal direction.
+     * @param direction The direction, a String
+     * @param ticks The distance to move in motor ticks
+     */
     public void setTargets(String direction, int ticks) {
 
         //This is all inverted (big sigh)
@@ -241,14 +248,21 @@ public class Robot {
 
     }
 
+    /**
+     * Sets the drive motors to RUN_TO_POSITION. Enables usage of the DcMotor.setTargetPosition()
+     * and Robot.setTargets() functions.
+     */
     public void positionRunningMode() {
 
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontLeftDrive.setMode(RUN_TO_POSITION);
+        frontRightDrive.setMode(RUN_TO_POSITION);
+        backLeftDrive.setMode(RUN_TO_POSITION);
+        backRightDrive.setMode(RUN_TO_POSITION);
     }
 
+    /**
+     * Turns off the motor encoders, to run purely on power.
+     */
     public void powerRunningMode()
     {
         frontLeftDrive.setMode(RUN_WITHOUT_ENCODER);
@@ -264,6 +278,9 @@ public class Robot {
 
     }
 
+    /**
+     * Sets the motors to run with encoder feedback.
+     */
     public void encoderRunningMode(){
         frontLeftDrive.setMode(RUN_USING_ENCODER);
         frontRightDrive.setMode(RUN_USING_ENCODER);
@@ -278,6 +295,9 @@ public class Robot {
         backRightDrive.setMode(STOP_AND_RESET_ENCODER);
     }
 
+    /**
+     * Adds motor data to telemetry and updates it.
+     */
     @SuppressLint("DefaultLocale")
     public void tellMotorOutput(){
         telemetry.addData("Control Mode", controlMode);
@@ -303,6 +323,10 @@ public class Robot {
         launcher.hammerServo.setPosition(launcher.hammerBackPosition);
     }
 
+    /**
+     * Updates the SorterHardware, LauncherHardware, ArtifactLocator, Limelight, and HuskyLens.
+     * Also adds some data to telemetry.
+     */
     public void updateAllDaThings()
     {
         sorterHardware.updateSorterHardware();
@@ -338,6 +362,10 @@ public class Robot {
 
     }
 
+    /**
+     * Sets the intake and feeder servos to run.
+     * @param num The power input, from -1.0 to 1.0.
+     */
     public void runBasicIntake(double num)
     {
         intakeyServoR.setPower(num);
@@ -379,6 +407,4 @@ public class Robot {
             sorterHardware.reference = 0;
         }
     }
-
-
 }

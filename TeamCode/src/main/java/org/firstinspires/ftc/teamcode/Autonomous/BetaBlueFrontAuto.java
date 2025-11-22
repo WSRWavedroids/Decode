@@ -3,10 +3,12 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.CHECK_MOVE_1;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.CHECK_MOVE_2;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.CHECK_TAG;
+import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.DRIVE_CLOSER_TO_GOAL;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.FINE_TUNE_TARGETING;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.FIRE_FIRST_PATTERN;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.FIRST_SPIN;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.LAUNCHER_ON;
+import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.RESET_BLENDER;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.SET_APRILTAG_PIPELINE;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.START;
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.TAG_TELEMETRY;
@@ -60,7 +62,8 @@ public class BetaBlueFrontAuto extends OpMode {
     enum step {
         START,
         CHECK_MOVE_1, CHECK_MOVE_2, CHECK_TAG, TAG_TELEMETRY, SET_APRILTAG_PIPELINE,
-        FIRST_SPIN, LAUNCHER_ON, TURN_BACK_TOWARDS_GOAL, FINE_TUNE_TARGETING, FIRE_FIRST_PATTERN,
+        FIRST_SPIN, LAUNCHER_ON, TURN_BACK_TOWARDS_GOAL, FINE_TUNE_TARGETING, DRIVE_CLOSER_TO_GOAL,
+        FIRE_FIRST_PATTERN, RESET_BLENDER,
         UNPARK_1, UNPARK_2, UNPARK_3,
         YAY
     }
@@ -121,7 +124,11 @@ public class BetaBlueFrontAuto extends OpMode {
                 break;
             case CHECK_MOVE_2:
                 if (auto.checkMovement()) {
-                    auto.turnRobotLeft(600);
+                    if (blackboard.get(ALLIANCE_KEY).equals("BLUE")) {
+                        auto.turnRobotLeft(600);
+                    } else {
+                        auto.turnRobotRight(600);
+                    }
                     nextStep(CHECK_TAG);
                 }
                 break;
@@ -190,17 +197,27 @@ public class BetaBlueFrontAuto extends OpMode {
                 }
                 break;
             case TURN_BACK_TOWARDS_GOAL:
-                auto.turnRobotRight(600);
+                if (blackboard.get(ALLIANCE_KEY).equals("BLUE")) {
+                    auto.turnRobotRight(600);
+                } else {
+                    auto.turnRobotLeft(600);
+                }
+
                 nextStep(FINE_TUNE_TARGETING);
+                break;
             case FINE_TUNE_TARGETING:
                 if (auto.checkMovement()) {
                     if (robot.targetTag.currentlyDetected) //Angle detect if possible / needed
                     {
                         auto.turnRobotRight((int) ((robot.targetTag.angleX +robot.limelightSideOffsetAngle) * (1660/360)));
                     }
-                    nextStep(FIRE_FIRST_PATTERN);
+                    nextStep(DRIVE_CLOSER_TO_GOAL);
                 }
                 break;
+            case DRIVE_CLOSER_TO_GOAL:
+                if (auto.checkMovement()) {
+                    auto.moveRobotForward(200);
+                }
             case FIRE_FIRST_PATTERN:
                 if (auto.checkMovement()) {
                     if (robot.pattern.equals("PPG")) {
@@ -211,16 +228,34 @@ public class BetaBlueFrontAuto extends OpMode {
                         auto.fireInSequence(robot.sorterLogic.slotA, robot.sorterLogic.slotB, robot.sorterLogic.slotC);
                     }
 
-                    nextStep(UNPARK_1);
+                    if (auto.fireInSequenceComplete()) {
+                        nextStep(RESET_BLENDER);
+                    }
                 }
                 break;
+            case RESET_BLENDER:
+                robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(),
+                        robot.sorterLogic.slotA.getLoadPosition());
+                nextStep(UNPARK_1);
+                break;
             case UNPARK_1:
-                auto.turnRobotRight(-1200);
+                if (blackboard.get(ALLIANCE_KEY).equals("BLUE")) {
+                    auto.turnRobotRight(-1200);
+                } else {
+                    auto.turnRobotLeft(-1200);
+                }
+
                 nextStep(UNPARK_2);
                 break;
             case UNPARK_2:
                 if (auto.checkMovement()) {
-                    auto.moveRobotLeft(800);
+                    robot.launcher.setLauncherSpeed(0);
+                    if (blackboard.get(ALLIANCE_KEY).equals("BLUE")) {
+                        auto.moveRobotLeft(800);
+                    } else {
+                        auto.moveRobotRight(800);
+                    }
+
                     nextStep(UNPARK_3);
                 }
                 break;
@@ -266,6 +301,7 @@ public class BetaBlueFrontAuto extends OpMode {
         // It's mostly used for troubleshooting.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Step", currentStep);
+        telemetry.addData("fireInSequenceStallingState", auto.fireInSequenceStallingState);
 
         if(robot.targetTag.currentlyDetected)
         {

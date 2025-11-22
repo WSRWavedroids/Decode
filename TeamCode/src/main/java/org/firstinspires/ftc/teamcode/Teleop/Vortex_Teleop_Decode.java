@@ -166,9 +166,9 @@ public class Vortex_Teleop_Decode extends OpMode {
         }
 
 
-        ///This will work once we have inventory Cam
+        /// This will work once we have inventory Cam
         /// Preps color of choice
-        /*
+
         if(gamepad2.square && !gamepad2.left_bumper)
         {
             robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterLogic.findFirstType(PURPLE).getFirePosition());
@@ -177,10 +177,10 @@ public class Vortex_Teleop_Decode extends OpMode {
         {
             robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterLogic.findFirstType(GREEN).getFirePosition());
         }
-        else if(gamepad2.left_trigger > 0.5 && !gamepad2.left_bumper && robot.sorterHardware.currentPositionState == LOAD)//ok this might not be great... don't have the button map with me atm
+        /*else if(gamepad2.left_trigger > 0.5 && !gamepad2.left_bumper && robot.sorterHardware.currentPositionState == LOAD)//ok this might not be great... don't have the button map with me atm
         {
             robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterLogic.findFirstOccupied().getFirePosition());
-        }
+        }*/
 
         /// Clears list each time the button is deliberately pressed, so ready for queueing
         /// Without this we have no way to empty it without firing
@@ -198,7 +198,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         {
             robot.queue.addToNextSpotColor(GREEN);
         }
-        */
+
 
         if(gamepad2.cross)
         {
@@ -269,7 +269,7 @@ public class Vortex_Teleop_Decode extends OpMode {
             cadenHoldingReady = false;
         }
 
-        if(gamepad2.right_trigger > 0.50 && !robot.launcher.wantToOpenDoor){
+        if(gamepad2.right_trigger > 0.50 && !robot.launcher.wantToOpenDoor) {
             if(!cadenHoldingFire)
             {
                 cadenHoldingFire = true;
@@ -622,6 +622,15 @@ public class Vortex_Teleop_Decode extends OpMode {
         telemetry.addData("Blender State", robot.sorterHardware.currentPositionState);
         telemetry.addData("Door Cooldown", robot.sorterHardware.cooldownTimer.seconds());
         telemetry.addData("Launcher Cooldown", robot.launcher.cooldownTimer);
+
+        telemetry.addLine("Artifact Storage:");
+        telemetry.addData("Total Inventory", robot.sorterLogic.inventory.getCount());
+        telemetry.addLine("Purple: " + robot.sorterLogic.inventory.getPurpleCount() +
+                " Green: " + robot.sorterLogic.inventory.getGreenCount());
+        telemetry.addData("Slot A", robot.sorterLogic.slotA.getOccupied());
+        telemetry.addData("Slot B", robot.sorterLogic.slotB.getOccupied());
+        telemetry.addData("Slot C", robot.sorterLogic.slotC.getOccupied());
+
 
         //robot.tellMotorOutput();
     }

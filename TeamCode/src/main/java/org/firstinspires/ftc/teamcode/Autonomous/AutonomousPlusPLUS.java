@@ -549,14 +549,17 @@ public class AutonomousPlusPLUS {
     }
 
     enum fireInSequenceStalling {READY, FIRING}
-    fireInSequenceStalling fireInSequenceStallingState = fireInSequenceStalling.READY;
+    fireInSequenceStalling fireInSequenceStallingState = READY;
     int fireInSequenceI = 0;
     int fireInSequenceStep = 0;
+    boolean firingInSequence;
 
     public void fireInSequence(ArtifactLocator.slot one, ArtifactLocator.slot two, ArtifactLocator.slot three) {
+        firingInSequence = true;
         switch (fireInSequenceStep) {
             case 0:
                 fireInSequenceStep = 1;
+                return;
             case 1:
                 switch (fireInSequenceStallingState) {
                     case READY:
@@ -570,9 +573,11 @@ public class AutonomousPlusPLUS {
                         if (!robot.launcher.onCooldown && !robot.launcher.waitingToFire) {
                             fireInSequenceStallingState = READY;
                             fireInSequenceStep++;
-                            return;
+
                         }
                 }
+
+                return;
 
             case 2:
                 switch (fireInSequenceStallingState) {
@@ -587,9 +592,10 @@ public class AutonomousPlusPLUS {
                         if (!robot.launcher.onCooldown && !robot.launcher.waitingToFire) {
                             fireInSequenceStallingState = READY;
                             fireInSequenceStep++;
-                            return;
                         }
                 }
+
+                return;
 
             case 3:
                 switch (fireInSequenceStallingState) {
@@ -603,16 +609,21 @@ public class AutonomousPlusPLUS {
                     case FIRING:
                         if (!robot.launcher.onCooldown && !robot.launcher.waitingToFire) {
                             fireInSequenceStallingState = READY;
-                            fireInSequenceStep = 0;
-                            return;
+                            fireInSequenceStep = 4;
                         }
                 }
-        }
 
-        //reset to safe
-        robot.launcher.setLauncherSpeed(0);
-        stallForSpin(robot.sorterHardware.positionedCheck(), robot.sorterHardware.positions[0]);
-        stallForSpin(robot.sorterHardware.positionedCheck(), robot.sorterHardware.positions[0]);
+                return;
+
+            case 4:
+                firingInSequence = false;
+                fireInSequenceStep = 0;
+                return;
+        }
+    }
+
+    public boolean fireInSequenceComplete() {
+        return !firingInSequence && !robot.launcher.onCooldown;
     }
 
     public void safeSorterSpin(int targetPosition)

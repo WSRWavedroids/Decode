@@ -40,6 +40,7 @@ import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.Core.ArtifactLocator;
 import org.firstinspires.ftc.teamcode.Core.Robot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -139,10 +140,11 @@ public class SensorHuskyLens extends LinearOpMode {
              *
              * Returns an empty array if no objects are seen.
              */
-            HuskyLens.Block[] blocks = huskyLens.blocks();
-            telemetry.addData("Block count", blocks.length);
-            /*for (int i = 0; i < blocks.length; i++) {
-                telemetry.addData("Block", blocks[i].toString());
+            ArrayList<HuskyLens.Block> blocks =
+                    (ArrayList<HuskyLens.Block>) Arrays.asList(huskyLens.blocks());
+            telemetry.addData("Block count", blocks.size());
+            for (HuskyLens.Block currentBlock : blocks) {
+                telemetry.addData("Block", currentBlock.toString());
                 /*
                  * Here inside the FOR loop, you could save or evaluate specific info for the currently recognized Bounding Box:
                  * - blocks[i].width and blocks[i].height   (size of box, in pixels)
@@ -152,10 +154,15 @@ public class SensorHuskyLens extends LinearOpMode {
                  *
                  * These values have Java type int (integer).
                  */
+                if (currentBlock.y > 160) {
+                    blocks.remove(currentBlock);
+                } else if (currentBlock.x < 40 || currentBlock.x > 280) {
+                    blocks.remove(currentBlock);
+                }
                 //checkZone(blocks[i]);
-            //}
+            }
 
-            robot.sorterLogic.sortOutBlobs(blocks[0].id);
+            robot.sorterLogic.sortOutBlobs(blocks.get(0).id);
 
 
             telemetry.update();

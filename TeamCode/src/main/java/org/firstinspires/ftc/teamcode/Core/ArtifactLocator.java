@@ -181,10 +181,9 @@ public class ArtifactLocator {
                     break;
             }
         }
-        inventory.count = currentPurpleCount + currentGreenCount;
-        inventory.purpleCount = currentPurpleCount;
-        inventory.greenCount = currentGreenCount;
-        inventory.canMakePattern = inventory.purpleCount == 2 & inventory.greenCount == 1;
+        inventory.setCount(currentPurpleCount + currentGreenCount);
+        inventory.setPurpleCount(currentPurpleCount);
+        inventory.setGreenCount(currentGreenCount);
         return;
     }
 
@@ -351,7 +350,7 @@ public class ArtifactLocator {
     @SuppressLint("DefaultLocale")
     public void cameraTelemetry() {
 
-        robot.telemetry.addLine("Inventory: " + inventory.count + " Artifacts; " + inventory.purpleCount + " purple, " + inventory.greenCount + " green.");
+        robot.telemetry.addLine("Inventory: " + inventory.getCount() + " Artifacts; " + inventory.purpleCount + " purple, " + inventory.greenCount + " green.");
         robot.telemetry.addLine("Circularity Radius Center");
         robot.telemetry.addLine("Gain: " + Integer.toString(gainControl.getGain()));
 
@@ -477,11 +476,36 @@ public class ArtifactLocator {
      * for each color and in total, and whether or not a Pattern can be created.
      */
     public class slotInventory {
-        public int count;
+        private int count;
         public int purpleCount;
         public int greenCount;
-        public boolean canMakePattern;
         public slotInventory() {}
+
+        public int getCount() {
+            return count;
+        }
+        public void setCount(int newCount) {
+            count = newCount;
+        }
+
+        public int getPurpleCount() {
+            return purpleCount;
+        }
+        public void setPurpleCount(int newPurpleCount) {
+            purpleCount = newPurpleCount;
+        }
+
+        public int getGreenCount() {
+            return greenCount;
+        }
+        public void setGreenCount(int newGreenCount) {
+            greenCount = newGreenCount;
+        }
+
+        public boolean canMakePattern() {
+            return greenCount == 1 && purpleCount == 2;
+        }
+
     }
 
     /**
