@@ -32,7 +32,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode.Vision;
 
+import static com.qualcomm.hardware.dfrobot.HuskyLens.Algorithm.*;
+
+import static java.util.concurrent.TimeUnit.*;
+
+import androidx.annotation.Discouraged;
+
 import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -62,27 +69,29 @@ import java.util.concurrent.TimeUnit;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
+@Disabled
 @TeleOp(name = "Sensor: HuskyLens", group = "Sensor")
 public class SensorHuskyLens extends LinearOpMode {
 
     private final int READ_PERIOD = 1;
+    private final HuskyLens.Algorithm currentAlgorithm = OBJECT_CLASSIFICATION;
     Robot robot;
 
     private HuskyLens huskyLens;
-    scanBox[] boxes = new scanBox[6];
+    //scanBox[] boxes = new scanBox[6];
 
 
     public SensorHuskyLens(Robot robot)
     {
         this.robot = robot;
         huskyLens = robot.husky;
-        huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
-        Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
+        huskyLens.selectAlgorithm(currentAlgorithm);
+        Deadline rateLimit = new Deadline(READ_PERIOD, SECONDS);
         rateLimit.expire();
     }
 
 
-
+    @Deprecated
     public void runOpMode()
     {
         huskyLens = robot.husky;
@@ -92,7 +101,7 @@ public class SensorHuskyLens extends LinearOpMode {
          * what is happening on the Driver Station telemetry.  Typical applications
          * would not likely rate limit.
          */
-        Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
+        Deadline rateLimit = new Deadline(READ_PERIOD, SECONDS);
 
         /*
          * Immediately expire so that the first time through we'll do the read.
@@ -114,7 +123,7 @@ public class SensorHuskyLens extends LinearOpMode {
         }
 
 
-        huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
+        huskyLens.selectAlgorithm(currentAlgorithm);
 
         telemetry.update();
         waitForStart();
@@ -173,22 +182,22 @@ public class SensorHuskyLens extends LinearOpMode {
     void checkZone(HuskyLens.Block blockData) {
         for(ArtifactLocator.Zone checkingZone : robot.sorterLogic.allZones) {
             if((checkingZone.inRange(blockData.x, blockData.y))) {
-                robot.sorterLogic.sortOutBlobs(checkingZone, blockData.id);
+                robot.sorterLogic.sortOutBlobs(blockData.id);
                 doTele(robot.sorterLogic.allZones.indexOf(checkingZone), blockData);
             }
             else {
-                robot.sorterLogic.sortOutBlobs(checkingZone, 0);
+                robot.sorterLogic.sortOutBlobs(0);
             }
         }
     }
 
-
     public void updateBlockScan()
     {
         HuskyLens.Block[] blocks = huskyLens.blocks();
-        telemetry.addData("Block count", blocks.length);
-        for (int i = 0; i < blocks.length; i++) {
-            telemetry.addData("Block", blocks[i].toString());
+        ArrayList<HuskyLens.Block> filteredBlocks = new ArrayList<>();
+        robot.telemetry.addData("Unfiltered Block count", blocks.length);
+        for (HuskyLens.Block currentBlock : blocks) {
+            robot.telemetry.addData("Block", currentBlock.toString());
             /*
              * Here inside the FOR loop, you could save or evaluate specific info for the currently recognized Bounding Box:
              * - blocks[i].width and blocks[i].height   (size of box, in pixels)
@@ -198,10 +207,21 @@ public class SensorHuskyLens extends LinearOpMode {
              *
              * These values have Java type int (integer).
              */
-            checkZone(blocks[i]);
-
-
+            if (currentBlock.y > 160) {
+                continue;
+            } else if (currentBlock.x < 40 || currentBlock.x > 280) {
+                continue;
+            }
+            filteredBlocks.add(currentBlock);
         }
+
+        if (filteredBlocks.isEmpty()) {
+            robot.telemetry.addData("Searching for blocks", "None found");
+            return;
+        }
+        int foundID = filteredBlocks.get(0).id;
+        robot.sorterLogic.sortOutBlobs(foundID);
+        robot.telemetry.addData("Searching for blocks", "ID is " + foundID);
     }
 
     public class scanBox
@@ -221,7 +241,7 @@ public class SensorHuskyLens extends LinearOpMode {
 
     public void startHusky()
     {
-        huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
+        huskyLens.selectAlgorithm(currentAlgorithm);
     }
 
     public void doTele(int i, HuskyLens.Block blockData)

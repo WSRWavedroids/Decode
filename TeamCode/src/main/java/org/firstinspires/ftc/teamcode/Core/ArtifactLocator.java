@@ -68,9 +68,9 @@ public class ArtifactLocator {
      */
     public void initLogic() {
         //Define slots
-        slotA = new Slot(robot.sorterHardware.positions[0], robot.sorterHardware.positions[1]);
-        slotB = new Slot(robot.sorterHardware.positions[2], robot.sorterHardware.positions[3]);
-        slotC = new Slot(robot.sorterHardware.positions[4], robot.sorterHardware.positions[5]);
+        slotA = new Slot(robot.sorterHardware.positions[0], robot.sorterHardware.positions[1], "A");
+        slotB = new Slot(robot.sorterHardware.positions[2], robot.sorterHardware.positions[3], "B");
+        slotC = new Slot(robot.sorterHardware.positions[4], robot.sorterHardware.positions[5], "C");
         noSlot = new NoSlot();
 
         zone1 = new Zone(140, 180, 0, 120);
@@ -121,29 +121,20 @@ public class ArtifactLocator {
     }
 
     /**
-     * Sorts the color blobs into the proper slots.
-     * @param currentZone The Zone to put the artifact into.
-     * @param state The HuskyLens ID. 0 = EMPTY, 1 = PURPLE, 2 = GREEN.
+     * Sorts the HushyLens output into the appropriate Slot.
+     * @param state The HuskyLens ID. 1 = PURPLE, 2 = GREEN, 3 = EMPTY.
      */
-    public void sortOutBlobs(Zone currentZone, int state) {
+    public void sortOutBlobs(int state) {
         SlotState newState;
 
         switch (state) {
-            case 0: newState = EMPTY;  break;
             case 1: newState = PURPLE; break;
             case 2: newState = GREEN;  break;
+            case 3: newState = EMPTY;  break;
             default: newState = UNKNOWN;
         }
 
-        this.findSlotByZone(currentZone).setOccupied(newState);
-    }
-
-    /**
-     * Sorts the HushyLens output into the appropriate Slot.
-     * @param state The HuskyLens ID. 0 = EMPTY, 1 = PURPLE, 2 = GREEN.
-     */
-    public void sortOutBlobs(int state) {
-        sortOutBlobs(zone1,state);
+        this.findCurrentSlotInPosition(LOAD).setOccupied(newState);
     }
 
     /**
@@ -363,6 +354,7 @@ public class ArtifactLocator {
         private SlotState occupied = UNKNOWN;
         private final int firePosition;
         private final int loadPosition;
+        private final String name;
 
         /**
          * This constructor creates a Slot. A Slot is a representation of a physical Slot in the
@@ -370,9 +362,10 @@ public class ArtifactLocator {
          * @param motorLoadPosition The motor position to go to when firing, in ticks.
          * @param motorFirePosition The motor position to go to when loading, in ticks.
          */
-        public Slot(int motorLoadPosition, int motorFirePosition) {
+        public Slot(int motorLoadPosition, int motorFirePosition, String name) {
             this.loadPosition = motorLoadPosition;
             this.firePosition = motorFirePosition;
+            this.name = name;
         }
 
         /**
@@ -440,6 +433,14 @@ public class ArtifactLocator {
         public boolean exists() {
             return true;
         }
+
+        /**
+         * Gets a string for the name of the Slot: "A", "B", "C", or "No Slot Found".
+         * @return The name of the Slot.
+         */
+        public String getName() {
+            return name;
+        }
     }
 
     /**
@@ -455,7 +456,7 @@ public class ArtifactLocator {
          * UNKNOWN.
          */
         NoSlot() { // Feed it junk data. If you ever see these numbers, we have a problem
-            super(6, 7);
+            super(6, 7, "No Slot Found");
         }
 
         @Override

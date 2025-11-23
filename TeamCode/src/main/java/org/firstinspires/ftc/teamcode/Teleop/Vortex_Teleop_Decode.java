@@ -616,6 +616,8 @@ public class Vortex_Teleop_Decode extends OpMode {
         telemetry.addData("Launcher at Speed", robot.launcher.motorSpeedCheck(robot.launcher.velocityTarget));
         telemetry.addData("Launcher on Cooldown", robot.launcher.onCooldown);
         telemetry.addData("Blender State", robot.sorterHardware.currentPositionState);
+        telemetry.addData("Current Load Slot", robot.sorterLogic.findCurrentSlotInPosition(LOAD).getName());
+        telemetry.addData("Current Fire Slot", robot.sorterLogic.findCurrentSlotInPosition(FIRE).getName());
         telemetry.addData("Door Cooldown", robot.sorterHardware.cooldownTimer.seconds());
         telemetry.addData("Launcher Cooldown", robot.launcher.cooldownTimer);
 
