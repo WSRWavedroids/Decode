@@ -21,83 +21,71 @@
 
 package org.firstinspires.ftc.teamcode.Core;
 
-import static android.os.SystemClock.sleep;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.*;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.*;
 import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.*;
-
 
 import android.annotation.SuppressLint;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.opencv.Circle;
-import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
-
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class ArtifactLocator {
 
-    private ExposureControl exposureControl;
-    private GainControl gainControl;
+    //private ExposureControl exposureControl;
+    //private GainControl gainControl;
 
-    private ColorBlobLocatorProcessor purpleLocator;
-    private ColorBlobLocatorProcessor greenLocator;
-    private VisionPortal portal;
-    private List<ColorBlobLocatorProcessor.Blob> purpleBlobList;
-    private List<ColorBlobLocatorProcessor.Blob> greenBlobList;
-    public enum slotState{EMPTY, PURPLE, GREEN, UNKNOWN;}
+    //private ColorBlobLocatorProcessor purpleLocator;
+    //private ColorBlobLocatorProcessor greenLocator;
+    //private VisionPortal portal;
+    //private List<ColorBlobLocatorProcessor.Blob> purpleBlobList;
+    //private List<ColorBlobLocatorProcessor.Blob> greenBlobList;
+    public enum SlotState {EMPTY, PURPLE, GREEN, UNKNOWN}
 
-    public slot slotA;
-    public slot slotB;
-    public slot slotC;
-    public slot noSlot;
-    public slotRange zone1;
-    public slotRange zone2;
-    public slotRange zone3;
-    public slotRange zone4;
-    public slotRange zone5;
-    public slotRange zone6;
-    public ArrayList<slot> allSlots = new ArrayList<>();
-    public ArrayList<slotRange> allZones = new ArrayList<slotRange>();
+    public Slot slotA;
+    public Slot slotB;
+    public Slot slotC;
+    public Slot noSlot;
+    public Zone zone1;
+    public Zone zone2;
+    public Zone zone3;
+    public Zone zone4;
+    public Zone zone5;
+    public Zone zone6;
+    public ArrayList<Slot> allSlots = new ArrayList<>();
+    public ArrayList<Zone> allZones = new ArrayList<>();
     public ArrayList<Integer> offsetPositions = new ArrayList<>();
-    public slotInventory inventory;
+    public SlotInventory inventory;
 
     public Robot robot;
 
     public ArtifactLocator(Robot robotFile) {
         robot = robotFile;
-        initCamera();
+        initLogic();
     }
 
     /**
-     * Initializes the camera, sets the settings, prepares the VisionPortal,
-     * and initializes numerous logic-related objects, including slots and the inventory.
-     * Might take a couple seconds to run, as it has to wait for the camera to initialize.
+     * Initializes numerous logic-related objects, including slots and the inventory.
      */
-    public void initCamera() {
+    public void initLogic() {
         //Define slots
-        slotA = new slot(robot.sorterHardware.positions[0], robot.sorterHardware.positions[1]);
-        slotB = new slot(robot.sorterHardware.positions[2], robot.sorterHardware.positions[3]);
-        slotC = new slot(robot.sorterHardware.positions[4], robot.sorterHardware.positions[5]);
-        noSlot = new slot();
+        slotA = new Slot(robot.sorterHardware.positions[0], robot.sorterHardware.positions[1]);
+        slotB = new Slot(robot.sorterHardware.positions[2], robot.sorterHardware.positions[3]);
+        slotC = new Slot(robot.sorterHardware.positions[4], robot.sorterHardware.positions[5]);
+        noSlot = new NoSlot();
 
-        zone1 = new slotRange(140, 180, 0, 120);
-        zone2 = new slotRange(0,160,0,120);
-        zone3 = new slotRange(0,160,120,240);
-        zone4 = new slotRange(140,180,120,240);
-        zone5 = new slotRange(160,320,120,240);
-        zone6 = new slotRange(160,320,0,120);
+        zone1 = new Zone(140, 180, 0, 120);
+        zone2 = new Zone(0, 160, 0, 120);
+        zone3 = new Zone(0, 160, 120, 240);
+        zone4 = new Zone(140, 180, 120, 240);
+        zone5 = new Zone(160, 320, 120, 240);
+        zone6 = new Zone(160, 320, 0, 120);
 
         //Sort things into lists
-        offsetPositions.add(0, slotA.loadPosition);
-        offsetPositions.add(1, slotB.firePosition);
-        offsetPositions.add(2, slotC.loadPosition);
-        offsetPositions.add(3, slotA.firePosition);
-        offsetPositions.add(4, slotB.loadPosition);
-        offsetPositions.add(5, slotC.firePosition);
+        offsetPositions.add(0, slotA.getLoadPosition());
+        offsetPositions.add(1, slotB.getFirePosition());
+        offsetPositions.add(2, slotC.getLoadPosition());
+        offsetPositions.add(3, slotA.getFirePosition());
+        offsetPositions.add(4, slotB.getLoadPosition());
+        offsetPositions.add(5, slotC.getFirePosition());
 
         allSlots.add(slotA); allSlots.add(slotB); allSlots.add(slotC);
 
@@ -105,20 +93,14 @@ public class ArtifactLocator {
         allZones.add(zone4); allZones.add(zone5); allZones.add(zone6);
 
         // Define the inventory
-        inventory = new slotInventory();
-
-        // Set camera settings
-        /*while (portal.getCameraState() != VisionPortal.CameraState.CAMERA_DEVICE_READY) {
-            sleep(10); //lol stallin
-        }*/ sleep(2000); //TODO get this to actually work
-        //setCameraSettings();
+        inventory = new SlotInventory();
     }
 
-    /**
+    /*/**
      * Sets the proper camera settings. Must be called after the camera is initialized,
      * otherwise the program crashes.
      */
-    @Deprecated
+    /*@Deprecated
     public void setCameraSettings() {
         exposureControl = portal.getCameraControl(ExposureControl.class);
         exposureControl.setMode(ExposureControl.Mode.Manual);
@@ -126,7 +108,7 @@ public class ArtifactLocator {
 
         gainControl = portal.getCameraControl(GainControl.class);
         gainControl.setGain(85);
-    }
+    }*/
 
     /**
      * Queries the camera for the current blob lists, sorts them into slots, and updates the
@@ -139,11 +121,11 @@ public class ArtifactLocator {
 
     /**
      * Sorts the color blobs into the proper slots.
-     * @param currentZone The zone to put the artifact into.
+     * @param currentZone The Zone to put the artifact into.
      * @param state The HuskyLens ID. 0 = EMPTY, 1 = PURPLE, 2 = GREEN.
      */
-    public void sortOutBlobs(slotRange currentZone, int state) {
-        slotState newState;
+    public void sortOutBlobs(Zone currentZone, int state) {
+        SlotState newState;
 
         switch (state) {
             case 0: newState = EMPTY;  break;
@@ -156,7 +138,7 @@ public class ArtifactLocator {
     }
 
     /**
-     * Sorts the HushyLens output into the appropriate slot.
+     * Sorts the HushyLens output into the appropriate Slot.
      * @param state The HuskyLens ID. 0 = EMPTY, 1 = PURPLE, 2 = GREEN.
      */
     public void sortOutBlobs(int state) {
@@ -169,7 +151,7 @@ public class ArtifactLocator {
     private void takeInventory() {
         int currentPurpleCount = 0;
         int currentGreenCount = 0;
-        for (slot currentSlot : allSlots) {
+        for (Slot currentSlot : allSlots) {
             switch (currentSlot.getOccupied()) {
                 case EMPTY:
                     break;
@@ -181,20 +163,17 @@ public class ArtifactLocator {
                     break;
             }
         }
-        inventory.setCount(currentPurpleCount + currentGreenCount);
-        inventory.setPurpleCount(currentPurpleCount);
-        inventory.setGreenCount(currentGreenCount);
-        return;
+        inventory.updateInventory(currentPurpleCount, currentGreenCount);
     }
 
     /**
-     * Searches the slots in order of ABC to find the first slot containing the indicated contents.
-     * @param slotType The target state of the slot. Can be EMPTY, GREEN, PURPLE, or UNKNOWN
-     *                 in the form of a slotState enum.
-     * @return The first found slot filled with the indicated slotType.
+     * Searches the slots in order of ABC to find the first Slot containing the indicated contents.
+     * @param slotType The target state of the Slot. Can be EMPTY, GREEN, PURPLE, or UNKNOWN
+     *                 in the form of a SlotState enum.
+     * @return The first found Slot filled with the indicated slotType.
      */
-    public slot findFirstType(slotState slotType) {
-        for (slot currentSlot : allSlots) {
+    public Slot findFirstType(SlotState slotType) {
+        for (Slot currentSlot : allSlots) {
             if (currentSlot.contains(slotType)) {
                 return currentSlot;
             }
@@ -204,12 +183,12 @@ public class ArtifactLocator {
 
 
     /**
-     * Searches the slots in order of ABC to find the first slot containing a ball.
-     *                 in the form of a slotState enum.
-     * @return The first found slot containing a ball
+     * Searches the slots in order of ABC to find the first Slot containing a ball.
+     *                 in the form of a SlotState enum.
+     * @return The first found Slot containing a ball
      */
-    public slot findFirstOccupied() {
-        for (slot currentSlot : allSlots) {
+    public Slot findFirstOccupied() {
+        for (Slot currentSlot : allSlots) {
             if (currentSlot.contains(GREEN) || currentSlot.contains(PURPLE)) {
                 return currentSlot;
             }
@@ -219,14 +198,14 @@ public class ArtifactLocator {
 
 
     /**
-     * Searches the slots in order of ABC to find the first slot that is known and does not contain
-     * the specified contents. If the input is UNKNOWN, it will find the first known slot.
-     * @param slotType The not-target state of the slot. Can be EMPTY, GREEN, PURPLE, or UNKNOWN in
-     *                 the form of a slotState enum.
-     * @return The first found slot.
+     * Searches the slots in order of ABC to find the first Slot that is known and does not contain
+     * the specified contents. If the input is UNKNOWN, it will find the first known Slot.
+     * @param slotType The not-target state of the Slot. Can be EMPTY, GREEN, PURPLE, or UNKNOWN in
+     *                 the form of a SlotState enum.
+     * @return The first found Slot.
      */
-    public slot findFirstNotType(slotState slotType) {
-        for (slot currentSlot : allSlots) {
+    public Slot findFirstNotType(SlotState slotType) {
+        for (Slot currentSlot : allSlots) {
             if (currentSlot.doesNotContain(slotType, UNKNOWN)) {
                 return currentSlot;
             }
@@ -235,11 +214,11 @@ public class ArtifactLocator {
     }
 
     /**
-     * Uses the current offset to find which slot is in the specified zone.
-     * @param zone The target zone.
-     * @return The found slot.
+     * Uses the current offset to find which Slot is in the specified Zone.
+     * @param zone The target Zone.
+     * @return The found Slot.
      */
-    public slot findSlotByZone(slotRange zone) {
+    public Slot findSlotByZone(Zone zone) {
         int offset = getCurrentOffset();
         if (offset == -1) {
             return noSlot;
@@ -259,14 +238,14 @@ public class ArtifactLocator {
     }
 
     /**
-     * Finds a slot in the FIRE or LOAD position, if there is one.
+     * Finds a Slot in the FIRE or LOAD position, if there is one.
      * @param targetPosition FIRE or LOAD. FIRE is the position ready to launch, and LOAD is the
      *                       load position.
-     * @return A slot, if there's one in position. If there isn't, will return noSlot.
+     * @return A Slot, if there's one in position. If there isn't, will return noSlot.
      */
-    public slot findCurrentSlotInPosition(SorterHardware.positionState targetPosition) {
+    public Slot findCurrentSlotInPosition(SorterHardware.positionState targetPosition) {
         SorterHardware.positionState actualPositionState;
-        slot foundSlot;
+        Slot foundSlot;
 
         switch (getCurrentOffset()) {
             case 0:  foundSlot = slotA; actualPositionState = LOAD; break;
@@ -304,14 +283,14 @@ public class ArtifactLocator {
      * @param ticks The current position of the encoder
      * @return The current nearest blender offset, from 0-5. -2 = error.
      */
-    private int findClosestOffset(double ticks) {
-        ticks = equalizeMotorPositions((int) ticks);
+    private int findClosestOffset(int ticks) {
+        ticks = equalizeMotorPositions(ticks);
 
-        double lowestDistance = 1000000000;
+        int lowestDistance = 1000000000;
         int offset = -2;
-        double currentDistanceCheck;
+        int currentDistanceCheck;
 
-        for(int i = 0; i<6; i++) {
+        for(int i = 0; i < 6; i++) {
             currentDistanceCheck = Math.abs(offsetPositions.get(i) - ticks);
             if (currentDistanceCheck < lowestDistance) {
                 lowestDistance = currentDistanceCheck;
@@ -321,7 +300,6 @@ public class ArtifactLocator {
         // Check the high offset 0
         currentDistanceCheck = Math.abs(robot.sorterHardware.ticksPerRotation - ticks);
         if (currentDistanceCheck < lowestDistance) {
-            lowestDistance = currentDistanceCheck;
             offset = 0;
         }
 
@@ -350,12 +328,13 @@ public class ArtifactLocator {
     @SuppressLint("DefaultLocale")
     public void cameraTelemetry() {
 
-        robot.telemetry.addLine("Inventory: " + inventory.getCount() + " Artifacts; " + inventory.purpleCount + " purple, " + inventory.greenCount + " green.");
-        robot.telemetry.addLine("Circularity Radius Center");
-        robot.telemetry.addLine("Gain: " + Integer.toString(gainControl.getGain()));
+        robot.telemetry.addLine("Inventory: " + inventory.getTotalCount() + " Artifacts; " +
+                inventory.getPurpleCount() + " purple, " + inventory.getGreenCount() + " green.");
+        //robot.telemetry.addLine("Circularity Radius Center");
+        //robot.telemetry.addLine("Gain: " + Integer.toString(gainControl.getGain()));
 
 
-        // Display the Blob's circularity, and the size (radius) and center location of its circleFit.
+        /*// Display the Blob's circularity, and the size (radius) and center location of its circleFit.
         robot.telemetry.addLine("Purple:");
         for (ColorBlobLocatorProcessor.Blob b : purpleBlobList) {
 
@@ -370,104 +349,139 @@ public class ArtifactLocator {
             Circle circleFit = b.getCircle();
             robot.telemetry.addLine(String.format("%5.3f      %3d     (%3d,%3d)",
                     b.getCircularity(), (int) circleFit.getRadius(), (int) circleFit.getX(), (int) circleFit.getY()));
-        }
+        }*/
     }
 
     /**
-     * The slot class stores the occupancy state (slotState enum) and correct motor
+     * The Slot class stores the occupancy state (SlotState enum) and correct motor
      * positions to load and fire an Artifact. A constructor must be called to create an
      * instance of the class, representing one slot in the blender.
      */
-    public class slot {
-        private slotState occupied = UNKNOWN;
-        private int firePosition;
-        private int loadPosition;
-        private boolean specialIsNotASlot = false;
+    public class Slot {
+        private SlotState occupied = UNKNOWN;
+        private final int firePosition;
+        private final int loadPosition;
 
         /**
-         * This constructor creates a slot.
+         * This constructor creates a Slot. A Slot is a representation of a physical Slot in the
+         * blender.
          * @param motorLoadPosition The motor position to go to when firing, in ticks.
          * @param motorFirePosition The motor position to go to when loading, in ticks.
          */
-        public slot(double motorLoadPosition, double motorFirePosition) {
-            this.loadPosition = (int) motorLoadPosition;
-            this.firePosition = (int) motorFirePosition;
+        public Slot(int motorLoadPosition, int motorFirePosition) {
+            this.loadPosition = motorLoadPosition;
+            this.firePosition = motorFirePosition;
         }
 
         /**
-         * This constructor is a special case. It will create a "fake" slot that always returns the
-         * current position. This is to ensure the findFirstSlot(), findFirstNoSlot(), and
-         * findSlotByZone() functions can still return a "no slot found" option without returning
-         * null. Note that noSlot technically could end up with junk data in slotState occupied.
-         */
-        public slot() {
-            this.specialIsNotASlot = true;
-        }
-
-        /**
-         * Returns the stored firing position for the slot. If the slot is noSlot,
-         * will return the current motor position, effectively not moving.
+         * Returns the stored firing position for the Slot. If the Slot is noSlot,
+         * will return the current blender reference, effectively avoiding any change.
          * @return The firing position, in ticks
          */
         public int getFirePosition() {
-            if(specialIsNotASlot) {
-                return robot.sorterHardware.motor.getCurrentPosition();
-            }
-            else return firePosition;
+            return firePosition;
         }
 
         /**
-         * Returns the stored loading position for the slot. If the slot is noSlot,
-         * will return the current motor position.
+         * Returns the stored loading position for the Slot. If the Slot is noSlot,
+         * will return the current blender reference, effectively avoiding any change.
          * @return The loading position, in ticks
          */
         public int getLoadPosition() {
-            if(specialIsNotASlot) {
-                return robot.sorterHardware.motor.getCurrentPosition();
-            }
             return loadPosition;
         }
 
         /**
-         * Returns the current occupation of the slot. if the slot is noSlot, will return UNKNOWN.
-         * @return The current occupation of the slot, in a slotState enum.
+         * Returns the current occupation of the Slot. if the Slot is noSlot, will return UNKNOWN.
+         * @return The current occupation of the Slot, in a SlotState enum.
          */
-        public slotState getOccupied() {
-            if (specialIsNotASlot) {
-                return UNKNOWN;
-            }
+        public SlotState getOccupied() {
             return occupied;
         }
 
         /**
-         * Stores the new contents in the slot.
-         * @param newOccupation The new slotState
+         * Stores the new contents in the Slot.
+         * @param newOccupation The new SlotState
          */
-        public void setOccupied(slotState newOccupation) {
+        public void setOccupied(SlotState newOccupation) {
             occupied = newOccupation;
         }
 
         /**
-         * Checks to see if the slot contains the specified contents
-         * @param checkState The contents to check for, in the form iof a slotState enum.
-         * @return Whether or not the slot contains the contents checked for.
+         * Checks to see if the Slot contains the specified contents
+         * @param checkState The contents to check for, in the form iof a SlotState enum.
+         * @return Whether or not the Slot contains the contents checked for.
          */
-        public boolean contains(slotState checkState) {
+        public boolean contains(SlotState checkState) {
             return occupied == checkState;
         }
 
         /**
-         * Checks to see if the slot doesn't contain any of the specified contents.
-         * @param checkStates The state(s) to be checked against. Yes, state(s); it can handle multiple.
-         * @return Whether or not the slot does not contain any of the contents checked against.
+         * Checks to see if the Slot doesn't contain any of the specified contents.
+         * @param checkStates The state(s) to be checked against. Yes, state(s); it can handle
+         *                    multiple.
+         * @return Whether or not the Slot does not contain any of the contents checked against.
          */
-        public boolean doesNotContain(slotState... checkStates) {
-            for (slotState currentCheckState : checkStates) {
+        public boolean doesNotContain(SlotState... checkStates) {
+            for (SlotState currentCheckState : checkStates) {
                 if (currentCheckState == occupied) {
                     return false;
                 }
             }
             return true;
+        }
+
+        /**
+         * This function is an easy way to identify if a function returned a NoSlot.
+         * @return A real Slot returns true, and a NoSlot returns false
+         */
+        public boolean exists() {
+            return true;
+        }
+    }
+
+    /**
+     * The NoSlot is a special case. It will create a "fake" Slot that always returns the
+     * current blender reference for positions and UNKNOWN for occupancy. This is to ensure the
+     * findFirstSlot(), findFirstNoSlot(), and findSlotByZone() functions can still return a "no
+     * Slot found" option without returning null.
+     */
+    public class NoSlot extends Slot {
+        /**
+         * Creates a phantom Slot, a NoSlot, that does as little damage as possible when it's
+         * returned. Positions will return the current blender reference and the occupancy is always
+         * UNKNOWN.
+         */
+        NoSlot() { // Feed it junk data. If you ever see these numbers, we have a problem
+            super(6, 7);
+        }
+
+        @Override
+        public int getFirePosition() {
+            return (int) robot.sorterHardware.reference;
+        }
+
+        @Override
+        public int getLoadPosition() {
+            return (int) robot.sorterHardware.reference;
+        }
+
+        @Override
+        public void setOccupied(SlotState newOccupation) {}
+
+        @Override
+        public boolean contains(SlotState checkState) {
+            return checkState == UNKNOWN;
+        }
+
+        @Override
+        public boolean doesNotContain(SlotState... checkStates) {
+            return true;
+        }
+
+        @Override
+        public boolean exists() {
+            return false;
         }
     }
 
@@ -475,16 +489,21 @@ public class ArtifactLocator {
      * This class is the inventory. It stores the current count of Artifacts,
      * for each color and in total, and whether or not a Pattern can be created.
      */
-    public class slotInventory {
+    public class SlotInventory {
         private int count;
-        public int purpleCount;
-        public int greenCount;
-        public slotInventory() {}
+        private int purpleCount;
+        private int greenCount;
+        public SlotInventory() {}
 
-        public int getCount() {
+        public void updateInventory(int currentPurpleCount, int currentGreenCount) {
+            setTotalCount(currentPurpleCount + currentGreenCount);
+            setPurpleCount(currentPurpleCount);
+            setGreenCount(currentGreenCount);
+        }
+        public int getTotalCount() {
             return count;
         }
-        public void setCount(int newCount) {
+        public void setTotalCount(int newCount) {
             count = newCount;
         }
 
@@ -502,6 +521,11 @@ public class ArtifactLocator {
             greenCount = newGreenCount;
         }
 
+        /**
+         * Checks to see if two PURPLE Artifacts and one GREEN Artifact is in the inventory; in
+         * other words, if we can fire one Pattern.
+         * @return Whether or not we can make the Pattern
+         */
         public boolean canMakePattern() {
             return greenCount == 1 && purpleCount == 2;
         }
@@ -509,17 +533,19 @@ public class ArtifactLocator {
     }
 
     /**
-     * The slotRange class is used to define and range of values for the camera to use. If the
+     * The Zone class is used to define and range of values for the camera to use. If the
      * center of a Blob is within the range (which is easy to check by calling the inRange() boolean
-     * function), the Artifact represented by the Blob is within the slot for which the range
+     * function), the Artifact represented by the Blob is within the Slot for which the range
      * represents.
+     * <p>
+     * This class also just represents the physical position of the blender if needed.
      */
-    public class slotRange {
+    public class Zone {
         private final float xMin;
         private final float xMax;
         private final float yMin;
         private final float yMax;
-        slotRange(float xMin, float xMax, float yMin, float yMax) {
+        Zone(float xMin, float xMax, float yMin, float yMax) {
             this.xMin = xMin;
             this.xMax = xMax;
             this.yMin = yMin;
@@ -527,9 +553,9 @@ public class ArtifactLocator {
         }
 
         /**
-         * The inRange() function checks to see if a given coordinate is within the slotRange. Its
+         * The inRange() function checks to see if a given coordinate is within the Zone. Its
          * intended implementation is to check whether or not an Artifact, represented by a Blob, is
-         * within a slot, represented by a slotRange. Input the center coordinates of a Blob to test
+         * within a Slot, represented by a Zone. Input the center coordinates of a Blob to test
          * this.
          * @param inputX The x-coordinate to test
          * @param inputY The y-coordinate to test

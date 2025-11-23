@@ -28,13 +28,14 @@ package org.firstinspires.ftc.teamcode.Autonomous;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.firstinspires.ftc.teamcode.Core.Robot.CardinalDirections.*;
+
 import com.bylazar.panels.Panels;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Core.Robot;
-import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 //import org.firstinspires.ftc.teamcode.OLD.Autonomous.AprilTags.MayFlowers;
 
 /**
@@ -119,7 +120,7 @@ public class AutonomousPLUS extends LinearOpMode {
 
     public void moveRobotForward(int ticks, long pause) {
         if (opModeIsActive()) {
-            robot.setTargets("Forward", ticks); // Inverted... Lol
+            robot.setTargets(FORWARD, ticks); // Inverted... Lol
             robot.positionRunningMode();
         }
         robot.powerSet(speed);
@@ -141,7 +142,7 @@ public class AutonomousPLUS extends LinearOpMode {
 
     public void moveRobotBackward(int ticks, long pause) {
         if (opModeIsActive()) {
-            robot.setTargets("Backward", ticks);
+            robot.setTargets(BACKWARD, ticks);
             robot.positionRunningMode();
             robot.powerSet(speed);
 
@@ -163,7 +164,7 @@ public class AutonomousPLUS extends LinearOpMode {
     public void moveRobotLeft(int ticks, long pause) {
 
         if (opModeIsActive()) {
-            robot.setTargets("Left", ticks);
+            robot.setTargets(LEFT, ticks);
             robot.positionRunningMode();
             robot.powerSet(speed);
 
@@ -186,7 +187,7 @@ public class AutonomousPLUS extends LinearOpMode {
     public void moveRobotRight(int ticks, long pause) {
 
         if (opModeIsActive()) {
-            robot.setTargets("Right", ticks);
+            robot.setTargets(RIGHT, ticks);
             robot.positionRunningMode();
             robot.powerSet(speed);
 
@@ -207,7 +208,7 @@ public class AutonomousPLUS extends LinearOpMode {
     public void turnRobotRight(int ticks, long pause) {
 
         if (opModeIsActive()) {
-            robot.setTargets("Turn Right", ticks);
+            robot.setTargets(TURN_RIGHT, ticks);
             robot.positionRunningMode();
             robot.powerSet(speed);
 
@@ -228,7 +229,7 @@ public class AutonomousPLUS extends LinearOpMode {
     public void turnRobotLeft(int ticks, long pause) {
 
         if (opModeIsActive()) {
-            robot.setTargets("Turn Left", ticks);
+            robot.setTargets(TURN_LEFT, ticks);
             robot.positionRunningMode();
             robot.powerSet(speed);
 
@@ -250,7 +251,7 @@ public class AutonomousPLUS extends LinearOpMode {
     public void moveDiagonalRight(int ticks, long pause) {
         //This moves along the 45/225 axis, Positive ticks move forward and negative move back
         if (opModeIsActive()) {
-            robot.setTargets("Diagonal Right", ticks);
+            robot.setTargets(DIAGONAL_RIGHT, ticks);
             robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.powerSet(speed);
@@ -272,7 +273,7 @@ public class AutonomousPLUS extends LinearOpMode {
     public void moveDiagonalLeft(int ticks, long pause) {
         //moves along the 135/315 axis, positive ticks move forward and negative ticks move back
         if (opModeIsActive()) {
-            robot.setTargets("Diagonal Left", ticks);
+            robot.setTargets(DIAGONAL_LEFT, ticks);
             robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.powerSet(speed);

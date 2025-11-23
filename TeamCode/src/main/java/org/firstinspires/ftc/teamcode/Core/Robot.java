@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Core;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.*;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.*;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.*;
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.*;
+import static org.firstinspires.ftc.teamcode.Core.Robot.OpenClosed.*;
 
 import android.annotation.SuppressLint;
 
@@ -15,9 +15,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -29,7 +27,6 @@ import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
 import org.firstinspires.ftc.teamcode.Vision.SensorHuskyLens;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
-
 
 public class Robot {
 
@@ -88,7 +85,11 @@ public class Robot {
 
     public static TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
-    public enum openClosed{OPEN,CLOSED}
+    public enum OpenClosed {OPEN,CLOSED}
+    public enum CardinalDirections {
+        FORWARD, BACKWARD, LEFT, RIGHT,
+        DIAGONAL_LEFT, DIAGONAL_RIGHT,
+        TURN_LEFT, TURN_RIGHT}
 
     public boolean scanningForTargetTag = false;
 
@@ -188,57 +189,57 @@ public class Robot {
 
     /**
      * Runs the drive train in a cardinal direction.
-     * @param direction The direction, a String
+     * @param direction The direction, a cardinalDirection enum
      * @param ticks The distance to move in motor ticks
      */
-    public void setTargets(String direction, int ticks) {
+    public void setTargets(CardinalDirections direction, int ticks) {
 
-        //This is all inverted (big sigh)
+        // This is all inverted (big sigh)
 
         switch (direction) {
-            case "Right":
+            case RIGHT:
                 frontLeftDrive.setTargetPosition(-ticks + frontLeftDrive.getCurrentPosition());
                 frontRightDrive.setTargetPosition(ticks + frontRightDrive.getCurrentPosition());
                 backLeftDrive.setTargetPosition(ticks + backLeftDrive.getCurrentPosition());
                 backRightDrive.setTargetPosition(-ticks + backRightDrive.getCurrentPosition());
                 break;
-            case "Left":
+            case LEFT:
                 frontLeftDrive.setTargetPosition(ticks + frontLeftDrive.getCurrentPosition());
                 frontRightDrive.setTargetPosition(-ticks + frontRightDrive.getCurrentPosition());
                 backLeftDrive.setTargetPosition(-ticks + backLeftDrive.getCurrentPosition());
                 backRightDrive.setTargetPosition(ticks + backRightDrive.getCurrentPosition());
                 break;
-            case "Forward":
+            case FORWARD:
                 frontLeftDrive.setTargetPosition(-ticks + frontLeftDrive.getCurrentPosition());
                 frontRightDrive.setTargetPosition(-ticks + frontRightDrive.getCurrentPosition());
                 backLeftDrive.setTargetPosition(-ticks + backLeftDrive.getCurrentPosition());
                 backRightDrive.setTargetPosition(-ticks + backRightDrive.getCurrentPosition());
                 break;
-            case "Backward":
+            case BACKWARD:
                 frontLeftDrive.setTargetPosition(ticks + frontLeftDrive.getCurrentPosition());
                 frontRightDrive.setTargetPosition(ticks + frontRightDrive.getCurrentPosition());
                 backLeftDrive.setTargetPosition(ticks + backLeftDrive.getCurrentPosition());
                 backRightDrive.setTargetPosition(ticks + backRightDrive.getCurrentPosition());
                 break;
-            case "Turn Right":
+            case TURN_RIGHT:
                 frontLeftDrive.setTargetPosition(-ticks + frontLeftDrive.getCurrentPosition());
                 frontRightDrive.setTargetPosition(ticks + frontRightDrive.getCurrentPosition());
                 backLeftDrive.setTargetPosition(-ticks + backLeftDrive.getCurrentPosition());
                 backRightDrive.setTargetPosition(ticks + backRightDrive.getCurrentPosition());
                 break;
-            case "Turn Left":
+            case TURN_LEFT:
                 frontLeftDrive.setTargetPosition(ticks + frontLeftDrive.getCurrentPosition());
                 frontRightDrive.setTargetPosition(-ticks + frontRightDrive.getCurrentPosition());
                 backLeftDrive.setTargetPosition(ticks + backLeftDrive.getCurrentPosition());
                 backRightDrive.setTargetPosition(-ticks + backRightDrive.getCurrentPosition());
                 break;
-            case "Diagonal Right":
+            case DIAGONAL_RIGHT:
                 frontLeftDrive.setTargetPosition(-ticks + frontLeftDrive.getCurrentPosition());
                 frontRightDrive.setPower(0);
                 backLeftDrive.setPower(0);
                 backRightDrive.setTargetPosition(-ticks + backRightDrive.getCurrentPosition());
                 break;
-            case "Diagonal Left":
+            case DIAGONAL_LEFT:
                 frontLeftDrive.setPower(0);
                 frontRightDrive.setTargetPosition(-ticks + frontRightDrive.getCurrentPosition());
                 backLeftDrive.setTargetPosition(-ticks + backLeftDrive.getCurrentPosition());

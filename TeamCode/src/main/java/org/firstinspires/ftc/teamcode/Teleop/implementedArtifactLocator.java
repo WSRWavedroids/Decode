@@ -77,7 +77,7 @@ public class implementedArtifactLocator extends OpMode {
         robot = new Robot(hardwareMap, telemetry, this);
         intCam = robot.sorterLogic;
 
-        intCam.initCamera();
+        intCam.initLogic();
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");

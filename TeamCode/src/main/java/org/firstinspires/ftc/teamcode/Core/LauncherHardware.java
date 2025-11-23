@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode.Core;
 
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.*;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.*;
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.*;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.*;
 import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.*;
 
 import com.bylazar.configurables.annotations.Configurable;
