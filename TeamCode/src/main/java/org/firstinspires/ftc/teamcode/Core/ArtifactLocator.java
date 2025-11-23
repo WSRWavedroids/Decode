@@ -63,7 +63,8 @@ public class ArtifactLocator {
     }
 
     /**
-     * Initializes numerous logic-related objects, including slots and the inventory.
+     * Initializes numerous logic-related objects, including slots, the inventory, and lists to
+     * iterate through them.
      */
     public void initLogic() {
         //Define slots
@@ -353,9 +354,10 @@ public class ArtifactLocator {
     }
 
     /**
-     * The Slot class stores the occupancy state (SlotState enum) and correct motor
-     * positions to load and fire an Artifact. A constructor must be called to create an
-     * instance of the class, representing one slot in the blender.
+     * A Slot is a representation of a physical Slot in the blender. The Slot class stores the
+     * occupancy state (SlotState enum) and correct motor positions to load and fire an Artifact. A
+     * constructor must be called to create an instance of the class, representing one slot in the
+     * blender.
      */
     public class Slot {
         private SlotState occupied = UNKNOWN;
