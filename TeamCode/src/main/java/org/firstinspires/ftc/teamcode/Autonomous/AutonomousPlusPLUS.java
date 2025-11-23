@@ -29,6 +29,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
  */
 
 import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousPlusPLUS.fireInSequenceStalling.*;
+import static org.firstinspires.ftc.teamcode.Core.Robot.CardinalDirections.*;
 import static android.os.SystemClock.sleep;
 
 import com.bylazar.panels.Panels;
@@ -129,7 +130,7 @@ public class AutonomousPlusPLUS {
 
     public void moveRobotForward(int ticks) {
 
-        robot.setTargets("Forward", ticks); // Inverted... Lol
+        robot.setTargets(FORWARD, ticks); // Inverted... Lol
         robot.positionRunningMode();
 
         robot.powerSet(speed);
@@ -151,7 +152,7 @@ public class AutonomousPlusPLUS {
     }
 
     public void moveRobotBackward(int ticks) {
-        robot.setTargets("Backward", ticks);
+        robot.setTargets(BACKWARD, ticks);
         robot.positionRunningMode();
         robot.powerSet(speed);
     }
@@ -169,7 +170,7 @@ public class AutonomousPlusPLUS {
     }
 
     public void moveRobotLeft(int ticks) {
-        robot.setTargets("Left", ticks);
+        robot.setTargets(LEFT, ticks);
         robot.positionRunningMode();
         robot.powerSet(speed);
     }
@@ -187,7 +188,7 @@ public class AutonomousPlusPLUS {
     }
 
     public void moveRobotRight(int ticks) {
-        robot.setTargets("Right", ticks);
+        robot.setTargets(RIGHT, ticks);
         robot.positionRunningMode();
         robot.powerSet(speed);
     }
@@ -205,7 +206,7 @@ public class AutonomousPlusPLUS {
     }
 
     public void turnRobotRight(int ticks) {
-        robot.setTargets("Turn Right", ticks);
+        robot.setTargets(TURN_RIGHT, ticks);
         robot.positionRunningMode();
         robot.powerSet(speed);
     }
@@ -223,7 +224,7 @@ public class AutonomousPlusPLUS {
     }
 
     public void turnRobotLeft(int ticks) {
-        robot.setTargets("Turn Left", ticks);
+        robot.setTargets(TURN_LEFT, ticks);
         robot.positionRunningMode();
         robot.powerSet(speed);
     }
@@ -242,7 +243,7 @@ public class AutonomousPlusPLUS {
 
     public void moveDiagonalRight(int ticks, long pause) {
         //This moves along the 45/225 axis, Positive ticks move forward and negative move back
-        robot.setTargets("Diagonal Right", ticks);
+        robot.setTargets(DIAGONAL_RIGHT, ticks);
         robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.powerSet(speed);
@@ -263,7 +264,7 @@ public class AutonomousPlusPLUS {
 
     public void moveDiagonalLeft(int ticks, long pause) {
         //moves along the 135/315 axis, positive ticks move forward and negative ticks move back
-        robot.setTargets("Diagonal Left", ticks);
+        robot.setTargets(DIAGONAL_LEFT, ticks);
         robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.powerSet(speed);
@@ -554,7 +555,7 @@ public class AutonomousPlusPLUS {
     int fireInSequenceStep = 0;
     boolean firingInSequence;
 
-    public void fireInSequence(ArtifactLocator.slot one, ArtifactLocator.slot two, ArtifactLocator.slot three) {
+    public void fireInSequence(ArtifactLocator.Slot one, ArtifactLocator.Slot two, ArtifactLocator.Slot three) {
         firingInSequence = true;
         switch (fireInSequenceStep) {
             case 0:

@@ -171,7 +171,7 @@ public class SensorHuskyLens extends LinearOpMode {
 
     @Deprecated
     void checkZone(HuskyLens.Block blockData) {
-        for(ArtifactLocator.slotRange checkingZone : robot.sorterLogic.allZones) {
+        for(ArtifactLocator.Zone checkingZone : robot.sorterLogic.allZones) {
             if((checkingZone.inRange(blockData.x, blockData.y))) {
                 robot.sorterLogic.sortOutBlobs(checkingZone, blockData.id);
                 doTele(robot.sorterLogic.allZones.indexOf(checkingZone), blockData);
@@ -226,7 +226,7 @@ public class SensorHuskyLens extends LinearOpMode {
 
     public void doTele(int i, HuskyLens.Block blockData)
     {
-        telemetry.addData("In zone:"+i, "");
+        telemetry.addData("In Zone:"+i, "");
         telemetry.addData("Color ID Detected: ", blockData.id);
     }
 

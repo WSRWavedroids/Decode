@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Core;
 
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.*;
+import static org.firstinspires.ftc.teamcode.Core.Robot.OpenClosed.*;
 import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.*;
 
 
@@ -50,7 +50,7 @@ public class SorterHardware {
     public DcMotorEx motor;
     public LauncherHardware launcher;
 
-    public Robot.openClosed doorTarget = CLOSED;
+    public Robot.OpenClosed doorTarget = CLOSED;
 
     public ElapsedTime cooldownTimer = new ElapsedTime();
     public boolean onCooldown = false;
@@ -89,7 +89,7 @@ public class SorterHardware {
         positions[0] = 0; //Slot A load
         positions[1] = ticksPerRotation / 2; //Slot A launch
         positions[2] = (2 * ticksPerRotation/3); //Slot B load
-        positions[3] = ticksPerRotation / 6; // slot B launch
+        positions[3] = ticksPerRotation / 6; // Slot B launch
         positions[4] = ticksPerRotation / 3; //Slot C load
         positions[5] = 5 * ticksPerRotation / 6; //Slot C launch
 
@@ -150,7 +150,7 @@ public class SorterHardware {
         else return false;
     }
 
-    public void triggerServo(Robot.openClosed goTo)
+    public void triggerServo(Robot.OpenClosed goTo)
     {
         doorTarget = goTo;
         wantToMoveDoor = true;

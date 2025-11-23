@@ -1,13 +1,9 @@
 package org.firstinspires.ftc.teamcode.Core;
 
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.EMPTY;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.GREEN;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.PURPLE;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.CLOSED;
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.OPEN;
-
-import android.telephony.IccOpenLogicalChannelResponse;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.EMPTY;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.GREEN;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.PURPLE;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.UNKNOWN;
 
 import com.bylazar.configurables.annotations.Configurable;
 
@@ -52,7 +48,7 @@ public class fireQueue {
 
     }
 
-    public void addToNextSpotColor(ArtifactLocator.slotState color)
+    public void addToNextSpotColor(ArtifactLocator.SlotState color)
     {
         if(currentSlot < 3)
         {
@@ -72,7 +68,7 @@ public class fireQueue {
         }
     }
 
-    public void addToListDirectly(int positionInList, ArtifactLocator.slotState color)
+    public void addToListDirectly(int positionInList, ArtifactLocator.SlotState color)
     {
         balls[positionInList].color = color;
         noBallsQueued = false;
@@ -216,7 +212,7 @@ public class fireQueue {
 
 class queueBall
 {
-    ArtifactLocator.slotState color;
+    ArtifactLocator.SlotState color;
 }
 
 

@@ -1,22 +1,6 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.CHECK_MOVE_1;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.CHECK_MOVE_2;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.CHECK_TAG;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.DRIVE_CLOSER_TO_GOAL;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.FINE_TUNE_TARGETING;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.FIRE_FIRST_PATTERN;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.FIRST_SPIN;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.LAUNCHER_ON;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.RESET_BLENDER;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.SET_APRILTAG_PIPELINE;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.START;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.TAG_TELEMETRY;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.TURN_BACK_TOWARDS_GOAL;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.UNPARK_1;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.UNPARK_2;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.UNPARK_3;
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.YAY;
+import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -28,20 +12,11 @@ import org.firstinspires.ftc.teamcode.Core.Robot;
 import java.util.Objects;
 
 /**
- * This file is our iterative (Non-Linear) "OpMode" for TeleOp.
- * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
- * The names of OpModes appear on the menu of the FTC Driver Station.
- * When an selection is made from the menu, the corresponding OpMode
- * class is selected on the Robot Controller and executed.
- * This particular one is called "Lean Mean TeleOp Machine". I had a little too much fun with naming this.
- * <p>
- * This OpMode controls the functions of the robot during the driver-controlled period.
- * <p>
- * If the "@Disabled" line is not commented out, the program will not show up on the driver hub.
- * If you ever have problems with the program not showing up on the driver hub, it's probably because of that.
- * <p>
- * Throughout this program, there are comments explaining what everything does because previous programmers
- * did a horrible job of doing that.
+ * This is an iterative autonomous program. It runs in a state machine, which allows us to run the
+ * updateAllDaThings() function and properly run the blender without any... questionable code. And
+ * it's marginally more efficient. Also, this contains the proper code to run the red alliance auto
+ * too, allowing us to keep both autos up to date in a single file. BetaRedFrontAuto is a shell that
+ * basically just hijacks this file to work, which is neat.
  */
 @Autonomous(group = "Basic", name = "BETA Blue Front")
 public class BetaBlueFrontAuto extends OpMode {
@@ -72,7 +47,7 @@ public class BetaBlueFrontAuto extends OpMode {
     public static final String ALLIANCE_KEY = "Alliance"; //For blackboard
     public static final String PATTERN_KEY = "Pattern";
 
-    /*
+    /**
      * Code to run ONCE when the driver hits INIT
      */
     public void init() {
@@ -89,7 +64,7 @@ public class BetaBlueFrontAuto extends OpMode {
         blackboard.put(ALLIANCE_KEY, "BLUE");
     }
 
-    /*
+    /**
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
      */
     public void init_loop() {
@@ -100,7 +75,7 @@ public class BetaBlueFrontAuto extends OpMode {
         telemetry.update();
     }
 
-    /*
+    /**
      * Code to run ONCE when the driver hits PLAY
      */
     public void start() {
@@ -110,7 +85,7 @@ public class BetaBlueFrontAuto extends OpMode {
         robot.sorterHardware.legalToSpin = true;
     }
 
-    /*
+    /**
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
     public void loop() {
@@ -124,7 +99,7 @@ public class BetaBlueFrontAuto extends OpMode {
                 break;
             case CHECK_MOVE_2:
                 if (auto.checkMovement()) {
-                    if (blackboard.get(ALLIANCE_KEY).equals("BLUE")) {
+                    if (Objects.equals(blackboard.get(ALLIANCE_KEY), "BLUE")) {
                         auto.turnRobotLeft(600);
                     } else {
                         auto.turnRobotRight(600);
@@ -197,7 +172,7 @@ public class BetaBlueFrontAuto extends OpMode {
                 }
                 break;
             case TURN_BACK_TOWARDS_GOAL:
-                if (blackboard.get(ALLIANCE_KEY).equals("BLUE")) {
+                if (Objects.equals(blackboard.get(ALLIANCE_KEY), "BLUE")) {
                     auto.turnRobotRight(600);
                 } else {
                     auto.turnRobotLeft(600);
@@ -209,7 +184,7 @@ public class BetaBlueFrontAuto extends OpMode {
                 if (auto.checkMovement()) {
                     if (robot.targetTag.currentlyDetected) //Angle detect if possible / needed
                     {
-                        auto.turnRobotRight((int) ((robot.targetTag.angleX +robot.limelightSideOffsetAngle) * (1660/360)));
+                        auto.turnRobotRight((int) ((robot.targetTag.angleX +robot.limelightSideOffsetAngle) * ( (double) 1660 / 360)));
                     }
                     nextStep(DRIVE_CLOSER_TO_GOAL);
                 }
@@ -239,7 +214,7 @@ public class BetaBlueFrontAuto extends OpMode {
                 nextStep(UNPARK_1);
                 break;
             case UNPARK_1:
-                if (blackboard.get(ALLIANCE_KEY).equals("BLUE")) {
+                if (Objects.equals(blackboard.get(ALLIANCE_KEY), "BLUE")) {
                     auto.turnRobotRight(-1200);
                 } else {
                     auto.turnRobotLeft(-1200);
@@ -250,7 +225,7 @@ public class BetaBlueFrontAuto extends OpMode {
             case UNPARK_2:
                 if (auto.checkMovement()) {
                     robot.launcher.setLauncherSpeed(0);
-                    if (blackboard.get(ALLIANCE_KEY).equals("BLUE")) {
+                    if (Objects.equals(blackboard.get(ALLIANCE_KEY), "BLUE")) {
                         auto.moveRobotLeft(800);
                     } else {
                         auto.moveRobotRight(800);

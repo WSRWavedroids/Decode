@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.EMPTY;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.GREEN;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.slotState.PURPLE;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.GREEN;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.PURPLE;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.*;
-import static org.firstinspires.ftc.teamcode.Core.Robot.openClosed.*;
 import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.*;
 
 import com.bylazar.panels.Panels;
@@ -13,7 +11,6 @@ import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -22,7 +19,6 @@ import org.firstinspires.ftc.teamcode.Core.Robot;
 
 
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This file is our iterative (Non-Linear) "OpMode" for TeleOp.
@@ -624,7 +620,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         telemetry.addData("Launcher Cooldown", robot.launcher.cooldownTimer);
 
         telemetry.addLine("Artifact Storage:");
-        telemetry.addData("Total Inventory", robot.sorterLogic.inventory.getCount());
+        telemetry.addData("Total Inventory", robot.sorterLogic.inventory.getTotalCount());
         telemetry.addLine("Purple: " + robot.sorterLogic.inventory.getPurpleCount() +
                 " Green: " + robot.sorterLogic.inventory.getGreenCount());
         telemetry.addData("Slot A", robot.sorterLogic.slotA.getOccupied());
