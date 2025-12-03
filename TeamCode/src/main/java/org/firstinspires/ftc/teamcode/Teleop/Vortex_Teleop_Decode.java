@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.GREEN;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.PURPLE;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.*;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.*;
 import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.*;
+import static org.firstinspires.ftc.teamcode.Core.fireQueue.firingQueue.SMART;
 
 import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -167,11 +167,13 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         if(gamepad2.square && !gamepad2.left_bumper)
         {
-            robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterLogic.findFirstType(PURPLE).getFirePosition());
+            robot.sorterHardware.prepareNewMovement(
+                    robot.sorterLogic.findFirstType(PURPLE).getFirePosition());
         }
         else if(gamepad2.triangle && !gamepad2.left_bumper)
         {
-            robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterLogic.findFirstType(GREEN).getFirePosition());
+            robot.sorterHardware.prepareNewMovement(
+                    robot.sorterLogic.findFirstType(GREEN).getFirePosition());
         }
         /*else if(gamepad2.left_trigger > 0.5 && !gamepad2.left_bumper && robot.sorterHardware.currentPositionState == LOAD)//ok this might not be great... don't have the button map with me atm
         {
@@ -189,22 +191,24 @@ public class Vortex_Teleop_Decode extends OpMode {
         if(gamepad2.squareWasPressed() && gamepad2.left_bumper)
         {
             robot.queue.addToNextSpotColor(PURPLE);
+            robot.queue.wantToFireQueue = SMART;
         }
         else if(gamepad2.triangleWasPressed() && gamepad2.left_bumper)
         {
             robot.queue.addToNextSpotColor(GREEN);
+            robot.queue.wantToFireQueue = SMART;
         }
 
 
         if(gamepad2.cross)
         {
-            if(robot.sorterHardware.currentPositionState == FIRE)
+            if(robot.sorterHardware.inStateCheck(FIRE))
             {
                 //if not in load position, go there and make sure we don't jam in the process
-                goNextLoadPosition(1);
+                robot.sorterHardware.prepareNewMovement(robot.sorterLogic.findFirstType(EMPTY).getLoadPosition());
                 robot.cancelAutoIntake();
             }
-            else if(robot.sorterHardware.currentPositionState == SWITCH)
+            else if(robot.sorterHardware.inStateCheck(SWITCH))
             {
                 //dont jam while spinning to load
                 robot.cancelAutoIntake();

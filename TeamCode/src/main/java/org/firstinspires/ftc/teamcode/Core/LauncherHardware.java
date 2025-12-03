@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Core;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.*;
 import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.*;
 import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.*;
+import static org.firstinspires.ftc.teamcode.Core.fireQueue.firingQueue.SMART;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -128,7 +129,6 @@ public class LauncherHardware {
         motor.setVelocity(velocityTarget);
     }
 
-
     public void updateLauncherHardware() {
         inSpeedRange = motorSpeedCheck(velocityTarget);
         timerCheck();
@@ -140,6 +140,10 @@ public class LauncherHardware {
 
         if (hammerForward) {
             robot.sorterLogic.findCurrentSlotInPosition(FIRE).setOccupied(EMPTY);
+        }
+
+        if (robot.queue.wantToFireQueue == SMART) {
+            robot.queue.fireAllSmart(1, true);
         }
     }
 

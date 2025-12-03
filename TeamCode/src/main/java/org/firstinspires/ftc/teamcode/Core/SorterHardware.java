@@ -215,6 +215,13 @@ public class SorterHardware {
 
     }
 
+    /**
+     * prepareNewMovement, now with 50% less parameters!!!
+     * @param targetTickPose
+     */
+    public void prepareNewMovement(int targetTickPose) {
+        prepareNewMovement(motor.getCurrentPosition(), targetTickPose);
+    }
     public void spin()
     {
             runPIDMotorStuffLol();

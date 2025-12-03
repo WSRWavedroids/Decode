@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.Core;
 
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.EMPTY;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.GREEN;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.PURPLE;
-import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.*;
+import static org.firstinspires.ftc.teamcode.Core.fireQueue.firingQueue.*;
 
 import com.bylazar.configurables.annotations.Configurable;
 
@@ -25,7 +23,8 @@ public class fireQueue {
     private boolean firstFired = false;
     private boolean secondFired = false;
     private boolean thirdFired = false;
-    public boolean wantToFireQueue = false;
+    public enum firingQueue{NONE, SMART, DUMB}
+    public firingQueue wantToFireQueue = NONE;
 
     public boolean noBallsQueued = true;
     int currentSlot = 0;
@@ -138,39 +137,44 @@ public class fireQueue {
         }
     }
 
-    public void fireAllSmart(double speedTarget)
+    public void fireAllSmart(double speedTarget, boolean revItUpNow)
     {
+        if (revItUpNow) {
+            robot.launcher.setLauncherSpeed(1);
+        }
+
         if(!robot.launcher.waitingToFire && !robot.launcher.onCooldown && !robot.sorterHardware.onCooldown)
         {
             if(!firstFired && !balls[0].color.equals(EMPTY))
             {
                 firstFired = true;
+                if (sorterLogic.findFirstType(balls[0].color) == sorterLogic.noSlot) {return;}
                 sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(balls[0].color).getFirePosition());
                 launcherHardware.readyFire(speedTarget, true);
             }
             else if(firstFired && !secondFired && !balls[1].color.equals(EMPTY))
             {
                 secondFired = true;
+                if (sorterLogic.findFirstType(balls[0].color) == sorterLogic.noSlot) {return;}
                 sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(balls[1].color).getFirePosition());
                 launcherHardware.readyFire(speedTarget, true);
             }
             else if(firstFired && secondFired && !thirdFired && !balls[2].color.equals(EMPTY))
             {
                 thirdFired = true;
+                if (sorterLogic.findFirstType(balls[0].color) == sorterLogic.noSlot) {return;}
                 sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(balls[2].color).getFirePosition());
                 launcherHardware.readyFire(speedTarget, true);
             }
             else if(balls[0].color.equals(EMPTY) && balls[1].color.equals(EMPTY) && balls[2].color.equals(EMPTY))
             {
                 clearList();
-                wantToFireQueue = false;
+                wantToFireQueue = NONE;
                 launcherHardware.setLauncherSpeed(0);
                 sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]);
             }
         }
-
     }
-
 
     public void fireAllDumb(double speedTarget)
     {
@@ -202,7 +206,7 @@ public class fireQueue {
             else if(balls[0].color.equals(EMPTY) && balls[1].color.equals(EMPTY) && balls[2].color.equals(EMPTY))
             {
                 clearList();
-                wantToFireQueue = false;
+                wantToFireQueue = NONE;
                 launcherHardware.setLauncherSpeed(0);
                 sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterHardware.positions[0]);
             }
