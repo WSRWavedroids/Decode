@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.Core.FramerateCalculator;
 import org.firstinspires.ftc.teamcode.Core.Robot;
 
 
@@ -41,6 +42,7 @@ public class Vortex_Teleop_Decode extends OpMode {
 
     // This section tells the program all of the different pieces of hardware that are on our robot that we will use in the program.
     private ElapsedTime runtime = new ElapsedTime();
+    private FramerateCalculator fps = new FramerateCalculator(runtime);
     private double speed = 0.75;
     private boolean spinTargetAcquired = false;
 
@@ -130,7 +132,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         runtime.reset();
         telemetry.addData("HYPE", "Let's do this!!!");
         gamepad1.setLedColor(0, 0, 255, 100000000);
-        gamepad2.setLedColor(0, 0, 255, 100000000);
+        gamepad2.setLedColor(0, 0, 255, 10);
         robot.sorterHardware.resetSorterEncoder();//REMOVE ONCE AUTO -> TELE IS FIGURED OUT
         robot.sorterHardware.legalToSpin = true;
 
@@ -192,11 +194,13 @@ public class Vortex_Teleop_Decode extends OpMode {
         {
             robot.queue.addToNextSpotColor(PURPLE);
             robot.queue.wantToFireQueue = SMART;
+            gamepad2.setLedColor(152, 7, 224,500);
         }
         else if(gamepad2.triangleWasPressed() && gamepad2.left_bumper)
         {
             robot.queue.addToNextSpotColor(GREEN);
             robot.queue.wantToFireQueue = SMART;
+            gamepad2.setLedColor(0, 255, 0, 500);
         }
 
 
@@ -320,6 +324,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         //robot.panelsTelemetry.addData("Motor Position", robot.launcher.motor.getCurrentPosition());
         robot.panelsTelemetry.update();
 
+        fps.update();
         doTelemetryStuff();
 
     }
@@ -592,6 +597,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         // This little section updates the driver hub on the runtime and the motor powers.
         // It's mostly used for troubleshooting.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("Framerate (last 15 seconds)", fps.getFramerate(30) + " fps");
 
 
         if(robot.targetTag.currentlyDetected)
