@@ -67,10 +67,11 @@ public class ArtifactLocator {
      * iterate through them.
      */
     public void initLogic() {
+        int ticksPerRotation = robot.sorterHardware.ticksPerRotation;
         //Define slots
-        slotA = new Slot(robot.sorterHardware.positions[0], robot.sorterHardware.positions[1], "A");
-        slotB = new Slot(robot.sorterHardware.positions[2], robot.sorterHardware.positions[3], "B");
-        slotC = new Slot(robot.sorterHardware.positions[4], robot.sorterHardware.positions[5], "C");
+        slotA = new Slot(0, ticksPerRotation / 2, "A");
+        slotB = new Slot(2 * ticksPerRotation / 3, ticksPerRotation / 6, "B");
+        slotC = new Slot(ticksPerRotation / 3, 5 * ticksPerRotation / 6, "C");
         noSlot = new NoSlot();
 
         zone1 = new Zone(140, 180, 0, 120);
@@ -456,7 +457,7 @@ public class ArtifactLocator {
          * UNKNOWN.
          */
         NoSlot() { // Feed it junk data. If you ever see these numbers, we have a problem
-            super(6, 7, "No Slot Found");
+            super(0, 0, "No Slot Found");
         }
 
         @Override

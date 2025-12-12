@@ -324,7 +324,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         //robot.panelsTelemetry.addData("Motor Position", robot.launcher.motor.getCurrentPosition());
         robot.panelsTelemetry.update();
 
-        fps.update();
+        //fps.update();
         doTelemetryStuff();
 
     }
@@ -571,7 +571,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         robot.sorterHardware.prepareNewMovement(robot.sorterHardware.motor.getCurrentPosition(), robot.sorterLogic.offsetPositions.get(targetOffset));
     }
 
-    private int makeSureNewOffsetIsOK(int oldNewOffset) { // is this the cause of our lag
+    private int makeSureNewOffsetIsOK(int oldNewOffset) {
         while (oldNewOffset < 0) {
             oldNewOffset += 6;
         }

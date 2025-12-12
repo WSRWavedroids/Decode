@@ -166,8 +166,8 @@ public class Robot {
         //This is new..
         telemetry.addData("Status", "Initialized");
 
-        sorterHardware = new SorterHardware(this);
-        launcher = new LauncherHardware(this);
+        sorterHardware = new BetaSorterHardware(this);
+        launcher = new BetaLauncherHardware(this);
         sorterLogic = new ArtifactLocator(this);
         inventoryCam = new SensorHuskyLens(this);
         queue = new fireQueue(this);
@@ -330,8 +330,8 @@ public class Robot {
      */
     public void updateAllDaThings()
     {
-        sorterHardware.updateSorterHardware();
-        launcher.updateLauncherHardware();
+        //sorterHardware.updateSorterHardware();
+        //launcher.updateLauncherHardware();
         sorterLogic.update();
         sorterHardware.updateSorterHardware();
         launcher.updateLauncherHardware();

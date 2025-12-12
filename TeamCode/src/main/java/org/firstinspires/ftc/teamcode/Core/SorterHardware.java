@@ -120,7 +120,7 @@ public class SorterHardware {
         int bestPosition = slotSpaces[0];
         int smallestDistance = Math.abs(slotSpaces[0] - currentPosition);
 
-        for (int i = 1; i < 3; i++) {
+        for (int i : slotSpaces) {
             int distance = Math.abs(slotSpaces[i] - currentPosition);
             if (distance < smallestDistance) {
                 smallestDistance = distance;
@@ -133,16 +133,12 @@ public class SorterHardware {
 
     public boolean inProperTickPosition()
     {
-        if(motor.getCurrentPosition() > reference - tickTolerance &&  motor.getCurrentPosition() < reference + tickTolerance)
-        {
-            return true;
-        }
-        else return false;
+        return motor.getCurrentPosition() > reference - tickTolerance && motor.getCurrentPosition() < reference + tickTolerance;
     }
 
     public boolean positionedCheck()
     {
-        if(/*getLimitSwitch() && */ inProperTickPosition())
+        if(inProperTickPosition())
         {
             currentlyMoving = false;
             return true;
@@ -154,6 +150,10 @@ public class SorterHardware {
     {
         doorTarget = goTo;
         wantToMoveDoor = true;
+    }
+    public void moveDoor(Robot.OpenClosed doorTarget) {
+        this.doorTarget = doorTarget;
+        moveDoor();
     }
 
     public void moveDoor()//Needs to become a state in update
@@ -204,10 +204,10 @@ public class SorterHardware {
     public boolean fireSafeCheck()
     {
         //if not on servo timeout and there and open, fire
-        return positionedCheck()  && inStateCheck(FIRE);
+        return positionedCheck() && inStateCheck(FIRE);
     }
 
-    public void prepareNewMovement(int currentTickPose, int targetTickPose/*, int currentSlot, int targetSlot*/)
+    public void prepareNewMovement(int currentTickPose, int targetTickPose)
     {
         lastSafePosition = currentTickPose;
         reference = (findFastestRotationInTicks(currentTickPose, targetTickPose));
@@ -234,14 +234,18 @@ public class SorterHardware {
 
         switch (disRobot.sorterLogic.getCurrentOffset()) {
             // Firing positions
-            case 1: currentPositionState = FIRE; break;
-            case 3: currentPositionState = FIRE; break;
-            case 5: currentPositionState = FIRE; break;
+            case 1:
+            case 3:
+            case 5:
+                currentPositionState = FIRE;
+                break;
 
             // Loading positions
-            case 0: currentPositionState = LOAD; break;
-            case 2: currentPositionState = LOAD; break;
-            case 4: currentPositionState = LOAD; break;
+            case 0:
+            case 2:
+            case 4:
+                currentPositionState = LOAD;
+                break;
 
             // Not in a position (-1)
             default: currentPositionState = positionState.SWITCH;

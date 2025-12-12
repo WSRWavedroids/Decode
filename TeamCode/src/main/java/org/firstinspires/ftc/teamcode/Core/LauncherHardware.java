@@ -24,7 +24,7 @@ public class LauncherHardware {
 
     public boolean wantToOpenDoor;
 
-    private Robot robot;
+    protected Robot robot;
 
     public double toleranceRange = 350;
 
