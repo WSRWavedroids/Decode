@@ -4,6 +4,8 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.*;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.*;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.*;
 import static org.firstinspires.ftc.teamcode.Core.Robot.OpenClosed.*;
+import static org.firstinspires.ftc.teamcode.Core.Robot.DriveMode.*;
+
 
 import android.annotation.SuppressLint;
 
@@ -15,6 +17,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -67,7 +70,7 @@ public class Robot {
     public OpMode opmode;
     public HardwareMap hardwareMap;
     public String startingPosition;
-    public String controlMode = "Robot Centric";// Robot Centric
+    public DriveMode controlMode = ROBOT_CENTRIC;
     public IMU.Parameters imuParameters;
     public WaveTag targetTag = new WaveTag();
     public String pattern;
@@ -85,6 +88,7 @@ public class Robot {
 
     public static TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
+    public enum DriveMode {ROBOT_CENTRIC, PEDRO, LEGACY_FIELD_CENTRIC}
     public enum OpenClosed {OPEN,CLOSED}
     public enum CardinalDirections {
         FORWARD, BACKWARD, LEFT, RIGHT,
@@ -246,7 +250,13 @@ public class Robot {
                 backRightDrive.setPower(0);
                 break;
         }
+    }
 
+    public void setRunMode(DcMotor.RunMode runMode) {
+        frontLeftDrive.setMode(runMode);
+        frontRightDrive.setMode(runMode);
+        backLeftDrive.setMode(runMode);
+        backRightDrive.setMode(runMode);
     }
 
     /**

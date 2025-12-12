@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode.Teleop;
 
 import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.*;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.*;
+import static org.firstinspires.ftc.teamcode.Core.Robot.CardinalDirections.*;
+import static org.firstinspires.ftc.teamcode.Core.Robot.DriveMode.*;
 import static org.firstinspires.ftc.teamcode.Core.SorterHardware.positionState.*;
-import static org.firstinspires.ftc.teamcode.Core.fireQueue.firingQueue.SMART;
+import static org.firstinspires.ftc.teamcode.Core.fireQueue.firingQueue.*;
 
 import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -42,7 +44,7 @@ public class Vortex_Teleop_Decode extends OpMode {
 
     // This section tells the program all of the different pieces of hardware that are on our robot that we will use in the program.
     private ElapsedTime runtime = new ElapsedTime();
-    private FramerateCalculator fps = new FramerateCalculator(runtime);
+    private final FramerateCalculator fps = new FramerateCalculator(runtime);
     private double speed = 0.75;
     private boolean spinTargetAcquired = false;
 
@@ -93,7 +95,7 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         outtakeTimer.reset();
 
-        if (robot.controlMode == "Field Centric") {
+        if (robot.controlMode == LEGACY_FIELD_CENTRIC) {
 
             imu = hardwareMap.get(IMU.class, "imu");
             IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -148,7 +150,6 @@ public class Vortex_Teleop_Decode extends OpMode {
         //So Begins the input chain. At least try a bit to organise by driver
 
         //Driver 1
-        controlMode();
         driveSpeed();
 
         if(robot.targetTag.currentlyDetected) {
@@ -157,7 +158,11 @@ public class Vortex_Teleop_Decode extends OpMode {
         }
 
         if (gamepad1.left_bumper || gamepad1.right_bumper || gamepad1.triangle) {
-            autoWheel(robot.targetTag.currentlyDetected, robot.targetTag.angleX);
+            //autoWheel(robot.targetTag.currentlyDetected, robot.targetTag.angleX);
+            int angle = (int) ((robot.targetTag.angleX +robot.limelightSideOffsetAngle) * ( (double) 1660 / 360));
+            robot.setTargets(TURN_RIGHT, angle);
+            robot.setRunMode(RUN_TO_POSITION);
+            robot.powerSet(speed);
         } else {
             singleJoystickDrive();
             spinTargetAcquired = false;
@@ -428,14 +433,14 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         float[] motorPowers = new float[4];
 
-        if (robot.controlMode == "Robot Centric") {
+        if (robot.controlMode == ROBOT_CENTRIC) {
 
             motorPowers[0] = (leftY + leftX + rightX);//might need inverted back
             motorPowers[1] = (leftY - leftX - rightX);
             motorPowers[2] = (leftY - leftX + rightX);
             motorPowers[3] = (leftY + leftX - rightX);
 
-        } else if (robot.controlMode == "Field Centric") {
+        } else if (robot.controlMode == LEGACY_FIELD_CENTRIC) {
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);;// sparky.getPosition().h
 
             // Rotate the movement direction counter to the bot's rotation
@@ -468,7 +473,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         }
 
         for (int i = 0; i < motorPowers.length; i++) {
-            motorPowers[i] *= (speed / max);
+            motorPowers[i] *= (float) (speed / max);
 
             float abs = Math.abs(motorPowers[i]);
             if (abs < 0.05) {
@@ -485,16 +490,16 @@ public class Vortex_Teleop_Decode extends OpMode {
 
     private void controlMode() {
         if (gamepad1.back) {
-            if (robot.controlMode == "Robot Centric"){
-                robot.controlMode = "Field Centric";
+            if (robot.controlMode == ROBOT_CENTRIC){
+                robot.controlMode = LEGACY_FIELD_CENTRIC;
                 telemetry.addData("Control Mode", "Field Centric Controls");
-            } else if (robot.controlMode == "Field Centric") {
-                robot.controlMode = "Robot Centric";
+            } else if (robot.controlMode == LEGACY_FIELD_CENTRIC) {
+                robot.controlMode = ROBOT_CENTRIC;
                 telemetry.addData("Control Mode", "Robot Centric Controls");
             }
         }
 
-        if (gamepad1.options && robot.controlMode == "Field Centric") {
+        if (gamepad1.options && robot.controlMode == LEGACY_FIELD_CENTRIC) {
             imu.resetYaw();
         }
     }

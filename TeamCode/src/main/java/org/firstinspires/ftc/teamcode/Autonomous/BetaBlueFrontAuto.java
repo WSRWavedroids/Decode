@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.step.*;
+import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.Step.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -34,7 +34,7 @@ public class BetaBlueFrontAuto extends OpMode {
     public AutonomousPlusPLUS auto = null;
     public IMU imu;
 
-    enum step {
+    enum Step {
         START,
         CHECK_MOVE_1, CHECK_MOVE_2, CHECK_TAG, TAG_TELEMETRY, SET_APRILTAG_PIPELINE,
         FIRST_SPIN, LAUNCHER_ON, TURN_BACK_TOWARDS_GOAL, FINE_TUNE_TARGETING, DRIVE_CLOSER_TO_GOAL,
@@ -42,7 +42,7 @@ public class BetaBlueFrontAuto extends OpMode {
         UNPARK_1, UNPARK_2, UNPARK_3,
         YAY
     }
-    private step currentStep = START;
+    private Step currentStep = START;
 
     public static final String ALLIANCE_KEY = "Alliance"; //For blackboard
     public static final String PATTERN_KEY = "Pattern";
@@ -263,11 +263,11 @@ public class BetaBlueFrontAuto extends OpMode {
     /*
      * The holding cell for all of the random functions we call above.
      */
-    private void nextStep(step nextStep) {
+    private void nextStep(Step nextStep) {
         currentStep = nextStep;
     }
 
-    private void nextPatternSpecificStep(step nextGeneralStep) {
+    private void nextPatternSpecificStep(Step nextGeneralStep) {
 
     }
 

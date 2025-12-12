@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import static org.firstinspires.ftc.teamcode.Core.Robot.DriveMode.*;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -143,11 +145,11 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
 
         //Driver 1
         if (gamepad1.back) {
-            if (Bot.controlMode == "Robot Centric"){
-                Bot.controlMode = "Field Centric";
+            if (Bot.controlMode == ROBOT_CENTRIC){
+                Bot.controlMode = LEGACY_FIELD_CENTRIC;
                 telemetry.addData("Control Mode", "Field Centric Controls");
-            } else if (Bot.controlMode == "Field Centric"){
-                Bot.controlMode = "Robot Centric";
+            } else if (Bot.controlMode == LEGACY_FIELD_CENTRIC){
+                Bot.controlMode = ROBOT_CENTRIC;
                 telemetry.addData("Control Mode", "Robot Centric Controls");
             }
         }
@@ -246,14 +248,14 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
 
         float[] motorPowers = new float[4];
 
-        if (Bot.controlMode == "Robot Centric") {
+        if (Bot.controlMode == ROBOT_CENTRIC) {
 
             motorPowers[0] = (leftY + leftX + rightX);
             motorPowers[1] = (leftY - leftX - rightX);
             motorPowers[2] = (leftY - leftX + rightX);
             motorPowers[3] = (leftY + leftX - rightX);
 
-        } else if (Bot.controlMode == "Field Centric") {
+        } else if (Bot.controlMode == LEGACY_FIELD_CENTRIC) {
             /*
             motorPowers[0] = (float) (Math.sin(leftStickAngle + 45 - robotAngle) * leftStickMagnitude + rightX);
             motorPowers[1] = (float) (Math.sin(leftStickAngle - 45 - robotAngle) * leftStickMagnitude + rightX);
