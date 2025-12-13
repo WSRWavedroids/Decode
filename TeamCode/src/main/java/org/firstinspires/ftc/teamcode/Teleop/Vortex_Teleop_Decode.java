@@ -282,7 +282,7 @@ public class Vortex_Teleop_Decode extends OpMode {
             if(!cadenHoldingFire)
             {
                 cadenHoldingFire = true;
-                robot.launcher.readyFire(1, false);
+                robot.launcher.readyFire(1, false, false);
             }
         }
         else
@@ -620,6 +620,7 @@ public class Vortex_Teleop_Decode extends OpMode {
         telemetry.addData("Last saved Alliance: ", blackboard.get(ALLIANCE_KEY));
 
         telemetry.addData("Reference", robot.sorterHardware.reference);
+        telemetry.addData("Current Reference Acceptable", robot.sorterLogic.isCurrentReferenceLogical((int) robot.sorterHardware.reference));
 
         telemetry.addData("Blender in position", robot.sorterHardware.inProperTickPosition());
         telemetry.addData("Closed Check", robot.sorterHardware.closedCheck());
@@ -633,8 +634,6 @@ public class Vortex_Teleop_Decode extends OpMode {
         telemetry.addData("Blender State", robot.sorterHardware.currentPositionState);
         telemetry.addData("Current Load Slot", robot.sorterLogic.findCurrentSlotInPosition(LOAD).getName());
         telemetry.addData("Current Fire Slot", robot.sorterLogic.findCurrentSlotInPosition(FIRE).getName());
-        telemetry.addData("Door Cooldown", robot.sorterHardware.cooldownTimer.seconds());
-        telemetry.addData("Launcher Cooldown", robot.launcher.cooldownTimer);
 
         telemetry.addLine("Artifact Storage:");
         telemetry.addData("Total Inventory", robot.sorterLogic.inventory.getTotalCount());

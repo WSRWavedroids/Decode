@@ -549,7 +549,7 @@ public class AutonomousPlusPLUS {
         }
     }
 
-    enum fireInSequenceStalling {READY, FIRING}
+    enum fireInSequenceStalling {READY, FIRE, FIRING}
     fireInSequenceStalling fireInSequenceStallingState = READY;
     int fireInSequenceI = 0;
     int fireInSequenceStep = 0;
@@ -560,66 +560,45 @@ public class AutonomousPlusPLUS {
         switch (fireInSequenceStep) {
             case 0:
                 fireInSequenceStep = 1;
-                return;
+                break;
             case 1:
-                switch (fireInSequenceStallingState) {
-                    case READY:
-                        robot.launcher.setLauncherSpeed(1);
-                        robot.sorterHardware.prepareNewMovement(
-                                robot.sorterHardware.motor.getCurrentPosition(),
-                                one.getFirePosition());
-                        robot.launcher.readyFire();
-                        fireInSequenceStallingState = FIRING;
-                    case FIRING:
-                        if (!robot.launcher.onCooldown && !robot.launcher.waitingToFire) {
-                            fireInSequenceStallingState = READY;
-                            fireInSequenceStep++;
-
-                        }
-                }
-
-                return;
-
+                fireOne(one);
+                break;
             case 2:
-                switch (fireInSequenceStallingState) {
-                    case READY:
-                        robot.launcher.setLauncherSpeed(1);
-                        robot.sorterHardware.prepareNewMovement(
-                                robot.sorterHardware.motor.getCurrentPosition(),
-                                two.getFirePosition());
-                        robot.launcher.readyFire();
-                        fireInSequenceStallingState = FIRING;
-                    case FIRING:
-                        if (!robot.launcher.onCooldown && !robot.launcher.waitingToFire) {
-                            fireInSequenceStallingState = READY;
-                            fireInSequenceStep++;
-                        }
-                }
-
-                return;
-
+                fireOne(two);
+                break;
             case 3:
-                switch (fireInSequenceStallingState) {
-                    case READY:
-                        robot.launcher.setLauncherSpeed(1);
-                        robot.sorterHardware.prepareNewMovement(
-                                robot.sorterHardware.motor.getCurrentPosition(),
-                                three.getFirePosition());
-                        robot.launcher.readyFire();
-                        fireInSequenceStallingState = FIRING;
-                    case FIRING:
-                        if (!robot.launcher.onCooldown && !robot.launcher.waitingToFire) {
-                            fireInSequenceStallingState = READY;
-                            fireInSequenceStep = 4;
-                        }
-                }
-
-                return;
-
+                fireOne(three);
+                break;
             case 4:
                 firingInSequence = false;
                 fireInSequenceStep = 0;
-                return;
+                break;
+                //Deven Fixed This A Little Bit He Is A Rubber Duck Now!!!!!!!!;)
+        }
+    }
+
+    private void fireOne(ArtifactLocator.Slot slot) {
+        switch (fireInSequenceStallingState) {
+            case READY:
+                robot.launcher.setLauncherSpeed(1);
+                robot.sorterHardware.prepareNewMovement(
+                        robot.sorterHardware.motor.getCurrentPosition(),
+                        slot.getFirePosition());
+                fireInSequenceStallingState = FIRE;
+                break;
+            case FIRE:
+                if (robot.sorterHardware.doneMoving()) {
+                    robot.launcher.readyFire();
+                    fireInSequenceStallingState = FIRING;
+                }
+                break;
+            case FIRING:
+                if (robot.launcher.doneFiring()) {
+                    fireInSequenceStallingState = READY;
+                    fireInSequenceStep += 1;
+                }
+                break;
         }
     }
 

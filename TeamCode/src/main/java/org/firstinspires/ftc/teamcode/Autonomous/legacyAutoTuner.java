@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.panels.Panels;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.Core.LauncherHardware;
 import org.firstinspires.ftc.teamcode.Core.Robot;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Vision.Limelight_Target_Scanner;
 import org.firstinspires.ftc.teamcode.Vision.Limelight_Randomization_Scanner;
 import org.firstinspires.ftc.teamcode.Vision.WaveTag;
 
+@Disabled
 @Configurable
 @Autonomous(group = "Basic", name = "Legacy Auto Tuner")
 public class legacyAutoTuner extends AutonomousPLUS {

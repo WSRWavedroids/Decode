@@ -120,15 +120,21 @@ public class SorterHardware {
         int bestPosition = slotSpaces[0];
         int smallestDistance = Math.abs(slotSpaces[0] - currentPosition);
 
-        for (int i : slotSpaces) {
-            int distance = Math.abs(slotSpaces[i] - currentPosition);
+        for (int potentialPosition : slotSpaces) {
+            int distance = Math.abs(potentialPosition - currentPosition);
             if (distance < smallestDistance) {
                 smallestDistance = distance;
-                bestPosition = slotSpaces[i];
+                bestPosition = potentialPosition;
             }
         }
 
-        return bestPosition;
+        return makeSureFastestRotationIsOK(bestPosition);
+    }
+
+    private int makeSureFastestRotationIsOK(int position) {
+        double rotation = (double) position / ticksPerRotation;
+        rotation = Math.round(rotation * 6) / 6.0;
+        return (int) (rotation * ticksPerRotation);
     }
 
     public boolean inProperTickPosition()

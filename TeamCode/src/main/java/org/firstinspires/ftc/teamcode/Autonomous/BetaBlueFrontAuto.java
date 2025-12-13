@@ -18,7 +18,7 @@ import java.util.Objects;
  * too, allowing us to keep both autos up to date in a single file. BetaRedFrontAuto is a shell that
  * basically just hijacks this file to work, which is neat.
  */
-@Autonomous(group = "Basic", name = "BETA Blue Front")
+@Autonomous(group = "Basic", name = "Brennan Click Here ---> New Blue Front")
 public class BetaBlueFrontAuto extends OpMode {
 
     // This section tells the program all of the different pieces of hardware that are on our robot that we will use in the program.
@@ -62,6 +62,7 @@ public class BetaBlueFrontAuto extends OpMode {
 
         robot.randomizationScanner.InitLimeLight(0);
         blackboard.put(ALLIANCE_KEY, "BLUE");
+
     }
 
     /**
@@ -81,7 +82,7 @@ public class BetaBlueFrontAuto extends OpMode {
     public void start() {
         runtime.reset();
         telemetry.addData("HYPE", "Let's do this!!!");
-        robot.sorterHardware.resetSorterEncoder();//REMOVE ONCE AUTO -> TELE IS FIGURED OUT
+        robot.readyHardware(true);
         robot.sorterHardware.legalToSpin = true;
     }
 
@@ -191,7 +192,8 @@ public class BetaBlueFrontAuto extends OpMode {
                 break;
             case DRIVE_CLOSER_TO_GOAL:
                 if (auto.checkMovement()) {
-                    auto.moveRobotForward(200);
+                    auto.moveRobotBackward(200);
+                    nextStep(FIRE_FIRST_PATTERN);
                 }
             case FIRE_FIRST_PATTERN:
                 if (auto.checkMovement()) {
@@ -226,12 +228,12 @@ public class BetaBlueFrontAuto extends OpMode {
                 if (auto.checkMovement()) {
                     robot.launcher.setLauncherSpeed(0);
                     if (Objects.equals(blackboard.get(ALLIANCE_KEY), "BLUE")) {
-                        auto.moveRobotLeft(800);
+                        auto.moveRobotLeft(900);
                     } else {
-                        auto.moveRobotRight(800);
+                        auto.moveRobotRight(900);
                     }
 
-                    nextStep(UNPARK_3);
+                    nextStep(YAY);
                 }
                 break;
             case UNPARK_3:
@@ -241,8 +243,11 @@ public class BetaBlueFrontAuto extends OpMode {
                 }
                 break;
             case YAY:
-                super.requestOpModeStop();
-                robot.telemetry.addLine("YAY");
+                if (auto.checkMovement()) {
+                    super.requestOpModeStop();
+                    robot.telemetry.addLine("YAY");
+                }
+
                 break;
         }
 
@@ -304,8 +309,6 @@ public class BetaBlueFrontAuto extends OpMode {
         telemetry.addData("Launcher at Speed", robot.launcher.motorSpeedCheck(robot.launcher.velocityTarget));
         telemetry.addData("Launcher on Cooldown", robot.launcher.onCooldown);
         telemetry.addData("Blender State", robot.sorterHardware.currentPositionState);
-        telemetry.addData("Door Cooldown", robot.sorterHardware.cooldownTimer.seconds());
-        telemetry.addData("Launcher Cooldown", robot.launcher.cooldownTimer);
 
         //robot.tellMotorOutput();
     }

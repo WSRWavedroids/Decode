@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * efficient, at least. But this class is basically just a button on the control hub. The auto is
  * in BetaBlueFrontAuto. Your problem is probably there.
  */
-@Autonomous(group = "Basic", name = "BETA Red Front")
+@Autonomous(group = "Basic", name = "Brennan Click Here ---> New Red Front")
 public class BetaRedFrontAuto extends BetaBlueFrontAuto {
 
     public void init() {

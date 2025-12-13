@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Core.Robot;
 
 import java.util.Objects;
 
+@Disabled
 @Autonomous(group = "Basic", name = "BLUE FRONT SCORE")
 public class BlueFrontAuto extends AutonomousPLUS {
 

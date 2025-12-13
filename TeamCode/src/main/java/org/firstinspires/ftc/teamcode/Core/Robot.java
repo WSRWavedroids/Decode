@@ -6,7 +6,6 @@ import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.*;
 import static org.firstinspires.ftc.teamcode.Core.Robot.OpenClosed.*;
 import static org.firstinspires.ftc.teamcode.Core.Robot.DriveMode.*;
 
-
 import android.annotation.SuppressLint;
 
 import com.bylazar.panels.Panels;
@@ -75,8 +74,8 @@ public class Robot {
     public WaveTag targetTag = new WaveTag();
     public String pattern;
 
-    public SorterHardware sorterHardware;
-    public LauncherHardware launcher;
+    public BetaSorterHardware sorterHardware;
+    public BetaLauncherHardware launcher;
     public ArtifactLocator sorterLogic;
     public SensorHuskyLens inventoryCam;
     public Limelight_Randomization_Scanner randomizationScanner;
@@ -364,7 +363,7 @@ public class Robot {
     {
         //Reliant functions not present
         telemetry.addData("Sorter Position: ", sorterHardware.motor.getCurrentPosition());
-        telemetry.addData("Reference", sorterHardware.motor.getCurrentPosition());
+        telemetry.addData("Reference", sorterHardware.reference);
         telemetry.addData("Launcher Velocity: ", launcher.motor.getVelocity());
         telemetry.addData("DOOR: ", sorterHardware.doorTarget);
         telemetry.addData("Sorter In Position", sorterHardware.positionedCheck());
@@ -407,7 +406,7 @@ public class Robot {
         launcher.hammerServo.setPosition(launcher.hammerBackPosition);
         sorterHardware.doorServo.setPosition(sorterHardware.doorClosedPosition);
         sorterHardware.alreadyClosed = true;
-        sorterHardware.doorTarget  = CLOSED;
+        sorterHardware.doorTarget = CLOSED;
         launcher.setLauncherSpeed(0);
         inventoryCam.updateBlockScan();
 

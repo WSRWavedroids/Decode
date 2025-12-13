@@ -13,14 +13,17 @@ public class BetaLauncherHardware extends LauncherHardware {
     public BetaLauncherHardware(Robot robotFile) {
         super(robotFile);
         this.robot = super.robot;
-        launcherCooldownDuration = 0.25;
+        launcherCooldownDuration = 0.5;
     }
 
     boolean lockControls = false;
+    boolean stopMotorAfter;
+    boolean doneFiring = false;
 
 
     enum LauncherSteps {
-        READY_FOR_COMMANDS, STALLING_UNTIL_SAFE, CHECK_IF_SAFE, REV_MOTOR, OPEN_DOOR, LAUNCHING, CLOSE_DOOR, RESET
+        READY_FOR_COMMANDS, STALLING_UNTIL_SAFE, CHECK_IF_SAFE, REV_MOTOR,
+        STALL_WHILE_MOTOR_REVVING, OPEN_DOOR, LAUNCHING, CLOSE_DOOR, RESET
     }
     LauncherSteps currentLauncherStep = READY_FOR_COMMANDS;
     private void nextStep(LauncherSteps nextStep) {
@@ -30,9 +33,12 @@ public class BetaLauncherHardware extends LauncherHardware {
     @Override
     public void updateLauncherHardware() {
         robot.telemetry.addLine("Untested launcher hardware, I choose you!");
+        robot.telemetry.addData("Launcher step", currentLauncherStep);
         switch (currentLauncherStep) {
             case READY_FOR_COMMANDS:
                 if (waitingToFire) {
+                    waitingToFire = false;
+                    doneFiring = false;
                     nextStep(STALLING_UNTIL_SAFE);
                 }
                 break;
@@ -45,7 +51,11 @@ public class BetaLauncherHardware extends LauncherHardware {
                 break;
             case REV_MOTOR:
                 setLauncherSpeed(velocityTarget);
-                if (motorSpeedCheck(velocityTarget)) {
+                cooldownTimer.reset();
+                nextStep(STALL_WHILE_MOTOR_REVVING);
+                break;
+            case STALL_WHILE_MOTOR_REVVING:
+                if (motorSpeedCheck(velocityTarget) || cooldownTimer.seconds() >= 1) {
                     nextStep(OPEN_DOOR);
                 }
                 break;
@@ -61,24 +71,32 @@ public class BetaLauncherHardware extends LauncherHardware {
                 break;
             case LAUNCHING:
                 if (cooldownTimer.seconds() >= launcherCooldownDuration) {
-                    onCooldown = false;
                     nextStep(CLOSE_DOOR);
                 }
                 break;
             case CLOSE_DOOR:
                 wantToOpenDoor = false;
                 robot.sorterHardware.moveDoor(CLOSED);
-                if (!robot.sorterHardware.openCheck()){
-                    nextStep(RESET);
-                }
+                nextStep(RESET);
+
                 break;
             case RESET:
-                setLauncherSpeed(0);
+                if (stopMotorAfter) setLauncherSpeed(0);
                 robot.sorterLogic.findCurrentSlotInPosition(FIRE).setOccupied(EMPTY);
                 lockControls = false;
+                onCooldown = false;
+                doneFiring = true;
                 nextStep(READY_FOR_COMMANDS);
                 break;
         }
+    }
+
+    public boolean doneFiring() {
+        if (doneFiring) {
+            doneFiring = false;
+            return true;
+        }
+        else return false;
     }
 
     @Override
@@ -89,5 +107,13 @@ public class BetaLauncherHardware extends LauncherHardware {
         else velocityTarget = 1;
 
         super.waitingToFire = true;
+    }
+    @Override
+    public void readyFire() {
+        this.readyFire(0, false, true);
+    }
+    public void readyFire(double speedTarget, boolean useSpeedTarget, boolean stopMotorAfter) {
+        this.stopMotorAfter = stopMotorAfter;
+        readyFire(speedTarget, useSpeedTarget);
     }
 }

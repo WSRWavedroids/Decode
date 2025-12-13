@@ -315,6 +315,10 @@ public class ArtifactLocator {
         return ticks;
     }
 
+    public boolean isCurrentReferenceLogical(int reference) {
+        return reference % ((double) robot.sorterHardware.ticksPerRotation / 6) == 0;
+    }
+
     /**
      * Adds the currently detected blobs to telemetry. Will not update telemetry.
      */
