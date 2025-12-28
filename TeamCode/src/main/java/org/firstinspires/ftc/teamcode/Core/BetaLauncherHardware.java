@@ -23,7 +23,7 @@ public class BetaLauncherHardware {
 
     public BetaLauncherHardware(Robot robotFile) {
         robot = robotFile;
-        motor = robot.launcherMotor;
+        motor = robot.launcherMotor1;
         // motor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(P, I, D, F));
         motor.setDirection(REVERSE);
         waitingToFire = false;

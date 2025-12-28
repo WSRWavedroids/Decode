@@ -42,7 +42,11 @@ public class Robot {
     public DcMotorEx backRightDrive;
 
     public DcMotorEx sorterMotor;
-    public DcMotorEx launcherMotor;
+    public DcMotorEx launcherMotor1;
+
+    public DcMotorEx launcherMotor2;
+
+    public DcMotorEx swivelMotor;
 
     public Servo hammerServo;
     public Servo doorServo;
@@ -83,6 +87,8 @@ public class Robot {
 
     public enum allianceSides {BLUE, RED}
     public allianceSides alliance;
+
+    public double robotPositionX, robotPositionY, robotHeading;
 
 
 
@@ -126,7 +132,9 @@ public class Robot {
         backRightDrive = hardwareMap.get(DcMotorEx.class, "backRightDrive");
 
         sorterMotor = hardwareMap.get(DcMotorEx.class, "sorterMotor");
-        launcherMotor =  hardwareMap.get(DcMotorEx.class, "launcherMotor");
+        launcherMotor1 =  hardwareMap.get(DcMotorEx.class, "launcherMotor1");
+        launcherMotor2 =  hardwareMap.get(DcMotorEx.class, "launcherMotor2");
+        swivelMotor = hardwareMap.get(DcMotorEx.class, "swivelMotor");
 
         //hammerServo = hardwareMap.get(Servo.class, "hammerServo");
         doorServo = hardwareMap.get(Servo.class, "doorServo");

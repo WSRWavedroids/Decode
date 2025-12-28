@@ -26,7 +26,7 @@ public class BetaSorterHardware  {
     public enum positionState {FIRE, LOAD, SWITCH}
 
     public int[] positions;
-    public static final Double ticksPerRotation = 8192.0;
+    public static final int ticksPerRotation = 8192;
     public int currentTickCount;
     public static Double tickTolerance = 100.0;
     public boolean legalToSpin = false;

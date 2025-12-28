@@ -53,7 +53,7 @@ public class ezPID {
      * @param toleranceIN The tolerance in ticks for the checking function/
      * @param modeIN SPEED mode or POSITION mode.
      */
-    public ezPID(DcMotorEx motorIn, double ticksPerRotationIN, double inP, double inI, double inD, double inF, double kneecapIN, double toleranceIN, movementType modeIN) {
+    public ezPID(DcMotorEx motorIn, int ticksPerRotationIN, double inP, double inI, double inD, double inF, double kneecapIN, double toleranceIN, movementType modeIN) {
         motor = motorIn;
         p = inP;
         i = inI;
@@ -71,8 +71,8 @@ public class ezPID {
     /// This is the constructor for a motor group
     /// Check out that file's comments to understand setting it up better
     /// To make a PID for the motor group, use the following line
-    /// private exPID singleMotorPID(PIDMotorGroup(numberOfMotorsIn, DcMotorEx["motors you want here without the "" "]), encoderResolutionValue, p, i, d, f, kneecap, tolleranceInTicks, motorMode)
-    public ezPID(PIDMotorGroup motorsIN, Double ticksPerRotationIN, Double inP, Double inI, Double inD, Double inF, Double kneecapIN, Double toleranceIN, movementType modeIN) {
+    /// private exPID singleMotorPID(PIDMotorGroup(numberOfMotorsIn, DcMotorEx["motors you want here without the "" "]), encoderResolutionValue, p, i, d, f, kneecap, toleranceInTicks, motorMode)
+    public ezPID(PIDMotorGroup motorsIN, int ticksPerRotationIN, Double inP, Double inI, Double inD, Double inF, Double kneecapIN, Double toleranceIN, movementType modeIN) {
         motorGroup = motorsIN;
         p = inP;
         i = inI;
@@ -205,8 +205,7 @@ public void runCalledPIDGroup(double reference)
     /// ONLY USE FOR ONE MOTOR ezPID INSTANCES OR WILL THROW ERRORS!
     /// Use the following line to call this properly FOR MOTOR GROUPS ONLY
     /// PIDGROUPINSTANCENAME.runCalledPID(Target position(Ticks) or speed (Ticks/s));
-    for (int i = 0; i < motorGroup.motorGroup.size(); i++)
-    {
+
         if(mode == movementType.POSITION)
         {
 
@@ -246,9 +245,10 @@ public void runCalledPIDGroup(double reference)
 
             double out = kneecap * ((p * error) + (i * integralSum) + (d * derivative) + feedforward);
 
-            motorGroup.motorGroup.get(i).setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            motorGroup.motorGroup.get(i).setPower(out);
-
+            for (int i = 0; i < motorGroup.motorGroup.size(); i++) {
+                motorGroup.motorGroup.get(i).setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                motorGroup.motorGroup.get(i).setPower(out);
+            }
             lastError = error;
 
             // reset the timer for next time
@@ -279,7 +279,10 @@ public void runCalledPIDGroup(double reference)
 
             double out = (p * error) + (i * integralSum) + (d * derivative);
 
-            motorGroup.motorGroup.get(i).setPower(out);
+            for (int i = 0; i < motorGroup.motorGroup.size(); i++) {
+                motorGroup.motorGroup.get(i).setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                motorGroup.motorGroup.get(i).setPower(out);
+            }
 
             lastError = error;
 
@@ -289,7 +292,6 @@ public void runCalledPIDGroup(double reference)
     }
     }
 
-}
 
 class PIDDUMP {
     ElapsedTime timerFromOld;
