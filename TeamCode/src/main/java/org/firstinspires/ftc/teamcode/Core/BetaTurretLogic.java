@@ -175,31 +175,46 @@ public class BetaTurretLogic {
     }
 
 
-    int runToSafeAngle(double intINDegs)
-    {
+    int runToSafeAngle(double intINDegs) {
 
-        if(intINDegs > safeDegreeDistance)
-        {
-            turretDegreesFromTarget = Math.abs((int) degreesToTicks((intINDegs - 360), (int) rawSwivelController.ticksPerRotation));
-            return (int) degreesToTicks((intINDegs - 360), (int) rawSwivelController.ticksPerRotation);
+        double finalTargetDeg;
+        double currentPosDeg = ticksToDegrees(swivelMotor.getCurrentPosition(), 8192);
+
+
+        // 1. If the input angle is unsafe, move to its safe coterminal
+        if (intINDegs > safeDegreeDistance) {
+            finalTargetDeg = intINDegs - 360;
+        } else if (intINDegs < -safeDegreeDistance) {
+            finalTargetDeg = intINDegs + 360;
         }
-        else if(intINDegs < -safeDegreeDistance)
-        {
-            turretDegreesFromTarget = Math.abs((int) degreesToTicks((intINDegs + 360), (int) rawSwivelController.ticksPerRotation));
-            return degreesToTicks((intINDegs + 360), (int) rawSwivelController.ticksPerRotation);
+        // 2. If the input is safe, check if its coterminal is also safe
+        else {
+            double coterminal = (intINDegs > 0) ? intINDegs - 360 : intINDegs + 360;
+
+            if (withinSafeZone(coterminal)) {
+                // Take the shorter movement
+                double distNormal = Math.abs(intINDegs - currentPosDeg);
+                double distCoterminal = Math.abs(coterminal - currentPosDeg);
+
+                finalTargetDeg = (distCoterminal < distNormal) ? coterminal : intINDegs;
+            } else {
+                // Only the input is safe
+                finalTargetDeg = intINDegs;
+            }
         }
-        else
-        {
-            turretDegreesFromTarget = Math.abs((int) degreesToTicks(intINDegs, (int) rawSwivelController.ticksPerRotation));
-            return degreesToTicks(intINDegs, (int) rawSwivelController.ticksPerRotation);
-        }
 
-
-
+        turretDegreesFromTarget = finalTargetDeg - currentPosDeg;
+        return degreesToTicks(finalTargetDeg, 8192);
     }
+
     double findLauncherTargetSpeed(double distanceFromTarget)
     {
        return (distanceFromTarget + heightOffsetModifier) * distanceModifier;
+    }
+
+    boolean withinSafeZone(double DegsIn)
+    {
+        return (DegsIn < safeDegreeDistance && DegsIn > -safeDegreeDistance);
     }
 
 

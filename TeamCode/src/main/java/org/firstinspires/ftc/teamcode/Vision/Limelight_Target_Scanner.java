@@ -69,7 +69,7 @@ import java.util.List;
  */
 
 //@Autonomous(name = "Limelight Score Target", group = "Sensor")
-public class Limelight_Target_Scanner /*extends AutonomousPLUS*/ {
+public class  Limelight_Target_Scanner /*extends AutonomousPLUS*/ {
 
     private Limelight3A limelight;
     public static final String ALLIANCE_KEY = "Alliance";
