@@ -88,7 +88,14 @@ public class Robot {
     public enum allianceSides {BLUE, RED}
     public allianceSides alliance;
 
-    public double robotPositionX, robotPositionY, robotHeading;
+    public Vector2 robotPosition;
+
+    public Vector2 turretPosition;
+
+    public double robotHeading;
+
+    public double turretPositionOffsetXInches, turretPositionOffsetYInches; //Inches from pedro position
+
 
 
 

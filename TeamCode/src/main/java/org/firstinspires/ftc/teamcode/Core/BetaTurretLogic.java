@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.Core.BetaTurretLogic.swivelControll
 import static org.firstinspires.ftc.teamcode.Core.BetaTurretLogic.swivelControllers.RAW;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.R;
@@ -42,10 +43,12 @@ public class BetaTurretLogic {
     enum swivelControllers {RAW, FINE}
     public swivelControllers lastUsedSwivelController;
 
+    public Follower follower;
 
-    public BetaTurretLogic(Robot robot) {
+
+    public BetaTurretLogic(Robot robot, Follower followerIN) {
         this.robot = robot;
-
+        follower = followerIN;
         launcherMotors = new PIDMotorGroup(2, robot.launcherMotor1, robot.launcherMotor2);
         swivelMotor = robot.swivelMotor;
         launcherController = new ezPID(launcherMotors, 28, launcherP, launcherI, launcherD,
@@ -62,6 +65,8 @@ public class BetaTurretLogic {
 
     public void runTurret()
     {
+        updateTurretPositionXY();
+        //updateAngle();
         turretDegreesFromTarget = updateAngle() - ticksToDegrees(swivelMotor.getCurrentPosition(), 8192);
 
         if(Math.abs(turretDegreesFromTarget) < fineDegreeWindow && autoTrackingModeOn)
@@ -112,14 +117,15 @@ public class BetaTurretLogic {
         }
         else
         {
+
             if(robot.alliance.equals(Robot.allianceSides.BLUE))
             {
                 //A^2 + B^2 = C^2
-                return Math.sqrt(Math.pow((robot.robotPositionX - 12.51), 2) + Math.pow((robot.robotPositionY - 136.15), 2));
+                return Math.sqrt(Math.pow(robot.turretPosition.x - 12.5, 2) + Math.pow((robot.turretPosition.y - 135.73), 2));
             }
             else if(robot.alliance.equals(Robot.allianceSides.RED))
             {
-                return Math.sqrt(Math.pow((robot.robotPositionX - 131.699), 2) + Math.pow((robot.robotPositionY - 135.73), 2));
+                return Math.sqrt(Math.pow(robot.turretPosition.x - 131.5, 2) + Math.pow((robot.turretPosition.y - 135.73), 2));
             }
             else
             {
@@ -142,7 +148,7 @@ public class BetaTurretLogic {
             if(robot.alliance.equals(Robot.allianceSides.BLUE))
             {
                 //gets the raw angle without accounting for heading
-                double rawAngle = Math.toDegrees(Math.atan2((robot.robotPositionX -12.51), (robot.robotPositionY -136.15)));
+                double rawAngle = Math.toDegrees(Math.atan2((robot.turretPosition.x -12.51), (robot.turretPosition.y -136.15)));
                 //Corrects for heading then hands off to safeAngle logic
                 //turretDegreesFromTarget = Math.abs(-90 + (rawAngle));
                 return robot.robotHeading - 90 + (rawAngle);
@@ -150,7 +156,7 @@ public class BetaTurretLogic {
             else if(robot.alliance.equals(Robot.allianceSides.RED))
             {
                 //gets the raw angle without accounting for heading
-                double rawAngle = Math.toDegrees(Math.atan2((robot.robotPositionX -131.699), (robot.robotPositionY -135.73)));
+                double rawAngle = Math.toDegrees(Math.atan2((robot.turretPosition.x -131.699), (robot.turretPosition.y -135.73)));
                 //Corrects for heading then hands off to safeAngle logic
                 //turretDegreesFromTarget =  Math.abs(-90 + (rawAngle));
                 return robot.robotHeading - 90 + (rawAngle);
@@ -216,6 +222,22 @@ public class BetaTurretLogic {
     {
         return (DegsIn < safeDegreeDistance && DegsIn > -safeDegreeDistance);
     }
+
+    void updateTurretPositionXY()
+    {
+       robot.robotPosition.x = follower.getPose().getX();
+       robot.robotPosition.y = follower.getPose().getY();
+       robot.robotHeading = follower.getHeading();
+
+       double rotatedX = robot.turretPositionOffsetXInches * Math.cos(robot.robotHeading) - robot.turretPositionOffsetYInches * Math.sin(robot.robotHeading);
+       double rotatedY = robot.turretPositionOffsetXInches * Math.sin(robot.robotHeading) + robot.turretPositionOffsetYInches * Math.cos(robot.robotHeading);
+
+        robot.turretPosition.x = robot.robotPosition.x + rotatedX;
+        robot.turretPosition.y = robot.robotPosition.y + rotatedY;
+    }
+
+
+
 
 
 
