@@ -43,6 +43,9 @@ public class BetaTurretLogic {
     enum swivelControllers {RAW, FINE}
     public swivelControllers lastUsedSwivelController;
 
+    public double minimumDistance;
+    public boolean canLaunch;
+
     public Follower follower;
 
 
@@ -227,7 +230,7 @@ public class BetaTurretLogic {
     {
        robot.robotPosition.x = follower.getPose().getX();
        robot.robotPosition.y = follower.getPose().getY();
-       robot.robotHeading = follower.getHeading();
+       robot.robotHeading = Math.toDegrees(follower.getHeading());
 
        double rotatedX = robot.turretPositionOffsetXInches * Math.cos(robot.robotHeading) - robot.turretPositionOffsetYInches * Math.sin(robot.robotHeading);
        double rotatedY = robot.turretPositionOffsetXInches * Math.sin(robot.robotHeading) + robot.turretPositionOffsetYInches * Math.cos(robot.robotHeading);
@@ -236,13 +239,43 @@ public class BetaTurretLogic {
         robot.turretPosition.y = robot.robotPosition.y + rotatedY;
     }
 
+    void calibratePositionFromTag()
+    {
+        //Angle from our robot heading to tag
+        double testVal = ticksToDegrees(swivelMotor.getCurrentPosition(), 8192) + robot.targetTag.angleX;
 
 
 
+        Vector2 goalPosition = new Vector2();
+        if(robot.targetTag.currentlyDetected && fineSwivelController.withinTolerance) {
+            if (robot.alliance.equals(Robot.allianceSides.BLUE))
+            {
+                goalPosition.x = 17;
+                goalPosition.y = 132;
+                //goalPosition.heading = 55;
+            } else
+            {
+                goalPosition.x = 123;
+                goalPosition.y = 132;
+                //goalPosition.heading = 125;
+            }
 
 
-
-
+            //Do some trig
+            //robot.robotPosition.x = ;
+            //robot.robotPosition.y = ;
+            //robot.robotHeading = ;
+        }
+    }
 
 
 }
+
+
+
+
+
+
+
+
+
