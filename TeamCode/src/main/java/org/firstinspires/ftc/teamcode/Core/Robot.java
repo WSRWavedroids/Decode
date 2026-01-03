@@ -200,7 +200,6 @@ public class Robot {
         randomizationScanner = new Limelight_Randomization_Scanner(this);
     }
 
-
     public boolean isWheelsBusy(){
         return backLeftDrive.isBusy() || frontLeftDrive.isBusy() || frontRightDrive.isBusy() || backRightDrive.isBusy();
     }

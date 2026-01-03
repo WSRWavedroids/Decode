@@ -51,9 +51,6 @@ public class ArtifactLocator {
     public Zone zone1;
     public Zone zone2;
     public Zone zone3;
-    public Zone zone4;
-    public Zone zone5;
-    public Zone zone6;
     public ArrayList<Slot> allSlots = new ArrayList<>();
     public ArrayList<Zone> allZones = new ArrayList<>();
     public ArrayList<Integer> offsetPositions = new ArrayList<>();
@@ -74,49 +71,28 @@ public class ArtifactLocator {
      */
     public void initLogic() {
         double ticksPerRotation = BetaSorterHardware.ticksPerRotation;
-        //Define slots
-        slotA = new Slot(0, (int) (ticksPerRotation / 2), "A");
-        slotB = new Slot((int) (2 * ticksPerRotation / 3), (int) (ticksPerRotation / 6), "B");
-        slotC = new Slot((int) (ticksPerRotation / 3), (int) (5 * ticksPerRotation / 6), "C");
+        // Define slots
+        slotA = new Slot(0, (int) (ticksPerRotation / 3), "A");
+        slotB = new Slot((int) (2 * ticksPerRotation / 3), 0, "B");
+        slotC = new Slot((int) (ticksPerRotation / 3), (int) (2 * ticksPerRotation / 3), "C");
         noSlot = new NoSlot();
 
         zone1 = new Zone(140, 180, 0, 120);
         zone2 = new Zone(0, 160, 0, 120);
         zone3 = new Zone(0, 160, 120, 240);
-        zone4 = new Zone(140, 180, 120, 240);
-        zone5 = new Zone(160, 320, 120, 240);
-        zone6 = new Zone(160, 320, 0, 120);
 
         //Sort things into lists
         offsetPositions.add(0, slotA.getLoadPosition());
-        offsetPositions.add(1, slotB.getFirePosition());
-        offsetPositions.add(2, slotC.getLoadPosition());
-        offsetPositions.add(3, slotA.getFirePosition());
-        offsetPositions.add(4, slotB.getLoadPosition());
-        offsetPositions.add(5, slotC.getFirePosition());
+        offsetPositions.add(1, slotC.getLoadPosition());
+        offsetPositions.add(2, slotB.getLoadPosition());
 
         allSlots.add(slotA); allSlots.add(slotB); allSlots.add(slotC);
 
         allZones.add(zone1); allZones.add(zone2); allZones.add(zone3);
-        allZones.add(zone4); allZones.add(zone5); allZones.add(zone6);
 
         // Define the inventory
         inventory = new SlotInventory();
     }
-
-    /*/**
-     * Sets the proper camera settings. Must be called after the camera is initialized,
-     * otherwise the program crashes.
-     */
-    /*@Deprecated
-    public void setCameraSettings() {
-        exposureControl = portal.getCameraControl(ExposureControl.class);
-        exposureControl.setMode(ExposureControl.Mode.Manual);
-        exposureControl.setExposure(37, TimeUnit.MILLISECONDS);
-
-        gainControl = portal.getCameraControl(GainControl.class);
-        gainControl.setGain(85);
-    }*/
 
     /**
      * Queries the camera for the current blob lists, sorts them into slots, and updates the
@@ -194,9 +170,9 @@ public class ArtifactLocator {
      * searches for the nth ball of a certain type within the inventory.
      * Can be used to find a ball of type past the first of the type
      * @param slotType The target state of the Slot. Can be EMPTY, GREEN, PURPLE, or UNKNOWN
-     *      *                 in the form of a SlotState enum.
-     * @param nthBall
-     * @return
+     *                 in the form of a SlotState enum.
+     * @param nthBall The Artifact to search for
+     * @return The found Slot
      */
     public Slot findXOfType(SlotState slotType, int nthBall)
     {
@@ -216,8 +192,7 @@ public class ArtifactLocator {
 
 
     /**
-     * Searches the slots in order of ABC to find the first Slot containing a ball.
-     *                 in the form of a SlotState enum.
+     * Searches the slots in order of ABC to find the first Slot containing an Artifact.
      * @return The first found Slot containing a ball
      */
     public Slot findFirstOccupied() {
@@ -277,21 +252,20 @@ public class ArtifactLocator {
      * @return A Slot, if there's one in position. If there isn't, will return noSlot.
      */
     public Slot findCurrentSlotInPosition(BetaSorterHardware.positionState targetPosition) {
-        BetaSorterHardware.positionState actualPositionState;
-        Slot foundSlot;
+        Slot foundLoadSlot;
+        Slot foundFireSlot;
 
         switch (getCurrentOffset()) {
-            case 0:  foundSlot = slotA; actualPositionState = LOAD; break;
-            case 1:  foundSlot = slotB; actualPositionState = FIRE; break;
-            case 2:  foundSlot = slotC; actualPositionState = LOAD; break;
-            case 3:  foundSlot = slotA; actualPositionState = FIRE; break;
-            case 4:  foundSlot = slotB; actualPositionState = LOAD; break;
-            case 5:  foundSlot = slotC; actualPositionState = FIRE; break;
-            default: foundSlot = noSlot; actualPositionState = SWITCH;
+            case 0:  foundLoadSlot = slotA; foundFireSlot = slotB; break;
+            case 1:  foundLoadSlot = slotB; foundFireSlot = slotC; break;
+            case 2:  foundLoadSlot = slotC; foundFireSlot = slotA; break;
+            default: foundLoadSlot = noSlot; foundFireSlot = noSlot;
         }
 
-        if (targetPosition == actualPositionState) {
-            return foundSlot;
+        if (targetPosition == LOAD) {
+            return foundLoadSlot;
+        } else if (targetPosition == FIRE) {
+            return foundFireSlot;
         } else return noSlot;
     }
 
@@ -357,36 +331,6 @@ public class ArtifactLocator {
 
     public boolean isCurrentReferenceLogical(int reference) {
         return reference % ((double) BetaSorterHardware.ticksPerRotation / 6) == 0;
-    }
-
-    /**
-     * Adds the currently detected blobs to telemetry. Will not update telemetry.
-     */
-    @SuppressLint("DefaultLocale")
-    public void cameraTelemetry() {
-
-        robot.telemetry.addLine("Inventory: " + inventory.getTotalCount() + " Artifacts; " +
-                inventory.getPurpleCount() + " purple, " + inventory.getGreenCount() + " green.");
-        //robot.telemetry.addLine("Circularity Radius Center");
-        //robot.telemetry.addLine("Gain: " + Integer.toString(gainControl.getGain()));
-
-
-        /*// Display the Blob's circularity, and the size (radius) and center location of its circleFit.
-        robot.telemetry.addLine("Purple:");
-        for (ColorBlobLocatorProcessor.Blob b : purpleBlobList) {
-
-            Circle circleFit = b.getCircle();
-            robot.telemetry.addLine(String.format("%5.3f      %3d     (%3d,%3d)",
-                    b.getCircularity(), (int) circleFit.getRadius(), (int) circleFit.getX(), (int) circleFit.getY()));
-        }
-
-        robot.telemetry.addLine("Green");
-        for (ColorBlobLocatorProcessor.Blob b : greenBlobList) {
-
-            Circle circleFit = b.getCircle();
-            robot.telemetry.addLine(String.format("%5.3f      %3d     (%3d,%3d)",
-                    b.getCircularity(), (int) circleFit.getRadius(), (int) circleFit.getX(), (int) circleFit.getY()));
-        }*/
     }
 
     /**

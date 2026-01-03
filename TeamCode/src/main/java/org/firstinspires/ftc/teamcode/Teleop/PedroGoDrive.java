@@ -136,9 +136,9 @@ public class PedroGoDrive extends OpMode {
     @Override
     public void loop() {
         //Call this once per loop
+        robot.updateAllDaThings();
         runDriverTwo();
         driveSpeed();
-        robot.updateAllDaThings();
         targetData = scanner.tagInfo();
         follower.update();
         telemetryM.update();

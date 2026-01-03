@@ -207,12 +207,12 @@ public class BlueFront12Ball extends OpMode {
     }
 
     public int autonomousPathUpdate() {
+        emergencyFinishIfNeeded();
         // Add your state machine Here
         // Access paths with paths.pathName
         // Refer to the Pedro Pathing Docs (Auto Example) for an example state machine
         switch (pathState) {
             case 0:
-                emergencyFinishIfNeeded();
                 follower.followPath(paths.MoveAwayFromGoal);
                 setPathState(1);
                 break;
@@ -221,24 +221,22 @@ public class BlueFront12Ball extends OpMode {
             - Follower State: "if(!follower.isBusy()) {}"
             - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
-            */emergencyFinishIfNeeded();
+            */
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if (!follower.isBusy()) {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    FireMatchPattern();
+                    auto.fireMatchPattern();
                     setPathState(2);
                 }
                 break;
             case 2:
-                emergencyFinishIfNeeded();
                 if (auto.fireInSequenceComplete()) {
                     follower.followPath(paths.LineUpWithCenterBalls);
                     setPathState(3);
                 }
                 break;
             case 3:
-                emergencyFinishIfNeeded();
                 if (!follower.isBusy()) {
                     //Enable auto Intake
                     actionTimer.resetTimer();
@@ -246,7 +244,6 @@ public class BlueFront12Ball extends OpMode {
                 }
                 break;
             case 4:
-                emergencyFinishIfNeeded();
                 if(actionTimer.getElapsedTime() > 250)
                 {
                     follower.followPath(paths.GrabCenterBalls);
@@ -255,7 +252,6 @@ public class BlueFront12Ball extends OpMode {
 
                 break;
             case 5:
-                emergencyFinishIfNeeded();
                 if (!follower.isBusy()) {
                     //Disable Auto intake
                     follower.followPath(paths.MoveToLetBallsOut);
@@ -263,35 +259,30 @@ public class BlueFront12Ball extends OpMode {
                 }
                 break;
             case 6: //Wait to let balls out
-                emergencyFinishIfNeeded();
                 if (!follower.isBusy()) {
                     actionTimer.resetTimer();
                     setPathState(7);
                 }
                 break;
             case 7:
-                emergencyFinishIfNeeded();
                 if (actionTimer.getElapsedTime() > 500) {
                     follower.followPath(paths.MoveToScoreSecondPattern);
                     setPathState(8);
                 }
                 break;
             case 8:
-                emergencyFinishIfNeeded();
                 if (!follower.isBusy()) {
-                    FireMatchPattern();
+                    auto.fireMatchPattern();
                     setPathState(9);
                 }
                 break;
             case 9:
-                emergencyFinishIfNeeded();
                 if (auto.fireInSequenceComplete()) {
                     follower.followPath(paths.LineUpToGrabCloseBalls);
                     setPathState(10);
                 }
                 break;
             case 10:
-                emergencyFinishIfNeeded();
                 if (!follower.isBusy()) {
                     //Enable auto intake
                     actionTimer.resetTimer();
@@ -299,34 +290,29 @@ public class BlueFront12Ball extends OpMode {
                 }
                 break;
             case 11:
-                emergencyFinishIfNeeded();
                 if (actionTimer.getElapsedTime() > 250) {
                     follower.followPath(paths.GrabCloseBalls);
                     setPathState(12);
                 }
             case 12:
-                emergencyFinishIfNeeded();
                 if (!follower.isBusy()) {
                     follower.followPath(paths.MoveToFireThirdPattern);
                     setPathState(13);
                 }
                 break;
             case 13:
-                emergencyFinishIfNeeded();
                 if (!follower.isBusy()) {
-                    FireMatchPattern();
+                    auto.fireMatchPattern();
                     setPathState(14);
                 }
                 break;
             case 14:
-                emergencyFinishIfNeeded();
                 if (auto.fireInSequenceComplete()) {
                     follower.followPath(paths.LineUpWithFarBalls);
                     setPathState(15);
                 }
                 break;
             case 15:
-                emergencyFinishIfNeeded();
                 if(!follower.isBusy())
                 {
                     //activate intake
@@ -335,7 +321,6 @@ public class BlueFront12Ball extends OpMode {
                 }
                 break;
             case 16:
-                emergencyFinishIfNeeded();
                 if(actionTimer.getElapsedTime() > 0.25)
                 {
                     follower.followPath(paths.GrabFarBalls);
@@ -343,7 +328,6 @@ public class BlueFront12Ball extends OpMode {
                 }
                 break;
             case 17:
-                emergencyFinishIfNeeded();
                 if(!follower.isBusy())
                 {
                     follower.followPath(paths.MoveForFinalPattern);
@@ -351,18 +335,14 @@ public class BlueFront12Ball extends OpMode {
                 }
                 break;
             case 18:
-                emergencyFinishIfNeeded();
                 if(!follower.isBusy())
                 {
-                    FireMatchPattern();
+                    auto.fireMatchPattern();
                     setPathState(99);
                 }
                 break;
-
-
             case 99:
                 return 0;
-
         }
         return 0;
     }
@@ -374,22 +354,6 @@ public class BlueFront12Ball extends OpMode {
             pathTimer.resetTimer();
         }
 
-    }
-
-     private void FireMatchPattern()
-    {
-        if(robot.pattern == PPG)
-        {
-            auto.fireInSequence(robot.sorterLogic.findXOfType(PURPLE, 1), robot.sorterLogic.findXOfType(PURPLE, 2), robot.sorterLogic.findFirstType(GREEN));
-        }
-        else if(robot.pattern == PGP)
-        {
-            auto.fireInSequence(robot.sorterLogic.findXOfType(PURPLE, 1), robot.sorterLogic.findFirstType(GREEN), robot.sorterLogic.findXOfType(PURPLE,2));
-        }
-        else if(robot.pattern == GPP)
-        {
-            auto.fireInSequence(robot.sorterLogic.findFirstType(GREEN), robot.sorterLogic.findXOfType(PURPLE, 1), robot.sorterLogic.findXOfType(PURPLE, 2));
-        }
     }
 
     private void scan()

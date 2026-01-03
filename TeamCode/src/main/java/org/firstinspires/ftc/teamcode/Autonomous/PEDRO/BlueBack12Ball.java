@@ -226,7 +226,7 @@ public class BlueBack12Ball extends OpMode {
                 if (!follower.isBusy()) {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    FireMatchPattern();
+                    auto.fireMatchPattern();
                     setPathState(2);
                 }
                 break;
@@ -279,7 +279,7 @@ public class BlueBack12Ball extends OpMode {
             case 8:
                 emergencyFinishIfNeeded();
                 if (!follower.isBusy()) {
-                    FireMatchPattern();
+                    auto.fireMatchPattern();
                     setPathState(9);
                 }
                 break;
@@ -314,7 +314,7 @@ public class BlueBack12Ball extends OpMode {
             case 13:
                 emergencyFinishIfNeeded();
                 if (!follower.isBusy()) {
-                    FireMatchPattern();
+                    auto.fireMatchPattern();
                     setPathState(14);
                 }
                 break;
@@ -354,7 +354,7 @@ public class BlueBack12Ball extends OpMode {
                 emergencyFinishIfNeeded();
                 if(!follower.isBusy())
                 {
-                    FireMatchPattern();
+                    auto.fireMatchPattern();
                     setPathState(99);
                 }
                 break;
@@ -374,22 +374,6 @@ public class BlueBack12Ball extends OpMode {
             pathTimer.resetTimer();
         }
 
-    }
-
-     private void FireMatchPattern()
-    {
-        if(robot.pattern == PPG)
-        {
-            auto.fireInSequence(robot.sorterLogic.findXOfType(PURPLE, 1), robot.sorterLogic.findXOfType(PURPLE, 2), robot.sorterLogic.findFirstType(GREEN));
-        }
-        else if(robot.pattern == PGP)
-        {
-            auto.fireInSequence(robot.sorterLogic.findXOfType(PURPLE, 1), robot.sorterLogic.findFirstType(GREEN), robot.sorterLogic.findXOfType(PURPLE,2));
-        }
-        else if(robot.pattern == GPP)
-        {
-            auto.fireInSequence(robot.sorterLogic.findFirstType(GREEN), robot.sorterLogic.findXOfType(PURPLE, 1), robot.sorterLogic.findXOfType(PURPLE, 2));
-        }
     }
 
     private void scan()

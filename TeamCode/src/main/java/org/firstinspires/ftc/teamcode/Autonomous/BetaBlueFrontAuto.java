@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import static org.firstinspires.ftc.teamcode.Autonomous.BetaBlueFrontAuto.Step.*;
+import static org.firstinspires.ftc.teamcode.Core.Robot.patternColors.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -108,7 +109,7 @@ public class BetaBlueFrontAuto extends OpMode {
                 nextStep(CHECK_MOVE_1);
                 break;
             case CHECK_MOVE_1:
-                auto.setSpeed(1);
+                auto.setSpeed(0.7);
                 if (Objects.equals(blackboard.get(ALLIANCE_KEY), "BLUE")) {
                     auto.moveRobotLeft(1000);
                 } else {
@@ -175,7 +176,7 @@ public class BetaBlueFrontAuto extends OpMode {
                 break;
             case FIRST_SPIN:
 
-                if (robot.pattern.equals("PGP") || robot.pattern.equals("PPG")) {
+                if (robot.pattern.equals(PGP) || robot.pattern.equals(PPG)) {
                     robot.sorterHardware.prepareNewMovement(
                             robot.sorterHardware.motor.getCurrentPosition(),
                             robot.sorterLogic.slotB.getFirePosition());
@@ -221,9 +222,9 @@ public class BetaBlueFrontAuto extends OpMode {
                 }
             case FIRE_FIRST_PATTERN:
                 if (auto.checkMovement()) {
-                    if (robot.pattern.equals("PPG")) {
+                    if (robot.pattern.equals(PPG)) {
                         auto.fireInSequence(robot.sorterLogic.slotB, robot.sorterLogic.slotC, robot.sorterLogic.slotA);
-                    } else if (robot.pattern.equals("PGP")) {
+                    } else if (robot.pattern.equals(PGP)) {
                         auto.fireInSequence(robot.sorterLogic.slotB, robot.sorterLogic.slotA, robot.sorterLogic.slotC);
                     } else {
                         auto.fireInSequence(robot.sorterLogic.slotA, robot.sorterLogic.slotB, robot.sorterLogic.slotC);
@@ -240,7 +241,7 @@ public class BetaBlueFrontAuto extends OpMode {
                 nextStep(UNPARK_0);
                 break;
             case UNPARK_0:
-                auto.setSpeed(1);
+                auto.setSpeed(0.7);
                 if(robot.sorterHardware.doneMoving()) {
                     auto.moveRobotForward(400);
                     nextStep(UNPARK_1);
@@ -261,10 +262,10 @@ public class BetaBlueFrontAuto extends OpMode {
                 break;
             case UNPARK_2:
                 if (auto.checkMovement()) {
-                    auto.setSpeed(.8);
+                    auto.setSpeed(1);
                     robot.launcher.setLauncherSpeed(0);
 
-                    if (false /*robot.pattern.equals("GPP")*/) {
+                    if (robot.pattern == GPP) {
                         patternCorrectedStrafeDistance = 1400;
                     } else {
                         patternCorrectedStrafeDistance = 600;

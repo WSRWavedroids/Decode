@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import static org.firstinspires.ftc.teamcode.Autonomous.SafeBlueFrontAuto.Step.*;
+import static org.firstinspires.ftc.teamcode.Core.Robot.patternColors.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -153,7 +154,7 @@ public class SafeBlueFrontAuto extends OpMode {
                 nextStep(FIRST_SPIN);
                 break;
             case FIRST_SPIN:
-                if (robot.pattern.equals("PGP") || robot.pattern.equals("PPG")) {
+                if (robot.pattern.equals(PGP) || robot.pattern.equals(PPG)) {
                     robot.sorterHardware.prepareNewMovement(
                             robot.sorterHardware.motor.getCurrentPosition(),
                             robot.sorterLogic.slotB.getFirePosition());
@@ -197,9 +198,9 @@ public class SafeBlueFrontAuto extends OpMode {
                 }
             case FIRE_FIRST_PATTERN:
                 if (auto.checkMovement()) {
-                    if (robot.pattern.equals("PPG")) {
+                    if (robot.pattern.equals(PPG)) {
                         auto.fireInSequence(robot.sorterLogic.slotB, robot.sorterLogic.slotC, robot.sorterLogic.slotA);
-                    } else if (robot.pattern.equals("PGP")) {
+                    } else if (robot.pattern.equals(PGP)) {
                         auto.fireInSequence(robot.sorterLogic.slotB, robot.sorterLogic.slotA, robot.sorterLogic.slotC);
                     } else {
                         auto.fireInSequence(robot.sorterLogic.slotA, robot.sorterLogic.slotB, robot.sorterLogic.slotC);

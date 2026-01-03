@@ -29,7 +29,12 @@ package org.firstinspires.ftc.teamcode.Autonomous;
  */
 
 import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousPlusPLUS.fireInSequenceStalling.*;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.GREEN;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.PURPLE;
 import static org.firstinspires.ftc.teamcode.Core.Robot.CardinalDirections.*;
+import static org.firstinspires.ftc.teamcode.Core.Robot.patternColors.GPP;
+import static org.firstinspires.ftc.teamcode.Core.Robot.patternColors.PGP;
+import static org.firstinspires.ftc.teamcode.Core.Robot.patternColors.PPG;
 import static android.os.SystemClock.sleep;
 
 import com.bylazar.panels.Panels;
@@ -510,6 +515,32 @@ public class AutonomousPlusPLUS {
                     fireInSequenceStallingState = READY;
                     fireInSequenceStep += 1;
                 }
+                break;
+        }
+    }
+
+    public void fireMatchPattern() {
+        switch (robot.pattern) {
+            case PPG:
+                fireInSequence(
+                        robot.sorterLogic.findFirstType(PURPLE),
+                        robot.sorterLogic.findFirstType(PURPLE),
+                        robot.sorterLogic.findFirstType(GREEN)
+                );
+                break;
+            case PGP:
+                fireInSequence(
+                        robot.sorterLogic.findFirstType(PURPLE),
+                        robot.sorterLogic.findFirstType(GREEN),
+                        robot.sorterLogic.findFirstType(PURPLE)
+                );
+                break;
+            case GPP:
+                fireInSequence(
+                        robot.sorterLogic.findFirstType(GREEN),
+                        robot.sorterLogic.findFirstType(PURPLE),
+                        robot.sorterLogic.findFirstType(PURPLE)
+                );
                 break;
         }
     }
