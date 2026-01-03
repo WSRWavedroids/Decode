@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous.PEDRO;
 
-import static org.firstinspires.ftc.teamcode.Core.Robot.patternColors.GPP;
-import static org.firstinspires.ftc.teamcode.Core.Robot.patternColors.PGP;
-import static org.firstinspires.ftc.teamcode.Core.Robot.patternColors.PPG;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.*;
+import static org.firstinspires.ftc.teamcode.Core.Robot.patternColors.*;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -381,15 +380,15 @@ public class RedBack12Ball extends OpMode {
     {
         if(robot.pattern == PPG)
         {
-            auto.fireInSequence(robot.sorterLogic.findXOfType(ArtifactLocator.SlotState.PURPLE, 1), robot.sorterLogic.findXOfType(ArtifactLocator.SlotState.PURPLE, 2), robot.sorterLogic.findFirstType(ArtifactLocator.SlotState.GREEN));
+            auto.fireInSequence(robot.sorterLogic.findXOfType(PURPLE, 1), robot.sorterLogic.findXOfType(PURPLE, 2), robot.sorterLogic.findFirstType(GREEN));
         }
         else if(robot.pattern == PGP)
         {
-            auto.fireInSequence(robot.sorterLogic.findXOfType(ArtifactLocator.SlotState.PURPLE, 1), robot.sorterLogic.findFirstType(ArtifactLocator.SlotState.GREEN), robot.sorterLogic.findXOfType(ArtifactLocator.SlotState.PURPLE,2));
+            auto.fireInSequence(robot.sorterLogic.findXOfType(PURPLE, 1), robot.sorterLogic.findFirstType(GREEN), robot.sorterLogic.findXOfType(PURPLE,2));
         }
         else if(robot.pattern == GPP)
         {
-            auto.fireInSequence(robot.sorterLogic.findFirstType(ArtifactLocator.SlotState.GREEN), robot.sorterLogic.findXOfType(ArtifactLocator.SlotState.PURPLE, 1), robot.sorterLogic.findXOfType(ArtifactLocator.SlotState.PURPLE, 2));
+            auto.fireInSequence(robot.sorterLogic.findFirstType(GREEN), robot.sorterLogic.findXOfType(PURPLE, 1), robot.sorterLogic.findXOfType(PURPLE, 2));
         }
     }
 
