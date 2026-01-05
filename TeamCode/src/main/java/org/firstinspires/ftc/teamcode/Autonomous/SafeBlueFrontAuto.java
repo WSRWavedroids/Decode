@@ -248,7 +248,6 @@ public class SafeBlueFrontAuto extends OpMode {
 
         robot.updateAllDaThings();
         doTelemetryStuff();
-
     }
 
 

@@ -58,7 +58,7 @@ import org.firstinspires.ftc.teamcode.Core.Robot;
  * Throughout this program, there are comments explaining what everything does because previous programmers
  * did a horrible job of doing that.
  */
-@Disabled
+
 @TeleOp(name="Beta Vortex", group="CompBot")
 public class Basic_Strafer_Bot_Tele_Op extends OpMode {
 
@@ -81,13 +81,8 @@ public class Basic_Strafer_Bot_Tele_Op extends OpMode {
         sorter = Bot.sorterHardware;
         launcher = Bot.launcher;
 
-
-
-
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
-
-
     }
 
     /*
