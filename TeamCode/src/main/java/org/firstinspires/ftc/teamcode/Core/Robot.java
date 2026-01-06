@@ -3,11 +3,15 @@ package org.firstinspires.ftc.teamcode.Core;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.*;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.*;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.*;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.EMPTY;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.GREEN;
+import static org.firstinspires.ftc.teamcode.Core.ArtifactLocator.SlotState.PURPLE;
 import static org.firstinspires.ftc.teamcode.Core.BetaSorterHardware.FeederState.*;
 import static org.firstinspires.ftc.teamcode.Core.Robot.OpenClosed.*;
 import static org.firstinspires.ftc.teamcode.Core.Robot.DriveMode.*;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.text.method.Touch;
 
 import com.bylazar.panels.Panels;
@@ -15,14 +19,17 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -64,9 +71,13 @@ public class Robot {
 
     public VoltageSensor voltageSensor;
 
-   // public WebcamName CamCam;
+    // public WebcamName CamCam;
 
     public HuskyLens husky;
+
+    public RevColorSensorV3 leftColorScanner;
+
+    public RevColorSensorV3 rightColorScanner;
 
     public Telemetry telemetry;
     //public BNO055IMU imu;
@@ -78,12 +89,14 @@ public class Robot {
     public DriveMode controlMode = ROBOT_CENTRIC;
     public IMU.Parameters imuParameters;
     public WaveTag targetTag = new WaveTag();
+
     public enum patternColors {PPG, GPP, PGP}
+
     public patternColors pattern;
 
     public enum allianceSides {BLUE, RED}
-    public allianceSides alliance;
 
+    public allianceSides alliance;
 
 
     public BetaSorterHardware sorterHardware;
@@ -100,11 +113,14 @@ public class Robot {
     public static TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
     public enum DriveMode {ROBOT_CENTRIC, PEDRO, LEGACY_FIELD_CENTRIC}
-    public enum OpenClosed {OPEN,CLOSED}
+
+    public enum OpenClosed {OPEN, CLOSED}
+
     public enum CardinalDirections {
         FORWARD, BACKWARD, LEFT, RIGHT,
         DIAGONAL_LEFT, DIAGONAL_RIGHT,
-        TURN_LEFT, TURN_RIGHT}
+        TURN_LEFT, TURN_RIGHT
+    }
 
     public boolean scanningForTargetTag = false;
 
@@ -126,7 +142,7 @@ public class Robot {
         backRightDrive = hardwareMap.get(DcMotorEx.class, "backRightDrive");
 
         sorterMotor = hardwareMap.get(DcMotorEx.class, "sorterMotor");
-        launcherMotor =  hardwareMap.get(DcMotorEx.class, "launcherMotor");
+        launcherMotor = hardwareMap.get(DcMotorEx.class, "launcherMotor");
 
         //hammerServo = hardwareMap.get(Servo.class, "hammerServo");
         doorServo = hardwareMap.get(Servo.class, "doorServo");
@@ -193,7 +209,7 @@ public class Robot {
     }
 
 
-    public boolean isWheelsBusy(){
+    public boolean isWheelsBusy() {
         return backLeftDrive.isBusy() || frontLeftDrive.isBusy() || frontRightDrive.isBusy() || backRightDrive.isBusy();
     }
 
@@ -206,8 +222,9 @@ public class Robot {
 
     /**
      * Runs the drive train in a cardinal direction.
+     *
      * @param direction The direction, a cardinalDirection enum
-     * @param ticks The distance to move in motor ticks
+     * @param ticks     The distance to move in motor ticks
      */
     public void setTargets(CardinalDirections direction, int ticks) {
 
@@ -287,13 +304,13 @@ public class Robot {
     /**
      * Turns off the motor encoders, to run purely on power.
      */
-    public void powerRunningMode()
-    {
+    public void powerRunningMode() {
         frontLeftDrive.setMode(RUN_WITHOUT_ENCODER);
         frontRightDrive.setMode(RUN_WITHOUT_ENCODER);
         backLeftDrive.setMode(RUN_WITHOUT_ENCODER);
         backRightDrive.setMode(RUN_WITHOUT_ENCODER);
     }
+
     public void powerSet(double speed) {
         frontLeftDrive.setPower(speed);
         frontRightDrive.setPower(speed);
@@ -305,14 +322,14 @@ public class Robot {
     /**
      * Sets the motors to run with encoder feedback.
      */
-    public void encoderRunningMode(){
+    public void encoderRunningMode() {
         frontLeftDrive.setMode(RUN_USING_ENCODER);
         frontRightDrive.setMode(RUN_USING_ENCODER);
         backLeftDrive.setMode(RUN_USING_ENCODER);
         backRightDrive.setMode(RUN_USING_ENCODER);
     }
 
-    public void encoderReset(){
+    public void encoderReset() {
         frontLeftDrive.setMode(STOP_AND_RESET_ENCODER);
         frontRightDrive.setMode(STOP_AND_RESET_ENCODER);
         backLeftDrive.setMode(STOP_AND_RESET_ENCODER);
@@ -323,7 +340,7 @@ public class Robot {
      * Adds motor data to telemetry and updates it.
      */
     @SuppressLint("DefaultLocale")
-    public void tellMotorOutput(){
+    public void tellMotorOutput() {
         telemetry.addData("Control Mode", controlMode);
         telemetry.addData("Motors", String.format("FL Power(%.2f) FL Location (%d) FL Target (%d)", frontLeftDrive.getPower(), frontLeftDrive.getCurrentPosition(), frontLeftDrive.getTargetPosition()));
         telemetry.addData("Motors", String.format("FR Power(%.2f) FR Location (%d) FR Target (%d)", frontRightDrive.getPower(), frontRightDrive.getCurrentPosition(), frontRightDrive.getTargetPosition()));
@@ -335,14 +352,14 @@ public class Robot {
 
     public double inchesToTicks(double inches) {
         // returns the inches * ticks per rotation / wheel circ
-        return ((inches/12.25) * 537.6 / .5);
+        return ((inches / 12.25) * 537.6 / .5);
         //todo Reference that 1 inch ~= 50 ticks
     }
 
     ElapsedTime timer = new ElapsedTime();
 
 
-    public void prepareAuto(){
+    public void prepareAuto() {
         sorterHardware.moveDoor(CLOSED);
     }
 
@@ -350,8 +367,7 @@ public class Robot {
      * Updates the SorterHardware, LauncherHardware, ArtifactLocator, Limelight, and HuskyLens.
      * Also adds some data to telemetry.
      */
-    public void updateAllDaThings()
-    {
+    public void updateAllDaThings() {
         //sorterHardware.updateSorterHardware();
         //launcher.updateLauncherHardware();
         sorterLogic.update();
@@ -359,8 +375,7 @@ public class Robot {
         launcher.updateLauncherHardware();
         queue.updateQueueStates();
 
-        if(scanningForTargetTag)
-        {
+        if (scanningForTargetTag) {
             targetTag = targetScanner.tagInfo();
         }
 
@@ -369,12 +384,10 @@ public class Robot {
         inventoryCam.updateBlockScan();
 
 
-
         dumpAllTelemetryFromUpdate();
     }
 
-    public void dumpAllTelemetryFromUpdate()
-    {
+    public void dumpAllTelemetryFromUpdate() {
         //Reliant functions not present
         telemetry.addData("Sorter Position: ", sorterHardware.motor.getCurrentPosition());
         telemetry.addData("Reference", sorterHardware.reference);
@@ -387,10 +400,10 @@ public class Robot {
 
     /**
      * Sets the intake and feeder servos to run.
+     *
      * @param num The power input, from -1.0 to 1.0.
      */
-    public void runBasicIntake(double num)
-    {
+    public void runBasicIntake(double num) {
         intakeyServoR.setPower(num);
         intakeyServoL.setPower(num);
         transferServoR.setPower(num);
@@ -405,25 +418,105 @@ public class Robot {
         //sorterHardware.prepareNewMovement(sorterHardware.motor.getCurrentPosition(), sorterLogic.findFirstType(EMPTY).getLoadPosition());/*replace with first empty*/
     }
 
-    public void cancelAutoIntake()
-    {
+    public void cancelAutoIntake() {
         sorterHardware.setFeeders(PASSIVE);
         runBasicIntake(0);
     }
 
-    public void readyHardware(boolean resetEncoder)
-    {
+    public void readyHardware(boolean resetEncoder) {
         sorterHardware.doorServo.setPosition(1);
         sorterHardware.moveDoor(CLOSED);
         launcher.setLauncherSpeed(0);
         inventoryCam.updateBlockScan();
 
-        if(resetEncoder)
-        {
+        if (resetEncoder) {
             sorterHardware.resetSorterEncoder();
             encoderReset();
             sorterHardware.reference = 0;
         }
     }
+
+    //This will need to be moved, but for now...
+    ArtifactLocator.SlotState runSideScannersWithRGB()
+    {
+        float purpleMinRed = 150;
+        float purpleMaxRed = 215;
+        float greenMinRed = 70;
+        float greenMaxRed = 130;
+        float purpleMinGreen= 70;
+        float purpleMaxGreen= 130;
+        float greenMinGreen = 150;
+        float greenMaxGreen = 215;
+        float purpleMinBlue= 170;
+        float purpleMaxBlue= 230;
+        float greenMinBlue = 70;
+        float greenMaxBlue = 130;
+
+        //Normalize to prevent color shift from lighting intensity
+        float leftNormGreen, leftNormRed, leftNormBlue, rightNormGreen, rightNormRed, rightNormBlue;
+        NormalizedRGBA leftNormalizedColors = leftColorScanner.getNormalizedColors();
+        NormalizedRGBA rightNormalizedColors = rightColorScanner.getNormalizedColors();
+        leftNormGreen = leftNormalizedColors.green / leftNormalizedColors.alpha;
+        leftNormRed = leftNormalizedColors.red / leftNormalizedColors.alpha;
+        leftNormBlue = leftNormalizedColors.blue / leftNormalizedColors.alpha;
+        rightNormGreen = rightNormalizedColors.green / leftNormalizedColors.alpha;
+        rightNormRed = rightNormalizedColors.red / leftNormalizedColors.alpha;
+        rightNormBlue = rightNormalizedColors.blue / leftNormalizedColors.alpha;
+
+        //Average in case of ball holes
+        float averagedRed = (leftNormRed + rightNormRed)/2;
+        float averagedGreen = (leftNormGreen + rightNormGreen)/2;
+        float averagedBlue = (leftNormBlue + rightNormBlue)/2;
+
+        telemetry.addData("Red: ", averagedRed);
+        telemetry.addData("Green: ", averagedGreen);
+        telemetry.addData("Blue: ", averagedBlue);
+        telemetry.update();
+
+        //Now take our values and do something with them.
+
+        if(averagedBlue > purpleMinBlue && averagedBlue < purpleMaxBlue &&
+                averagedRed > purpleMinRed && averagedRed < purpleMaxRed &&
+                averagedGreen > purpleMinGreen && averagedGreen < purpleMaxGreen) {
+            return PURPLE;
+
+
+        }
+        else if(averagedBlue > greenMinBlue && averagedBlue < greenMaxBlue &&
+                averagedRed > greenMinRed && averagedRed < greenMaxRed &&
+                averagedGreen > greenMinGreen && averagedGreen < greenMaxGreen) {
+            return GREEN;
+        }
+            return EMPTY;
+
+    }
+
+    ArtifactLocator.SlotState runSideScannersWithHSV()
+    {
+        int purpleMinHue = 255;
+        int purpleMaxHue = 295;
+
+        int greenMinHue = 85;
+        int greenMaxHue = 158;
+
+        int averagedRed = (leftColorScanner.red() + rightColorScanner.red())/2;
+        int averagedGreen = (leftColorScanner.green() + rightColorScanner.green())/2;
+        int averagedBlue = (leftColorScanner.blue() + rightColorScanner.blue())/2;
+
+        float[] hsvValues = new float[3];
+        Color.RGBToHSV(averagedRed, averagedGreen, averagedBlue, hsvValues);
+
+        if(hsvValues[0] > purpleMinHue && hsvValues[0] < purpleMaxHue)
+        {
+            return PURPLE;
+
+        }
+        else if(hsvValues[0] > greenMinHue && hsvValues[0] < greenMaxHue)
+        {
+            return GREEN;
+        }
+        return EMPTY;
+    }
+
 
 }
