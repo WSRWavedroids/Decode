@@ -34,7 +34,7 @@ public class RedBack12Ball extends BlueBack12Ball {
 
         follower.setStartingPose(new Pose(144-50.188, 9.200, Math.toRadians(90)));
 
-        robot.alliance = RED;
+//        robot.alliance = RED;
 
         paths = new PathsForBack12Red(follower); // Build paths
 

@@ -49,57 +49,56 @@ public class BlueBack12Ball extends OpMode {
         follower = robot.turret.follower;
         follower.setMaxPowerScaling(1);
         follower.setMaxPower(1);
-        robot.callPartialPedro = false;
         panelsTelemetry = Robot.panelsTelemetry;
         opmodeTimer = new Timer();
         pathTimer = new Timer();
         actionTimer = new Timer();
-        telemetry.addData("tolerance value test pt 1", TurretLogic.tolerance);
-        telemetry.addData("tolerance value test pt 2", TurretLogic.tolerance);
+//        telemetry.addData("tolerance value test pt 1", TurretLogic.tolerance);
+//        telemetry.addData("tolerance value test pt 2", TurretLogic.tolerance);
         auto = new AutonomousPlusPLUS(robot);
         robot.turret.activeMode = TurretLogic.controlMode.FULL;
 
-        robot.randomizationScanner.InitLimeLight(0);
-        blackboard.put(ALLIANCE_KEY, "BLUE");
-        stallTimer = new ElapsedTime();
-
-        robot.turret.follower.setPose(startPose);
-        robot.turret.follower.setHeading(startPose.getHeading());
-
-        robot.alliance = BLUE;
+//        robot.randomizationScanner.InitLimeLight(0);
+//        blackboard.put(ALLIANCE_KEY, "BLUE");
+//        stallTimer = new ElapsedTime();
+//
+//        robot.turret.follower.setPose(startPose);
+//        robot.turret.follower.setHeading(startPose.getHeading());
+//
+//        robot.alliance = BLUE;
 
         paths = new PathsForBack12Blue(follower); // Build paths
 
-        panelsTelemetry.debug("Status", "Initialized");
-        panelsTelemetry.update(telemetry);
+//        panelsTelemetry.debug("Status", "Initialized");
+//        panelsTelemetry.update(telemetry);
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
 
     public void init_loop() {
-        robot.pattern = robot.randomizationScanner.GetRandomization();
-        telemetry.addData(String.valueOf(robot.pattern), " Works!");
-        telemetry.update();
-
-        telemetry.addData("Our pattern is: ", String.valueOf(robot.pattern), " ...yay");
-
-        switch (robot.pattern) {
-            case PPG:
-                telemetry.addData("We doin", " PPG now");
-                blackboard.put(PATTERN_KEY, "PPG");
-                break;
-            case GPP:
-                telemetry.addData("We doin", " GPP now");
-                blackboard.put(PATTERN_KEY, "GPP");
-                break;
-            case PGP:
-                telemetry.addData("We doin", " PGP now");
-                blackboard.put(PATTERN_KEY, "PGP");
-                break;
-            default:
-                telemetry.addData("It failed ", "cry time");
-                break;
-        }
+//        robot.pattern = robot.randomizationScanner.GetRandomization();
+//        telemetry.addData(String.valueOf(robot.pattern), " Works!");
+//        telemetry.update();
+//
+//        telemetry.addData("Our pattern is: ", String.valueOf(robot.pattern), " ...yay");
+//
+//        switch (robot.pattern) {
+//            case PPG:
+//                telemetry.addData("We doin", " PPG now");
+//                blackboard.put(PATTERN_KEY, "PPG");
+//                break;
+//            case GPP:
+//                telemetry.addData("We doin", " GPP now");
+//                blackboard.put(PATTERN_KEY, "GPP");
+//                break;
+//            case PGP:
+//                telemetry.addData("We doin", " PGP now");
+//                blackboard.put(PATTERN_KEY, "PGP");
+//                break;
+//            default:
+//                telemetry.addData("It failed ", "cry time");
+//                break;
+//        }
     }
 
     /**
@@ -109,8 +108,8 @@ public class BlueBack12Ball extends OpMode {
         //runtime.reset();
         opmodeTimer.resetTimer();
         telemetry.addData("HYPE", "Let's do this!!!");
-        robot.readyHardware(true);
-        robot.sorterHardware.legalToSpin = true;
+        robot.readyHardware(false);
+//        robot.sorterHardware.legalToSpin = true;
         //speed = 1;
     }
 
@@ -121,13 +120,13 @@ public class BlueBack12Ball extends OpMode {
         pathState = autonomousPathUpdate(); // Update autonomous state machine
 
         // Log values to Panels and Driver Station
-        panelsTelemetry.debug("Path State", currentStep);
-        panelsTelemetry.debug("X", follower.getPose().getX());
-        panelsTelemetry.debug("Y", follower.getPose().getY());
-        panelsTelemetry.debug("Heading", follower.getPose().getHeading());
-        panelsTelemetry.debug("Max Power Scalar", follower.getMaxPowerScaling());
-        panelsTelemetry.debug("Motor power", robot.frontLeftDrive.getVelocity());
-        panelsTelemetry.update(telemetry);
+//        panelsTelemetry.debug("Path State", currentStep);
+//        panelsTelemetry.debug("X", follower.getPose().getX());
+//        panelsTelemetry.debug("Y", follower.getPose().getY());
+//        panelsTelemetry.debug("Heading", follower.getPose().getHeading());
+//        panelsTelemetry.debug("Max Power Scalar", follower.getMaxPowerScaling());
+//        panelsTelemetry.debug("Motor power", robot.frontLeftDrive.getVelocity());
+//        panelsTelemetry.update(telemetry);
     }
 
     public static class PathsForBack12Blue {
@@ -306,12 +305,12 @@ public class BlueBack12Ball extends OpMode {
                 if (!follower.isBusy()) {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    robot.queue.addPattern(robot.pattern);
+//                    robot.queue.addPattern(robot.pattern);
                     setCurrentStep(LINE_UP_2);
                 }
                 break;
             case LINE_UP_2:
-                if (robot.queue.noBallsQueued) {
+                if (/*robot.queue.noBallsQueued*/ true) {
                     follower.followPath(paths.LineUpWithMiddleBalls);
                     setCurrentStep(ENABLE_INTAKE_2);
                 }
@@ -352,12 +351,12 @@ public class BlueBack12Ball extends OpMode {
                 break;
             case FIRE_2:
                 if (!follower.isBusy()) {
-                    auto.fireMatchPattern();
+//                    auto.fireMatchPattern();
                     setCurrentStep(LINE_UP_3);
                 }
                 break;
             case LINE_UP_3:
-                if (auto.fireInSequenceComplete()) {
+                if (/*auto.fireInSequenceComplete()*/ true) {
                     follower.followPath(paths.LineUpWithClose);
                     setCurrentStep(ENABLE_INTAKE_3);
                 }
@@ -382,12 +381,12 @@ public class BlueBack12Ball extends OpMode {
                 break;
             case FIRE_3:
                 if (!follower.isBusy()) {
-                    auto.fireMatchPattern();
+//                    auto.fireMatchPattern();
                     setCurrentStep(LINE_UP_4);
                 }
                 break;
             case LINE_UP_4:
-                if (auto.fireInSequenceComplete()) {
+                if (/*auto.fireInSequenceComplete()*/ true) {
                     follower.followPath(paths.LineUpWithFarBalls);
                     setCurrentStep(ENABLE_INTAKE_4);
                 }
@@ -417,8 +416,8 @@ public class BlueBack12Ball extends OpMode {
             case FIRE_4:
                 if(!follower.isBusy())
                 {
-                    auto.fireMatchPattern();
-                    setCurrentStep(END);
+//                    auto.fireMatchPattern();
+//                    setCurrentStep(END);
                 }
                 break;
             case END:
@@ -444,8 +443,8 @@ public class BlueBack12Ball extends OpMode {
     {
         if(opmodeTimer.getElapsedTimeSeconds() >= 29)
         {
-            robot.turret.updateTurretPositionXY();
-            robot.sorterHardware.prepareNewMovement(0);
+//            robot.turret.updateTurretPositionXY();
+//            robot.sorterHardware.prepareNewMovement(0);
             setCurrentStep(END);
         }
     }
