@@ -222,7 +222,8 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         if (gamepad2.left_stick_y >= 0.9) {
             autoDriver2Mode = true;
-        } else if (gamepad2.left_stick_y <= -0.9) {
+            TurretLogic.activeMode = FULL;
+        } else if (gamepad2.left_stick_y <= -0.5) {
             autoDriver2Mode = false;
         }
 
