@@ -51,6 +51,8 @@ public class Vortex_Teleop_Decode extends OpMode {
     private double speed = 0.75;
     private boolean spinTargetAcquired = false;
 
+    private boolean autoDriver2Mode = false;
+
     private boolean automatedDrive;
     boolean cadenHoldingReady = false;
     boolean cadenHoldingFire = false;
@@ -218,6 +220,12 @@ public class Vortex_Teleop_Decode extends OpMode {
 
         //So Begins the input chain. At least try a bit to organise by driver
 
+        if (gamepad2.left_stick_y >= 0.9) {
+            autoDriver2Mode = true;
+        } else if (gamepad2.left_stick_y <= -0.9) {
+            autoDriver2Mode = false;
+        }
+
         driveSpeed();
 
         controlMode();
@@ -234,23 +242,41 @@ public class Vortex_Teleop_Decode extends OpMode {
             singleJoystickDrive();
         }
 
-        fireAll();
+        if (autoDriver2Mode) {
+            /*
+            Welcome to blindfold mode! This behavior emulates Caden when he's driving blindfolded.
+            It can't sort, but we weren't doing that 75% of the match anyway.
+             */
 
-        intake();
+            // First, let's make sure we aren't actively firing
+            if (robot.queue.noBallsQueued) {
+                robot.sorterHardware.runAdvancedIntake(); // Run the intake if at all possible
 
-        launcherToggle();
+                // If we're in a firing zone, and we aren't firing, fix that
+                if (robot.sorterLogic.inventory.getTotalCount() == 3 & robot.zoneDetector.isInFireZone()) {
+                    robot.queue.fillSimple();
+                }
+            }
+        } else {
+            fireAll();
 
-        fireCurrentFireSlot();
+            intake();
 
-        firePatternWithOffset();
+            launcherToggle();
 
-        incrementThroughPositions();
+            fireCurrentFireSlot();
+
+            firePatternWithOffset();
+
+            incrementThroughPositions();
+
+            toggleTurretFullMode();
+        }
+
 
         switchAlliance();
 
         //turretAssist();
-
-        toggleTurretFullMode();
 
         resetPedroPosition();
 
@@ -532,6 +558,7 @@ public class Vortex_Teleop_Decode extends OpMode {
     }
 
     private void manualTuneLauncher() {
+        autoDriver2Mode = false;
         if (gamepad2.dpadUpWasPressed()) {
             robot.launcher.velocityTarget += 20;
         } else if (gamepad2.dpadDownWasPressed()) {
