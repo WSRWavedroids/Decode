@@ -150,7 +150,7 @@ public class LauncherHardware {
                     activeFiringSlot = robot.sorterLogic.findCurrentSlotInPosition(FIRE);
                 }
                 setPerfectLauncherVelocity();
-                if (motorSpeedCheck(velocityTarget) && motorSteady() || cooldownTimer.seconds() >= 5) {
+                if ((motorSpeedCheck(velocityTarget) && motorSteady() || cooldownTimer.seconds() >= 5) & turret.positioned()) {
                     nextStep(FLICK);
                 }
                 break;
