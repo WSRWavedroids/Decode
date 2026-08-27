@@ -108,6 +108,7 @@ public class Robot {
     public Limelight_Target_Scanner targetScanner;
     public fireQueueWithStates queue;
     public SlotLightManager blinkies;
+    public ZoneDetector zoneDetector;
 
 
     public Panels panels;
@@ -208,6 +209,7 @@ public class Robot {
         randomizationScanner = new Limelight_Randomization_Scanner(this);
         turret = new TurretLogic(this, null);
         blinkies = new SlotLightManager(this);
+        zoneDetector = new ZoneDetector(this);
 
         robotPosition = new Vector2();
         turretPosition = new Vector2();
