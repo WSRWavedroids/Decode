@@ -677,6 +677,9 @@ public class Vortex_Teleop_Decode extends OpMode {
         telemetry.addData("Last saved Alliance", blackboard.get(ALLIANCE_KEY));
         telemetry.addData("Position grab successful", blackboardPositioningSucessful);
 
+        telemetry.addLine();
+        telemetry.addData("Blindfold Mode", autoDriver2Mode);
+
         //robot.tellMotorOutput();
     }
 
