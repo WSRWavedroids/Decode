@@ -36,13 +36,21 @@ public class ZoneDetector {
     }
 
     private double findCloseZoneLine(double x) {
-        if (x <= 72) return -x + 144;
-        else return x;
+        if (x <= 72) {
+            return -x + 144;
+        }
+        else {
+            return x;
+        }
     }
 
     private double findFarZoneLine(double x) {
-        if (x <= 72) return x - 48;
-        else return -x + 96;
+        if (x <= 72) {
+            return x - 48;
+        }
+        else {
+            return -x + 96;
+        }
     }
 
 }
