@@ -195,7 +195,7 @@ public class Robot {
         backLeftDrive.setZeroPowerBehavior(BRAKE);
         backRightDrive.setZeroPowerBehavior(BRAKE);
         frontLeftDrive.setZeroPowerBehavior(BRAKE);
-        sorterMotor.setZeroPowerBehavior(FLOAT);
+
 
 
         //This is new..

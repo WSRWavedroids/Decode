@@ -83,9 +83,6 @@ public class LauncherHardware {
         return currentLauncherStep;
     }
 
-    private void nextStep(LauncherSteps nextStep) {
-        currentLauncherStep = nextStep;
-    }
     private ElapsedTime cooldownTimer = new ElapsedTime();
 
     public void updateLauncherHardware() {
@@ -102,13 +99,13 @@ public class LauncherHardware {
                     firing = true;
                     switch (mode) {
                         case IF_SAFE_NOW:
-                            nextStep(CHECK_IF_SAFE);
+                            currentLauncherStep = CHECK_IF_SAFE;
                             break;
                         case WAIT_FOREVER:
-                            nextStep(STALLING_UNTIL_SAFE);
+                            currentLauncherStep = STALLING_UNTIL_SAFE;
                             break;
                         case WAIT_FOR_TIME:
-                            nextStep(WAIT_FOR_TIME_FOR_SAFE);
+                            currentLauncherStep = WAIT_FOR_TIME_FOR_SAFE;
                             break;
                     }
                 }
@@ -116,25 +113,25 @@ public class LauncherHardware {
             case STALLING_UNTIL_SAFE:
                 if (robot.sorterHardware.fireSafeCheck()) {
                     activeFiringSlot = robot.sorterLogic.findCurrentSlotInPosition(FIRE);
-                    nextStep(REV_MOTOR);
+                    currentLauncherStep = REV_MOTOR;
                 }
                 break;
             case WAIT_FOR_TIME_FOR_SAFE:
                 if (robot.sorterHardware.fireSafeCheck()) {
                     activeFiringSlot = robot.sorterLogic.findCurrentSlotInPosition(FIRE);
                     // All good
-                    nextStep(REV_MOTOR);
+                    currentLauncherStep = REV_MOTOR;
                 } else if (waitForSafeTimer.seconds() >= waitTime) {
                     // Command timed out
-                    nextStep(READY_FOR_COMMANDS);
+                    currentLauncherStep = READY_FOR_COMMANDS;
                 }
                 break;
             case CHECK_IF_SAFE:
                 if (robot.sorterHardware.fireSafeCheck()) {
                     activeFiringSlot = robot.sorterLogic.findCurrentSlotInPosition(FIRE);
-                    nextStep(REV_MOTOR);
+                    currentLauncherStep = REV_MOTOR;
                 } else {
-                    nextStep(READY_FOR_COMMANDS);
+                    currentLauncherStep = READY_FOR_COMMANDS;
                 }
                 break;
             case REV_MOTOR:
@@ -143,15 +140,15 @@ public class LauncherHardware {
                 }
                 setPerfectLauncherVelocity();
                 cooldownTimer.reset();
-                nextStep(STALL_WHILE_MOTOR_REVVING);
+                currentLauncherStep = STALL_WHILE_MOTOR_REVVING;
                 break;
             case STALL_WHILE_MOTOR_REVVING:
                 if (!activeFiringSlot.exists()) {
                     activeFiringSlot = robot.sorterLogic.findCurrentSlotInPosition(FIRE);
                 }
                 setPerfectLauncherVelocity();
-                if ((motorSpeedCheck(velocityTarget) && motorSteady() || cooldownTimer.seconds() >= 5) & robot.turret.positioned()) {
-                    nextStep(FLICK);
+                if ((motorSpeedCheck(velocityTarget) && motorSteady() && robot.turret.positioned() || cooldownTimer.seconds() >= 5)) {
+                    currentLauncherStep = FLICK;
                 }
                 break;
             case FLICK:
@@ -164,7 +161,7 @@ public class LauncherHardware {
                 robot.sorterHardware.flick();
                 cooldownTimer.reset();
 
-                nextStep(UNFLICK);
+                currentLauncherStep = UNFLICK;
                 break;
             case UNFLICK:
                 if (!activeFiringSlot.exists()) {
@@ -173,7 +170,7 @@ public class LauncherHardware {
 
                 if(robot.sorterHardware.flickyInPosition() || cooldownTimer.seconds() >= flickTime) {
                     robot.sorterHardware.resetFlicky();
-                    nextStep(LAUNCHING);
+                    currentLauncherStep = LAUNCHING;
                 }
                 break;
             case LAUNCHING:
@@ -218,7 +215,7 @@ public class LauncherHardware {
         firing = false;
 
         // All done, ready for the next one
-        nextStep(READY_FOR_COMMANDS);
+        currentLauncherStep = READY_FOR_COMMANDS;
     }
 
     public boolean doneFiring() {
